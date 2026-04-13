@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.core.presentation.ObserveAsEvents
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
@@ -45,6 +46,12 @@ fun BookingEditorRoot(
     viewModel: BookingEditorViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is BookingEditorEvent.CourtBooked -> onNavigateBack()
+        }
+    }
 
     BookingEditorScreen(
         state = state,
@@ -156,19 +163,21 @@ fun BookingEditorScreen(
                 }
             }
 
+            val availableTimes = state.availableSlots.map { it.startTime }.distinct()
+            val availableCourts = state.availableSlots
+                .filter { it.startTime == state.startTime }
+                .map { it.court }
+
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
                 verticalArrangement = Arrangement.spacedBy(0.dp),
             ) {
-                for (hour in 8..22) {
-                    for (minute in listOf(0, 30)) {
-                        val time = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
-                        Button(
-                            onClick = { onAction(BookingEditorAction.OnStartTimeChange(time)) },
-                            text = time,
-                            variant = if (time == state.startTime) ButtonVariant.Default else ButtonVariant.Outline,
-                        )
-                    }
+                for (availableTime in availableTimes) {
+                    Button(
+                        onClick = { onAction(BookingEditorAction.OnStartTimeChange(availableTime)) },
+                        text = availableTime,
+                        variant = if (availableTime == state.startTime) ButtonVariant.Default else ButtonVariant.Outline,
+                    )
                 }
             }
 
@@ -176,11 +185,11 @@ fun BookingEditorScreen(
                 horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
                 verticalArrangement = Arrangement.spacedBy(0.dp),
             ) {
-                for (i in 1..5) {
+                for (availableCourt in availableCourts) {
                     Button(
-                        onClick = { onAction(BookingEditorAction.OnCourtChange(i)) },
-                        text = "Platz $i",
-                        variant = if (i == state.court) ButtonVariant.Default else ButtonVariant.Outline,
+                        onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt)) },
+                        text = "Platz $availableCourt",
+                        variant = if (availableCourt == state.court) ButtonVariant.Default else ButtonVariant.Outline,
                     )
                 }
             }
@@ -190,15 +199,12 @@ fun BookingEditorScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick = {},
-                    text = "Buchen"
+                    onClick = { onAction(BookingEditorAction.OnBookClick) },
+                    text = "Buchen",
+                    enabled = !state.isSaving
                 )
             }
         }
-    }
-
-    if (state.showDeleteDialog) {
-
     }
 }
 

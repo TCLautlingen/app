@@ -1,6 +1,7 @@
 package org.tcl.app.booking.presentation.list
 
-import org.tcl.app.booking.domain.Booking
+import org.tcl.app.Booking
+
 
 data class BookingUi(
     val id: String,
@@ -13,7 +14,7 @@ data class BookingUi(
 fun Booking.toBookingUi(): BookingUi {
     return BookingUi(
         id = id,
-        date = date.toString(),
+        date = date,
         startTime = startTime,
         duration = duration.toString(),
         court = court.toString(),

@@ -7,4 +7,5 @@ data class BookingListState(
     val bookings: List<BookingUi> = emptyList(),
     val isLoading : Boolean = true,
     val showDeleteDialog: Boolean = false,
+    val bookingIdToDelete: String? = null,
 )

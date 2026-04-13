@@ -14,7 +14,7 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 @Composable
 @Preview
 fun App() {
-    val colors = RikkaPalette.Zinc.resolve(isDark = true)
+    val colors = RikkaPalette.Zinc.resolve(isDark = false)
 
     RikkaTheme(colors = colors) {
         Box(

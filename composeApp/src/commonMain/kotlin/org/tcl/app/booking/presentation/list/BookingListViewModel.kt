@@ -2,80 +2,60 @@ package org.tcl.app.booking.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kizitonwose.calendar.core.now
-import com.kizitonwose.calendar.core.plusDays
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.LocalDate
-import org.tcl.app.booking.domain.Booking
-import kotlin.collections.copy
-import kotlin.collections.emptyList
+import kotlinx.coroutines.launch
+import org.tcl.app.booking.domain.BookingRepository
 
 class BookingListViewModel(
-
+    private val repository: BookingRepository = BookingRepository()
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingListState())
     val state = _state.asStateFlow()
 
     init {
-        observeBookings()
+        updateBookings()
     }
 
     fun onAction(action: BookingListAction) {
         when (action) {
             is BookingListAction.OnDeleteClick -> {
-                _state.update { it.copy(showDeleteDialog = true) }
+                _state.update { it.copy(showDeleteDialog = true, bookingIdToDelete = action.bookingId) }
             }
             is BookingListAction.OnConfirmDelete -> {
-
+                viewModelScope.launch {
+                    _state.update { it.copy(isLoading = true) }
+                    try {
+                        repository.deleteBooking(_state.value.bookingIdToDelete ?: "")
+                        updateBookings()
+                        _state.update { it.copy(showDeleteDialog = false, bookingIdToDelete = null) }
+                    } catch (e: Exception) {
+                        _state.update { it.copy(isLoading = false) }
+                    }
+                }
             }
             is BookingListAction.OnDismissDeleteDialog -> {
                 _state.update { it.copy(showDeleteDialog = false) }
             }
+            is BookingListAction.OnRefresh -> updateBookings()
         }
     }
 
-    private fun observeBookings() {
-        flowOf(
-            listOf(
-                Booking(
-                    id = "1",
-                    date = LocalDate.now(),
-                    startTime = "10:00",
-                    duration = 30,
-                    court = 1
-                ),
-                Booking(
-                    id = "2",
-                    date = LocalDate.now(),
-                    startTime = "11:00",
-                    duration = 60,
-                    court = 2
-                ),
-                Booking(
-                    id = "3",
-                    date = LocalDate.now().plusDays(1),
-                    startTime = "12:00",
-                    duration = 90,
-                    court = 3
-                ),
-            )
-            /*
-            emptyList<Booking>()
-            */
-        )
-        .onEach { bookings ->
-            _state.update {
-                it.copy(
-                    bookings = bookings.map { booking -> booking.toBookingUi() },
-                    isLoading = false,
-                )
+    private fun updateBookings() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            try {
+                val bookings = repository.getBookings()
+                _state.update {
+                    it.copy(
+                        bookings = bookings.map { b -> b.toBookingUi() },
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
             }
         }
-        .launchIn(viewModelScope)
     }
 }

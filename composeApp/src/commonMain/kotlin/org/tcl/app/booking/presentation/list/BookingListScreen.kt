@@ -17,13 +17,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import app.composeapp.generated.resources.Res
 import app.composeapp.generated.resources.drone
 import org.jetbrains.compose.resources.painterResource
@@ -57,6 +61,7 @@ fun BookingListRoot(
     onNavigate: (AppGraph) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     BookingListScreen(
         state = state,
         onAction = viewModel::onAction,
@@ -70,6 +75,13 @@ fun BookingListScreen(
     onAction: (BookingListAction) -> Unit,
     onNavigate: (AppGraph) -> Unit
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            onAction(BookingListAction.OnRefresh)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(title = "Meine Buchungen")
@@ -86,11 +98,10 @@ fun BookingListScreen(
                 )
             }
         },
-    ) { paddingValues ->
-        when {
+    ) { when {
             state.isLoading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     Spinner()
@@ -98,7 +109,7 @@ fun BookingListScreen(
             }
             state.bookings.isEmpty() -> {
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -118,7 +129,7 @@ fun BookingListScreen(
             }
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(RikkaTheme.spacing.lg),
                     verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md),
                 ) {
@@ -128,7 +139,7 @@ fun BookingListScreen(
                     ) { booking ->
                         BookingCard(
                             booking = booking,
-                            onDelete = { onAction(BookingListAction.OnDeleteClick) },
+                            onDelete = { onAction(BookingListAction.OnDeleteClick(booking.id)) },
                         )
                     }
                 }
@@ -136,26 +147,24 @@ fun BookingListScreen(
         }
 
 
-        if (state.showDeleteDialog) {
-            AlertDialog(
-                modifier = Modifier.padding(RikkaTheme.spacing.xl),
-                open = true,
-                onDismiss = { onAction(BookingListAction.OnDismissDeleteDialog) },
-                onConfirm = { onAction(BookingListAction.OnConfirmDelete) },
-                animation = AlertDialogAnimation.FadeScale,
-            ) {
-                AlertDialogHeader(
-                    title = "Are you absolutely sure?",
-                    description = "This action cannot be undone.",
+        AlertDialog(
+            modifier = Modifier.padding(RikkaTheme.spacing.xl),
+            open = state.showDeleteDialog,
+            onDismiss = { onAction(BookingListAction.OnDismissDeleteDialog) },
+            onConfirm = { onAction(BookingListAction.OnConfirmDelete) },
+            animation = AlertDialogAnimation.FadeScale,
+        ) {
+            AlertDialogHeader(
+                title = "Are you absolutely sure?",
+                description = "This action cannot be undone.",
+            )
+            AlertDialogFooter {
+                AlertDialogCancel(onClick = { onAction(BookingListAction.OnDismissDeleteDialog) })
+                AlertDialogAction(
+                    text = "Delete",
+                    onClick = { onAction(BookingListAction.OnConfirmDelete) },
+                    variant = AlertDialogActionVariant.Destructive,
                 )
-                AlertDialogFooter {
-                    AlertDialogCancel(onClick = { onAction(BookingListAction.OnDismissDeleteDialog) })
-                    AlertDialogAction(
-                        text = "Delete",
-                        onClick = { onAction(BookingListAction.OnConfirmDelete) },
-                        variant = AlertDialogActionVariant.Destructive,
-                    )
-                }
             }
         }
     }
@@ -200,7 +209,7 @@ fun BookingCard(
                 }
                 IconButton(
                     icon = RikkaIcons.Trash,
-                    contentDescription = "Delete note",
+                    contentDescription = "Delete booking",
                     onClick = onDelete,
                 )
             }
