@@ -119,7 +119,7 @@ fun BookingEditorScreen(
                                     )
                                 }
                             },
-                            contentDescription = "Previous month",
+                            contentDescription = "Vorheriger Monat",
                         )
 
                         Text(
@@ -138,7 +138,7 @@ fun BookingEditorScreen(
                                     )
                                 }
                             },
-                            contentDescription = "Next month",
+                            contentDescription = "Nächster Monat",
                         )
                     }
                 },

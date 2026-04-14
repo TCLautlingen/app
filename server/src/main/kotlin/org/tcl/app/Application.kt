@@ -3,7 +3,9 @@ package org.tcl.app
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import org.tcl.app.model.FakeBookingRepository
+import org.tcl.app.plugins.configureAuthentication
+import org.tcl.app.plugins.configureRouting
+import org.tcl.app.plugins.configureSerialization
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -11,7 +13,7 @@ fun main() {
 }
 
 fun Application.module() {
-    val repository = FakeBookingRepository()
-
-    configureSerialization(repository)
+    configureSerialization()
+    configureAuthentication()
+    configureRouting()
 }

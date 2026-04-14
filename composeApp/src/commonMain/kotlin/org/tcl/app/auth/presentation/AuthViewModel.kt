@@ -1,0 +1,72 @@
+package org.tcl.app.auth.presentation
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.tcl.app.auth.domain.AuthRepository
+import org.tcl.app.core.data.TokenManager
+
+class AuthViewModel(
+    private val repository: AuthRepository,
+    private val tokenManager: TokenManager
+) : ViewModel() {
+    private val _state = MutableStateFlow(AuthState())
+    val state = _state.asStateFlow()
+
+
+    fun onAction(action: AuthAction) {
+        when (action) {
+            is AuthAction.OnTabChange -> {
+                _state.update { it.copy(selectedTab = action.selectedTab) }
+            }
+            is AuthAction.OnEmailChange -> {
+                _state.update { it.copy(email = action.email) }
+            }
+            is AuthAction.OnPasswordChange -> {
+                _state.update { it.copy(password = action.password) }
+            }
+            is AuthAction.OnConfirmPasswordChange -> {
+                _state.update { it.copy(confirmPassword = action.confirmPassword) }
+            }
+            AuthAction.OnLoginClick -> login()
+            AuthAction.OnRegisterClick -> register()
+        }
+    }
+
+    private fun login() {
+        val currentState = _state.value
+
+        viewModelScope.launch {
+            val authTokens = repository.login(
+                email = currentState.email,
+                password = currentState.password
+            )
+
+            if (authTokens != null) {
+                tokenManager.tokens = authTokens
+            }
+        }
+    }
+
+    private fun register() {
+        val currentState = _state.value
+
+        if (currentState.password != currentState.confirmPassword) {
+            return
+        }
+
+        viewModelScope.launch {
+            val authTokens = repository.register(
+                email = currentState.email,
+                password = currentState.password
+            )
+
+            if (authTokens != null) {
+                tokenManager.tokens = authTokens
+            }
+        }
+    }
+}

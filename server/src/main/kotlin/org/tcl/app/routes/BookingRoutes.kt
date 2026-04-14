@@ -1,30 +1,66 @@
-package org.tcl.app
+package org.tcl.app.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import org.tcl.app.AvailabilityRequest
+import org.tcl.app.AvailableSlot
+import org.tcl.app.Booking
+import org.tcl.app.COURT_COUNT
 import org.tcl.app.model.BookingRepository
 
-fun Application.configureSerialization(repository: BookingRepository) {
-    install(ContentNegotiation) {
-        json()
-    }
-
-    routing {
+fun Route.bookingRoutes(
+    repository: BookingRepository
+) {
+    authenticate("auth-jwt") {
         route("/bookings") {
             get {
-                val bookings = repository.getBookings()
+                val principal = call.principal<JWTPrincipal>()
+                val userId = principal?.payload?.getClaim("userId")?.asString()
+
+                if (userId == null) {
+                    return@get call.respond(HttpStatusCode.Unauthorized)
+                }
+
+                val court = call.request.queryParameters["court"]?.toIntOrNull()
+                val date = call.request.queryParameters["date"]
+
+                var bookings = repository.getBookings()
+                    .filter { it.userId == userId }
+
+                if (court != null) {
+                    bookings = bookings.filter { it.court == court }
+                }
+
+                if (date != null) {
+                    bookings = bookings.filter { it.date == date }
+                }
+
                 call.respond(bookings)
             }
 
             post {
+                val principal = call.principal<JWTPrincipal>()
+                val userId = principal?.payload?.getClaim("userId")?.asString()
+
+                if (userId == null) {
+                    return@post call.respond(HttpStatusCode.Unauthorized)
+                }
+
                 try {
-                    val booking = call.receive<Booking>().copy(id = (0..1000000).random().toString())
+                    val booking = call.receive<Booking>().copy(
+                        id = (0..1000000).random().toString(),
+                        userId = userId
+                    )
                     repository.addBooking(booking)
                     call.respond(booking)
                 } catch (ex: IllegalStateException) {
@@ -66,12 +102,19 @@ fun Application.configureSerialization(repository: BookingRepository) {
             }
 
             delete("/{bookingId}") {
+                val principal = call.principal<JWTPrincipal>()
+                val userId = principal?.payload?.getClaim("userId")?.asString()
+
+                if (userId == null) {
+                    return@delete call.respond(HttpStatusCode.Unauthorized)
+                }
+
                 val bookingId = call.parameters["bookingId"]
                 if (bookingId == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
-                if (repository.deleteBooking(bookingId)) {
+                if (repository.deleteBooking(userId, bookingId)) {
                     call.respond(HttpStatusCode.NoContent)
                 } else {
                     call.respond(HttpStatusCode.NotFound)

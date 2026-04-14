@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import org.tcl.app.booking.domain.BookingRepository
 
 class BookingListViewModel(
-    private val repository: BookingRepository = BookingRepository()
+    private val repository: BookingRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingListState())
     val state = _state.asStateFlow()

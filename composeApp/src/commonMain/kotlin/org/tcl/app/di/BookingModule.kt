@@ -8,7 +8,7 @@ import org.tcl.app.booking.presentation.editor.BookingEditorViewModel
 import org.tcl.app.booking.presentation.list.BookingListViewModel
 
 val bookingModule = module {
-    single { BookingApiService() }
+    single { BookingApiService(get()) }
     single { BookingRepository(get()) }
 
 

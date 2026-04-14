@@ -30,17 +30,6 @@ kotlin {
     
     jvm()
     
-    js {
-        browser()
-        binaries.executable()
-    }
-    
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
-    
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -71,6 +60,9 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.auth)
+            implementation(libs.anifantakis.ksafe)
+            implementation(libs.anifantakis.ksafe.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -82,9 +74,6 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-        webMain.dependencies {
-            implementation(libs.ktor.client.js)
         }
     }
 }

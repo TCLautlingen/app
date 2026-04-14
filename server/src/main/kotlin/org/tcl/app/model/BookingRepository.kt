@@ -5,5 +5,5 @@ import org.tcl.app.Booking
 interface BookingRepository {
     fun getBookings(): List<Booking>
     fun addBooking(booking: Booking)
-    fun deleteBooking(id: String): Boolean
+    fun deleteBooking(userId: String, id: String): Boolean
 }

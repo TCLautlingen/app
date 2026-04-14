@@ -33,6 +33,7 @@ import app.composeapp.generated.resources.drone
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.navigation.AppGraph
+import org.tcl.app.navigation.BottomNavigationBar
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialog
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogAction
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogActionVariant
@@ -41,12 +42,11 @@ import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogCancel
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogFooter
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogHeader
 import zed.rainxch.rikkaui.components.ui.button.Button
-import zed.rainxch.rikkaui.components.ui.button.ButtonSize
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.card.Card
 import zed.rainxch.rikkaui.components.ui.card.CardContent
-import zed.rainxch.rikkaui.components.ui.icon.Icon
+import zed.rainxch.rikkaui.components.ui.fab.Fab
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
 import zed.rainxch.rikkaui.components.ui.spinner.Spinner
@@ -57,15 +57,17 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
 fun BookingListRoot(
-    viewModel: BookingListViewModel = koinViewModel(),
     onNavigate: (AppGraph) -> Unit,
+    currentRoute: AppGraph?,
+    viewModel: BookingListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BookingListScreen(
         state = state,
         onAction = viewModel::onAction,
-        onNavigate = onNavigate
+        onNavigate = onNavigate,
+        currentRoute = currentRoute
     )
 }
 
@@ -73,7 +75,8 @@ fun BookingListRoot(
 fun BookingListScreen(
     state: BookingListState,
     onAction: (BookingListAction) -> Unit,
-    onNavigate: (AppGraph) -> Unit
+    onNavigate: (AppGraph) -> Unit,
+    currentRoute: AppGraph?,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner.lifecycle) {
@@ -86,17 +89,18 @@ fun BookingListScreen(
         topBar = {
             TopAppBar(title = "Meine Buchungen")
         },
+        bottomBar = {
+            BottomNavigationBar(
+                onNavigate = onNavigate,
+                current = currentRoute ?: AppGraph.BookingList,
+            )
+        },
         floatingActionButton = {
-            Button(
+            Fab(
+                icon = RikkaIcons.Plus,
+                label = "buchen",
                 onClick = { onNavigate(AppGraph.CreateBooking) },
-                modifier = Modifier.size(56.dp).clip(CircleShape),
-                size = ButtonSize.Icon,
-            ) {
-                Icon(
-                    imageVector = RikkaIcons.Plus,
-                    contentDescription = "buchen",
-                )
-            }
+            )
         },
     ) { when {
             state.isLoading -> {

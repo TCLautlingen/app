@@ -13,7 +13,7 @@ class FakeBookingRepository : BookingRepository {
         bookings.add(booking)
     }
 
-    override fun deleteBooking(id: String): Boolean {
-        return bookings.removeIf { it.id == id }
+    override fun deleteBooking(userId: String, id: String): Boolean {
+        return bookings.removeIf { it.userId == userId && it.id == id  }
     }
 }

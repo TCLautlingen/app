@@ -7,11 +7,14 @@ import kotlinx.serialization.Serializable
 sealed interface AppGraph : NavKey {
 
     @Serializable
-    data object Login : AppGraph
+    data object Auth : AppGraph
 
     @Serializable
-    data object BookingsList : AppGraph
+    data object BookingList : AppGraph
 
     @Serializable
     data object CreateBooking : AppGraph
+
+    @Serializable
+    data object BookingCourt : AppGraph
 }

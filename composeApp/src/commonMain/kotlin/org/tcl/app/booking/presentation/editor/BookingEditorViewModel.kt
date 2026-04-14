@@ -16,7 +16,7 @@ import kotlin.math.abs
 import kotlin.time.Clock
 
 class BookingEditorViewModel(
-    private val repository: BookingRepository = BookingRepository()
+    private val repository: BookingRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingEditorState())
     val state = _state.asStateFlow()
@@ -98,7 +98,6 @@ class BookingEditorViewModel(
         }
 
         val booking = Booking(
-            id = "",
             date = currentState.date.toString(),
             startTime = currentState.startTime,
             duration = currentState.duration,

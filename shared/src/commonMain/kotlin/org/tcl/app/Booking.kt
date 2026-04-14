@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Booking(
-    val id: String,
+    val id: String = "",
+    val userId: String = "",
     val date: String,
     val startTime: String,
     val duration: Int,

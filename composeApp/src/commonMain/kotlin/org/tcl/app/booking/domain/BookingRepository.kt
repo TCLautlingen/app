@@ -5,7 +5,7 @@ import org.tcl.app.Booking
 import org.tcl.app.booking.data.BookingApiService
 
 class BookingRepository(
-    private val api: BookingApiService = BookingApiService()
+    private val api: BookingApiService
 ) {
     suspend fun getBookings(): List<Booking> =
         api.getBookings()

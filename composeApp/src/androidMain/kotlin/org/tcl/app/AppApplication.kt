@@ -3,7 +3,9 @@ package org.tcl.app
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.tcl.app.di.authModule
 import org.tcl.app.di.bookingModule
+import org.tcl.app.di.coreModule
 import org.tcl.app.di.platformModule
 
 class AppApplication : Application() {
@@ -11,7 +13,7 @@ class AppApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@AppApplication)
-            modules(platformModule, bookingModule)
+            modules(platformModule, coreModule, authModule, bookingModule)
         }
     }
 }
