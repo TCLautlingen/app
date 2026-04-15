@@ -1,13 +1,16 @@
 package org.tcl.app.booking.presentation.editor
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kizitonwose.calendar.core.now
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.tcl.app.Booking
@@ -16,9 +19,15 @@ import kotlin.math.abs
 import kotlin.time.Clock
 
 class BookingEditorViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val repository: BookingRepository
 ) : ViewModel() {
-    private val _state = MutableStateFlow(BookingEditorState())
+    private val _state = MutableStateFlow(BookingEditorState(
+        date = LocalDate.parse(savedStateHandle["date"] ?: LocalDate.now().toString()),
+        court = savedStateHandle["court"] ?: 1,
+        startTime = savedStateHandle["startTime"] ?: currentTimeRounded(),
+        duration = savedStateHandle["duration"] ?: 60,
+    ))
     val state = _state.asStateFlow()
 
     private val _events = Channel<BookingEditorEvent>()
@@ -28,17 +37,36 @@ class BookingEditorViewModel(
         loadAvailability()
     }
 
+    fun initialize(date: String?, court: Int?, startTime: String?) {
+        if (date != null) {
+            savedStateHandle["date"] = _state.value.date.toString()
+            _state.update { it.copy(date = LocalDate.parse(date)) }
+        }
+        if (court != null) {
+            savedStateHandle["court"] = _state.value.court
+            _state.update { it.copy(court = court) }
+        }
+        if (startTime != null) {
+            savedStateHandle["startTime"] = _state.value.startTime
+            _state.update { it.copy(startTime = startTime) }
+        }
+        loadAvailability()
+    }
+
     fun onAction(action: BookingEditorAction) {
         when (action) {
             is BookingEditorAction.OnDateChange -> {
+                savedStateHandle["date"] = action.date.toString()
                 _state.update { it.copy(date = action.date) }
                 loadAvailability()
             }
             is BookingEditorAction.OnDurationChange -> {
+                savedStateHandle["duration"] = action.duration
                 _state.update { it.copy(duration = action.duration) }
                 loadAvailability()
             }
             is BookingEditorAction.OnStartTimeChange -> {
+                savedStateHandle["startTime"] = action.startTime
                 _state.update {
                     it.copy(
                         startTime = action.startTime,
@@ -51,6 +79,7 @@ class BookingEditorViewModel(
                 }
             }
             is BookingEditorAction.OnCourtChange -> {
+                savedStateHandle["court"] = action.court
                 _state.update { it.copy(court = action.court) }
             }
             is BookingEditorAction.OnBookClick -> bookCourt()
@@ -63,7 +92,7 @@ class BookingEditorViewModel(
         if (duration == 0) return
 
         viewModelScope.launch {
-            val slots = repository.getAvailability(date, duration)
+            val slots = repository.getAvailableSlots(date, duration)
             _state.update { it ->
                 it.copy(
                     availableSlots = slots,
@@ -79,14 +108,13 @@ class BookingEditorViewModel(
                 _state.update { it.copy(startTime = closestTime) }
             }
 
-            val availableCourt = slots
+            val availableCourts = slots
                 .filter { it.startTime == _state.value.startTime }
                 .map { it.court }
-                .firstOrNull()
 
-            _state.update { it.copy(court = availableCourt) }
-
-
+            if (_state.value.court !in availableCourts) {
+                _state.update { it.copy(court = availableCourts.firstOrNull()) }
+            }
         }
     }
 

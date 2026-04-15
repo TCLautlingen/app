@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,10 +43,17 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
 fun BookingEditorRoot(
+    date: String? = null,
+    court: Int? = null,
+    startTime: String? = null,
     onNavigateBack: () -> Unit,
     viewModel: BookingEditorViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(date, court, startTime) {
+        viewModel.initialize(date, court, startTime)
+    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {

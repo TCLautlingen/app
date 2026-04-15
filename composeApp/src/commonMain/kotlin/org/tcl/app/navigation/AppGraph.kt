@@ -13,7 +13,11 @@ sealed interface AppGraph : NavKey {
     data object BookingList : AppGraph
 
     @Serializable
-    data object CreateBooking : AppGraph
+    data class CreateBooking(
+        val date: String? = null,
+        val court: Int? = null,
+        val startTime: String? = null,
+    ) : AppGraph
 
     @Serializable
     data object BookingCourt : AppGraph

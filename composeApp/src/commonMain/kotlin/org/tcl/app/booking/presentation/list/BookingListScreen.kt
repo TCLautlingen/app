@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import app.composeapp.generated.resources.Res
 import app.composeapp.generated.resources.drone
 import org.jetbrains.compose.resources.painterResource
@@ -78,11 +76,8 @@ fun BookingListScreen(
     onNavigate: (AppGraph) -> Unit,
     currentRoute: AppGraph?,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(lifecycleOwner.lifecycle) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            onAction(BookingListAction.OnRefresh)
-        }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        onAction(BookingListAction.OnRefresh)
     }
 
     Scaffold(
@@ -99,7 +94,7 @@ fun BookingListScreen(
             Fab(
                 icon = RikkaIcons.Plus,
                 label = "buchen",
-                onClick = { onNavigate(AppGraph.CreateBooking) },
+                onClick = { onNavigate(AppGraph.CreateBooking()) },
             )
         },
     ) { when {
@@ -125,7 +120,7 @@ fun BookingListScreen(
                         Spacer(modifier = Modifier.height(RikkaTheme.spacing.lg))
                         Button(
                             text = "Buche einen Platz",
-                            onClick = { onNavigate(AppGraph.CreateBooking) },
+                            onClick = { onNavigate(AppGraph.CreateBooking()) },
                             variant = ButtonVariant.Outline,
                         )
                     }

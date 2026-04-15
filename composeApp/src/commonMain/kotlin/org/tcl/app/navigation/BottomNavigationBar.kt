@@ -15,15 +15,15 @@ fun BottomNavigationBar(
         NavigationBarItem(
             selected = current is AppGraph.BookingList,
             onClick = { onNavigate(AppGraph.BookingList) },
-            icon = RikkaIcons.Trash,
-            label = "Home",
+            icon = RikkaIcons.Copy,
+            label = "Buchungen",
             animation = NavigationBarAnimation.Tween,
         )
         NavigationBarItem(
             selected = current is AppGraph.BookingCourt,
             onClick = { onNavigate(AppGraph.BookingCourt) },
-            icon = RikkaIcons.Search,
-            label = "Search",
+            icon = RikkaIcons.Star,
+            label = "Plätze",
             animation = NavigationBarAnimation.Tween,
         )
     }

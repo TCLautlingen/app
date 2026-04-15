@@ -103,6 +103,9 @@ fun AppNavigation() {
 
             entry<AppGraph.CreateBooking> {
                 BookingEditorRoot(
+                    date = it.date,
+                    court = it.court,
+                    startTime = it.startTime,
                     onNavigateBack = { navStack.removeLastOrNull() },
                 )
             }

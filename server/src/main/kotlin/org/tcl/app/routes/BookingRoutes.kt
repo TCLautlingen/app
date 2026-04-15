@@ -12,10 +12,10 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import org.tcl.app.AvailabilityRequest
 import org.tcl.app.AvailableSlot
 import org.tcl.app.Booking
 import org.tcl.app.COURT_COUNT
+import org.tcl.app.CourtSlot
 import org.tcl.app.model.BookingRepository
 
 fun Route.bookingRoutes(
@@ -31,19 +31,8 @@ fun Route.bookingRoutes(
                     return@get call.respond(HttpStatusCode.Unauthorized)
                 }
 
-                val court = call.request.queryParameters["court"]?.toIntOrNull()
-                val date = call.request.queryParameters["date"]
-
-                var bookings = repository.getBookings()
+                val bookings = repository.getBookings()
                     .filter { it.userId == userId }
-
-                if (court != null) {
-                    bookings = bookings.filter { it.court == court }
-                }
-
-                if (date != null) {
-                    bookings = bookings.filter { it.date == date }
-                }
 
                 call.respond(bookings)
             }
@@ -70,10 +59,47 @@ fun Route.bookingRoutes(
                 }
             }
 
-            post("/availability") {
-                val request = call.receive<AvailabilityRequest>()
+            get("/courtSlots") {
+                val date = call.request.queryParameters["date"]
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date")
+
+                val court = call.request.queryParameters["court"]?.toIntOrNull()
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing or invalid court")
+
                 val bookings = repository.getBookings()
-                    .filter { it.date == request.date }
+                    .filter { it.date == date && it.court == court }
+
+                val allStartTimes = generateTimeSlots()
+                val slotDuration = 30
+
+                val courtSlots = allStartTimes.map { startTime ->
+
+                    val slotStart = parseMinutes(startTime)
+                    val slotEnd = slotStart + slotDuration
+
+                    val taken = bookings.any { booking ->
+                        val bookingStart = parseMinutes(booking.startTime)
+                        val bookingEnd = bookingStart + booking.duration
+                        slotStart < bookingEnd && slotEnd > bookingStart
+                    }
+
+                    CourtSlot(
+                        startTime = startTime,
+                        taken = taken
+                    )
+                }
+
+                call.respond(courtSlots)
+            }
+
+            get("/availableSlots") {
+                val date = call.request.queryParameters["date"]
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date")
+                val duration = call.request.queryParameters["duration"]?.toIntOrNull()
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing or invalid duration")
+
+                val bookings = repository.getBookings()
+                    .filter { it.date == date }
 
                 val allStartTimes = generateTimeSlots()
                 val courts = (1..COURT_COUNT)
@@ -83,7 +109,7 @@ fun Route.bookingRoutes(
                 for (startTime in allStartTimes) {
                     for (court in courts) {
                         val requestedStart = parseMinutes(startTime)
-                        val requestedEnd = requestedStart + request.duration
+                        val requestedEnd = requestedStart + duration
 
                         val hasConflict = bookings.any { booking ->
                             if (booking.court != court) return@any false

@@ -13,9 +13,9 @@ data class Booking(
 )
 
 @Serializable
-data class AvailabilityRequest(
-    val date: String,
-    val duration: Int
+data class CourtSlot(
+    val startTime: String,
+    val taken: Boolean
 )
 
 @Serializable
