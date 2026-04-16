@@ -1,18 +1,19 @@
 package org.tcl.app.auth.data
 
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpStatusCode
 import org.tcl.app.AuthTokens
 import org.tcl.app.LoginRequest
+import org.tcl.app.RegisterRequest
+import org.tcl.app.core.data.ApiClient
 
 class AuthApiService(
-    private val client: HttpClient
+    private val apiClient: ApiClient
 ) {
     suspend fun refresh(tokens: AuthTokens): AuthTokens? {
-        val response = client.post("/auth/refresh") {
+        val response = apiClient.client.post("/auth/refresh") {
             setBody(tokens)
         }
 
@@ -26,7 +27,7 @@ class AuthApiService(
     suspend fun login(email: String, password: String): AuthTokens? {
         val loginRequest = LoginRequest(email, password)
 
-        val response = client.post("/auth/login") {
+        val response = apiClient.client.post("/auth/login") {
             setBody(loginRequest)
         }
 
@@ -37,10 +38,10 @@ class AuthApiService(
         }
     }
 
-    suspend fun register(email: String, password: String): AuthTokens? {
-        val registerRequest = LoginRequest(email, password)
+    suspend fun register(email: String, password: String, firstName: String, lastName: String): AuthTokens? {
+        val registerRequest = RegisterRequest(email, password, firstName, lastName)
 
-        val response = client.post("/auth/register") {
+        val response = apiClient.client.post("/auth/register") {
             setBody(registerRequest)
         }
 

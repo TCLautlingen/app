@@ -6,6 +6,7 @@ import org.tcl.app.model.FakeBookingRepository
 import org.tcl.app.model.FakeUserRepository
 import org.tcl.app.routes.authRoutes
 import org.tcl.app.routes.bookingRoutes
+import org.tcl.app.routes.userRoutes
 
 fun Application.configureRouting() {
     val userRepository = FakeUserRepository()
@@ -14,5 +15,6 @@ fun Application.configureRouting() {
     routing {
         authRoutes(userRepository)
         bookingRoutes(bookingRepository)
+        userRoutes(userRepository)
     }
 }

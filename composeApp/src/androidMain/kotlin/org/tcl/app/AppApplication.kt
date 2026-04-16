@@ -7,13 +7,14 @@ import org.tcl.app.di.authModule
 import org.tcl.app.di.bookingModule
 import org.tcl.app.di.coreModule
 import org.tcl.app.di.platformModule
+import org.tcl.app.di.userModule
 
 class AppApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
             androidContext(this@AppApplication)
-            modules(platformModule, coreModule, authModule, bookingModule)
+            modules(platformModule, coreModule, authModule, bookingModule, userModule)
         }
     }
 }

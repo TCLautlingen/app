@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.core.presentation.ObserveAsEvents
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.input.Input
 import zed.rainxch.rikkaui.components.ui.label.Label
@@ -22,9 +23,17 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
 fun AuthRoot(
+    onSuccess: () -> Unit,
     viewModel: AuthViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is AuthEvent.LoggedIn -> onSuccess()
+            is AuthEvent.Registered -> onSuccess()
+        }
+    }
 
     AuthScreen(
         state = state,
@@ -67,7 +76,7 @@ fun AuthScreen(
                 verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md)
+                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
                 ) {
                     Label(
                         text = "Email",
@@ -82,7 +91,7 @@ fun AuthScreen(
                 }
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md)
+                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
                 ) {
                     Label(
                         text = "Passwort",
@@ -97,7 +106,7 @@ fun AuthScreen(
 
                 if (state.selectedTab != 0) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md)
+                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
                     ) {
                         Label(
                             text = "Passwort wiederholen",
@@ -107,6 +116,34 @@ fun AuthScreen(
                             value = state.confirmPassword,
                             onValueChange = { onAction(AuthAction.OnConfirmPasswordChange(it)) },
                             label = "Passwort wiederholen",
+                        )
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
+                    ) {
+                        Label(
+                            text = "Vorname",
+                            required = true
+                        )
+                        Input(
+                            value = state.firstName,
+                            onValueChange = { onAction(AuthAction.OnFirstNameChange(it)) },
+                            label = "Vorname",
+                        )
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
+                    ) {
+                        Label(
+                            text = "Nachname",
+                            required = true
+                        )
+                        Input(
+                            value = state.lastName,
+                            onValueChange = { onAction(AuthAction.OnLastNameChange(it)) },
+                            label = "Nachname",
                         )
                     }
                 }

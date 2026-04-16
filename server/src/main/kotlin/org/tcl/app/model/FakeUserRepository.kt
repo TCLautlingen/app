@@ -8,19 +8,29 @@ class FakeUserRepository : UserRepository {
     private data class StoredUser(
         val id: String,
         val email: String,
-        val password: String
-    )
+        val password: String,
+        val firstName: String,
+        val lastName: String,
+        val isAdmin: Boolean,
+        val isMember: Boolean
+    ) {
+        fun toUser(): User = User(id, email, firstName, lastName, isAdmin, isMember)
+    }
 
     private val users = mutableListOf<StoredUser>()
     private val refreshTokens = mutableListOf<RefreshToken>()
 
-    override fun register(email: String, password: String): User? {
+    override fun register(email: String, password: String, firstName: String, lastName: String): User? {
         if (users.any { it.email == email }) return null
 
         val id = UUID.randomUUID().toString()
-        users.add(StoredUser(id, email, password))
+        val storedUser = StoredUser(id, email, password, firstName, lastName,
+            isAdmin = true,
+            isMember = true
+        )
+        users.add(storedUser)
 
-        return User(id, email)
+        return storedUser.toUser()
     }
 
     override fun login(email: String, password: String): User? {
@@ -28,12 +38,16 @@ class FakeUserRepository : UserRepository {
             it.email == email && it.password == password
         }
 
-        return user?.let { User(it.id, it.email) }
+        return user?.toUser()
+    }
+
+    override fun getUsers(): List<User> {
+        return users
+            .map { it.toUser() }
     }
 
     override fun findById(id: String): User? {
-        return users.firstOrNull { it.id == id }
-            ?.let { User(it.id, it.email) }
+        return users.firstOrNull { it.id == id }?.toUser()
     }
 
     override fun saveRefreshToken(token: RefreshToken) {

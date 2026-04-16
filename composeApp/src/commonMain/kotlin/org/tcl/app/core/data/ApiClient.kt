@@ -34,7 +34,6 @@ class ApiClient(
 
         install(Auth) {
             bearer {
-
                 loadTokens {
                     BearerTokens(
                         tokenManager.tokens.accessToken,
@@ -43,16 +42,18 @@ class ApiClient(
                 }
 
                 refreshTokens {
-                    val response: AuthTokens = client.post("/auth/refresh") {
-                        setBody(tokenManager.tokens)
-                    }.body()
+                    try {
+                        val response: AuthTokens = client.post("/auth/refresh") {
+                            setBody(tokenManager.tokens)
+                        }.body()
 
-                    tokenManager.tokens = response
+                        tokenManager.tokens = response
 
-                    BearerTokens(
-                        response.accessToken,
-                        response.refreshToken
-                    )
+                        BearerTokens(response.accessToken, response.refreshToken)
+                    } catch (e: Exception) {
+                        tokenManager.clear()
+                        null
+                    }
                 }
             }
         }

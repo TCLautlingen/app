@@ -10,5 +10,6 @@ class AuthRepository(
 
     suspend fun login(email: String, password: String) : AuthTokens? = api.login(email, password)
 
-    suspend fun register(email: String, password: String) : AuthTokens? = api.register(email, password)
+    suspend fun register(email: String, password: String, firstName: String, lastName: String) : AuthTokens?
+        = api.register(email, password, firstName, lastName)
 }

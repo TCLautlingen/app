@@ -26,5 +26,12 @@ fun BottomNavigationBar(
             label = "Plätze",
             animation = NavigationBarAnimation.Tween,
         )
+        NavigationBarItem(
+            selected = current is AppGraph.UserProfile,
+            onClick = { onNavigate(AppGraph.UserProfile) },
+            icon = RikkaIcons.User,
+            label = "Profil",
+            animation = NavigationBarAnimation.Tween,
+        )
     }
 }

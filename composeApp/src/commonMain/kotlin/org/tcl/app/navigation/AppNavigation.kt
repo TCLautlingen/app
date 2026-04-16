@@ -17,11 +17,14 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.getKoin
 import org.tcl.app.auth.domain.AuthRepository
+import org.tcl.app.auth.presentation.AuthRoot
+import org.tcl.app.booking.presentation.court.BookingCourtRoot
 import org.tcl.app.booking.presentation.editor.BookingEditorRoot
 import org.tcl.app.booking.presentation.list.BookingListRoot
 import org.tcl.app.core.data.TokenManager
-import org.tcl.app.auth.presentation.AuthRoot
-import org.tcl.app.booking.presentation.court.BookingCourtRoot
+import org.tcl.app.user.presentation.editor.UserEditorRoot
+import org.tcl.app.user.presentation.list.UserListRoot
+import org.tcl.app.user.presentation.profile.UserProfileRoot
 
 @Composable
 fun AppNavigation() {
@@ -62,6 +65,18 @@ fun AppNavigation() {
                         AppGraph.BookingCourt::class,
                         AppGraph.BookingCourt.serializer()
                     )
+                    subclass(
+                        AppGraph.UserProfile::class,
+                        AppGraph.UserProfile.serializer()
+                    )
+                    subclass(
+                        AppGraph.UserList::class,
+                        AppGraph.UserList.serializer()
+                    )
+                    subclass(
+                        AppGraph.UserEditor::class,
+                        AppGraph.UserEditor.serializer()
+                    )
                 }
             }
         },
@@ -89,7 +104,9 @@ fun AppNavigation() {
         ),
         entryProvider = entryProvider {
             entry<AppGraph.Auth> {
-                AuthRoot()
+                AuthRoot(
+                    onSuccess = { loggedIn = true },
+                )
             }
 
             entry<AppGraph.BookingList> {
@@ -116,6 +133,32 @@ fun AppNavigation() {
                         navStack.add(route)
                     },
                     currentRoute = navStack.lastOrNull() as AppGraph?
+                )
+            }
+
+            entry<AppGraph.UserProfile> {
+                UserProfileRoot(
+                    onNavigate = { route ->
+                        navStack.add(route)
+                    },
+                    onLoggedOut = { loggedIn = false },
+                    currentRoute = navStack.lastOrNull() as AppGraph?
+                )
+            }
+
+            entry<AppGraph.UserList> {
+                UserListRoot(
+                    onNavigate = { route ->
+                        navStack.add(route)
+                    },
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                )
+            }
+
+            entry<AppGraph.UserEditor> {
+                UserEditorRoot(
+                    user = it.user,
+                    onNavigateBack = { navStack.removeLastOrNull() },
                 )
             }
         },

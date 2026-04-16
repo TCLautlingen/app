@@ -20,7 +20,7 @@ fun Route.authRoutes(
         post("/register") {
             val request = call.receive<RegisterRequest>()
 
-            val user = repository.register(request.email, request.password)
+            val user = repository.register(request.email, request.password, request.firstName, request.lastName)
                 ?: return@post call.respond(HttpStatusCode.Conflict)
 
             val access = JwtConfig.generateAccessToken(user.id)

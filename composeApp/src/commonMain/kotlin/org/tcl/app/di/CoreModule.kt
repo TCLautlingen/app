@@ -7,5 +7,4 @@ import org.tcl.app.core.data.TokenManager
 val coreModule = module {
     single { TokenManager(get()) }
     single { ApiClient(get()) }
-    single { get<ApiClient>().client }
 }

@@ -154,13 +154,16 @@ fun BookingListScreen(
             animation = AlertDialogAnimation.FadeScale,
         ) {
             AlertDialogHeader(
-                title = "Are you absolutely sure?",
-                description = "This action cannot be undone.",
+                title = "Möchtest du diese Buchung wirklich löschen?",
+                description = "Diese Aktion kann nicht rückgängig gemacht werden.",
             )
             AlertDialogFooter {
-                AlertDialogCancel(onClick = { onAction(BookingListAction.OnDismissDeleteDialog) })
+                AlertDialogCancel(
+                    onClick = { onAction(BookingListAction.OnDismissDeleteDialog) },
+                    text = "Abbrechen",
+                )
                 AlertDialogAction(
-                    text = "Delete",
+                    text = "Löschen",
                     onClick = { onAction(BookingListAction.OnConfirmDelete) },
                     variant = AlertDialogActionVariant.Destructive,
                 )
