@@ -31,5 +31,5 @@ data class CourtSlot(
 @Serializable
 data class AvailableSlot(
     val startTime: String,
-    val courtId: Int
+    val court: Court
 )

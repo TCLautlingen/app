@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS booking, refresh_token, court, "user" CASCADE;
+
 CREATE TABLE "user" (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -15,7 +17,7 @@ CREATE TABLE court (
 );
 
 CREATE TABLE refresh_token (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES "user"(id),
     token VARCHAR(512) NOT NULL UNIQUE,
     expires_at BIGINT NOT NULL
@@ -31,8 +33,8 @@ CREATE TABLE booking (
 );
 
 INSERT INTO court (name) VALUES
-    ('Court 1'),
-    ('Court 2'),
-    ('Court 3'),
-    ('Court 4'),
-    ('Court 5');
+    ('Platz 1'),
+    ('Platz 2'),
+    ('Platz 3'),
+    ('Platz 4'),
+    ('Platz 5');

@@ -128,7 +128,7 @@ fun BookingEditorScreen(
             val availableTimes = state.availableSlots.map { LocalTime.parse(it.startTime) }.distinct()
             val availableCourts = state.availableSlots
                 .filter { LocalTime.parse(it.startTime) == state.startTime }
-                .map { it.courtId }
+                .map { it.court }
 
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
@@ -149,9 +149,9 @@ fun BookingEditorScreen(
             ) {
                 for (availableCourt in availableCourts) {
                     Button(
-                        onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt)) },
-                        text = "Platz $availableCourt",
-                        variant = if (availableCourt == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
+                        onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt.id)) },
+                        text = availableCourt.name,
+                        variant = if (availableCourt.id == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
                     )
                 }
             }

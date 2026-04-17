@@ -7,14 +7,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.court.domain.CourtRepository
 
 class BookingCourtViewModel(
-    private val repository: BookingRepository
+    private val repository: BookingRepository,
+    private val courtRepository: CourtRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingCourtState())
     val state = _state.asStateFlow()
 
     init {
+        loadCourts()
         loadCourtSlots()
     }
 
@@ -27,6 +30,7 @@ class BookingCourtViewModel(
             }
             is BookingCourtAction.OnDateChangeDismiss -> _state.update { it.copy(showDateSheet = false) }
             is BookingCourtAction.OnRefresh -> {
+                loadCourts()
                 loadCourtSlots()
             }
             is BookingCourtAction.OnCourtChange -> {
@@ -47,6 +51,17 @@ class BookingCourtViewModel(
             _state.update {
                 it.copy(
                     courtSlots = courtSlots
+                )
+            }
+        }
+    }
+
+    private fun loadCourts() {
+        viewModelScope.launch {
+            val courts = courtRepository.getCourts()
+            _state.update {
+                it.copy(
+                    courts = courts
                 )
             }
         }

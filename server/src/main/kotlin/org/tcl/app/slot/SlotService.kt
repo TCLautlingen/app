@@ -51,7 +51,7 @@ class SlotService(
                 if (!hasConflict) {
                     available.add(AvailableSlot(
                         startTime = slotStart.toString(),
-                        courtId = court.id
+                        court = court
                     ))
                 }
             }

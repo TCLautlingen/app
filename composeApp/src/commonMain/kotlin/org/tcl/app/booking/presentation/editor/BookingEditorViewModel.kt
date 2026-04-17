@@ -74,7 +74,7 @@ class BookingEditorViewModel(
                         startTime = action.startTime,
                         courtId = it.availableSlots
                             .filter { slot -> LocalTime.parse(slot.startTime) == action.startTime }
-                            .map { slot -> slot.courtId }
+                            .map { slot -> slot.court.id }
                             .distinct()
                             .firstOrNull()
                     )
@@ -112,7 +112,7 @@ class BookingEditorViewModel(
 
             val availableCourts = slots
                 .filter { LocalTime.parse(it.startTime) == _state.value.startTime }
-                .map { it.courtId }
+                .map { it.court.id }
 
             if (_state.value.courtId !in availableCourts) {
                 _state.update { it.copy(courtId = availableCourts.firstOrNull()) }
