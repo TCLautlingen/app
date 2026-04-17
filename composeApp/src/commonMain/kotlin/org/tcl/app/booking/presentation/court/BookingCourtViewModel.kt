@@ -20,6 +20,12 @@ class BookingCourtViewModel(
 
     fun onAction(action: BookingCourtAction) {
         when (action) {
+            is BookingCourtAction.OnDateClick -> _state.update { it.copy(showDateSheet = true) }
+            is BookingCourtAction.OnDateChange -> {
+                _state.update { it.copy(date = action.date, showDateSheet = false) }
+                loadCourtSlots()
+            }
+            is BookingCourtAction.OnDateChangeDismiss -> _state.update { it.copy(showDateSheet = false) }
             is BookingCourtAction.OnRefresh -> {
                 loadCourtSlots()
             }

@@ -55,11 +55,13 @@ class BookingEditorViewModel(
 
     fun onAction(action: BookingEditorAction) {
         when (action) {
+            is BookingEditorAction.OnDateClick -> _state.update { it.copy(showDateSheet = true) }
             is BookingEditorAction.OnDateChange -> {
                 savedStateHandle["date"] = action.date.toString()
-                _state.update { it.copy(date = action.date) }
+                _state.update { it.copy(date = action.date, showDateSheet = false) }
                 loadAvailability()
             }
+            is BookingEditorAction.OnDateChangeDismiss -> _state.update { it.copy(showDateSheet = false) }
             is BookingEditorAction.OnDurationChange -> {
                 savedStateHandle["duration"] = action.duration
                 _state.update { it.copy(duration = action.duration) }

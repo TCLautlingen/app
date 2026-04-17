@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.COURT_COUNT
+import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import zed.rainxch.rikkaui.components.ui.button.Button
@@ -77,6 +78,12 @@ fun BookingCourtScreen(
                 .padding(RikkaTheme.spacing.lg),
             verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg)
         ) {
+            Button(
+                text = state.date.toString(),
+                onClick = { onAction(BookingCourtAction.OnDateClick) },
+                variant = ButtonVariant.Outline
+            )
+
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
                 verticalArrangement = Arrangement.spacedBy(0.dp),
@@ -124,5 +131,14 @@ fun BookingCourtScreen(
                 }
             }
         }
+
+        DateSheet(
+            open = state.showDateSheet,
+            onDismiss = { onAction(BookingCourtAction.OnDateChangeDismiss) },
+            selectedDate = state.date,
+            onDateSelected = {
+                onAction(BookingCourtAction.OnDateChange(it))
+            },
+        )
     }
 }

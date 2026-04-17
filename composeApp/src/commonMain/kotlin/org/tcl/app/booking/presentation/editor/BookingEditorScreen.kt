@@ -13,8 +13,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,12 +33,20 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.YearMonth
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
+import zed.rainxch.rikkaui.components.ui.input.Input
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
+import zed.rainxch.rikkaui.components.ui.sheet.Sheet
+import zed.rainxch.rikkaui.components.ui.sheet.SheetAnimation
+import zed.rainxch.rikkaui.components.ui.sheet.SheetContent
+import zed.rainxch.rikkaui.components.ui.sheet.SheetFooter
+import zed.rainxch.rikkaui.components.ui.sheet.SheetHeader
+import zed.rainxch.rikkaui.components.ui.sheet.SheetSide
 import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
@@ -97,67 +107,10 @@ fun BookingEditorScreen(
                 .padding(RikkaTheme.spacing.lg),
             verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg)
         ) {
-            val currentMonth = remember { YearMonth.now() }
-            val startMonth = remember { currentMonth.minusMonths(100) }
-            val endMonth = remember { currentMonth.plusMonths(100) }
-            val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
-
-            val calendarState = rememberCalendarState(
-                startMonth = startMonth,
-                endMonth = endMonth,
-                firstVisibleMonth = currentMonth,
-                firstDayOfWeek = firstDayOfWeek
-            )
-
-            HorizontalCalendar(
-                state = calendarState,
-                monthHeader = { month ->
-                    val currentMonth = month.yearMonth
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val scope = rememberCoroutineScope()
-                        IconButton(
-                            icon = RikkaIcons.ArrowLeft,
-                            onClick = {
-                                scope.launch {
-                                    calendarState.scrollToMonth(
-                                        calendarState.firstVisibleMonth.yearMonth.minusMonths(1)
-                                    )
-                                }
-                            },
-                            contentDescription = "Vorheriger Monat",
-                        )
-
-                        Text(
-                            text = currentMonth.month.name
-                                .lowercase()
-                                .replaceFirstChar { it.uppercase() } +
-                                    " ${currentMonth.year}"
-                        )
-
-                        IconButton(
-                            icon = RikkaIcons.ArrowRight,
-                            onClick = {
-                                scope.launch {
-                                    calendarState.scrollToMonth(
-                                        calendarState.firstVisibleMonth.yearMonth.plusMonths(1)
-                                    )
-                                }
-                            },
-                            contentDescription = "Nächster Monat",
-                        )
-                    }
-                },
-                dayContent = { day ->
-                    DayCell(
-                        day = day,
-                        isSelected = day.date == state.date,
-                        onClick = { onAction(BookingEditorAction.OnDateChange(day.date)) }
-                    )
-                }
+            Button(
+                text = state.date.toString(),
+                onClick = { onAction(BookingEditorAction.OnDateClick) },
+                variant = ButtonVariant.Outline
             )
 
             Row(
@@ -214,6 +167,15 @@ fun BookingEditorScreen(
                 )
             }
         }
+
+        DateSheet(
+            open = state.showDateSheet,
+            onDismiss = { onAction(BookingEditorAction.OnDateChangeDismiss) },
+            selectedDate = state.date,
+            onDateSelected = {
+                onAction(BookingEditorAction.OnDateChange(it))
+            },
+        )
     }
 }
 

@@ -15,4 +15,5 @@ data class BookingEditorState (
     val availableSlots: List<AvailableSlot> = emptyList(),
     val isSaving: Boolean = false,
     val showDeleteDialog: Boolean = false,
+    val showDateSheet: Boolean = false,
 )

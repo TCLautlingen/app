@@ -10,4 +10,5 @@ data class BookingCourtState(
     val date: LocalDate = LocalDate.now(),
     val courtId: Int = 1,
     val courtSlots: List<CourtSlot> = emptyList(),
+    val showDateSheet: Boolean = false,
 )
