@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,25 +12,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kizitonwose.calendar.compose.HorizontalCalendar
-import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
-import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.now
-import com.kizitonwose.calendar.core.plusMonths
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.YearMonth
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
@@ -39,14 +27,8 @@ import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
-import zed.rainxch.rikkaui.components.ui.input.Input
+import zed.rainxch.rikkaui.components.ui.label.Label
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
-import zed.rainxch.rikkaui.components.ui.sheet.Sheet
-import zed.rainxch.rikkaui.components.ui.sheet.SheetAnimation
-import zed.rainxch.rikkaui.components.ui.sheet.SheetContent
-import zed.rainxch.rikkaui.components.ui.sheet.SheetFooter
-import zed.rainxch.rikkaui.components.ui.sheet.SheetHeader
-import zed.rainxch.rikkaui.components.ui.sheet.SheetSide
 import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
@@ -107,52 +89,79 @@ fun BookingEditorScreen(
                 .padding(RikkaTheme.spacing.lg),
             verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg)
         ) {
-            Button(
-                text = state.date.toString(),
-                onClick = { onAction(BookingEditorAction.OnDateClick) },
-                variant = ButtonVariant.Outline
-            )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md),
-            ) {
-                for (i in intArrayOf(30, 60, 90, 120)) {
-                    Button(
-                        onClick = { onAction(BookingEditorAction.OnDurationChange(i)) },
-                        text = "$i min",
-                        variant = if (i == state.duration) ButtonVariant.Default else ButtonVariant.Outline,
-                    )
+            Column {
+                Label(
+                    text = "Datum wählen",
+                )
+
+                Button(
+                    text = state.date.toString(),
+                    onClick = { onAction(BookingEditorAction.OnDateClick) },
+                    variant = ButtonVariant.Outline
+                )
+            }
+
+            Column {
+                Label(
+                    text = "Dauer wählen",
+                )
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    for (i in intArrayOf(30, 60, 90, 120)) {
+                        Button(
+                            onClick = { onAction(BookingEditorAction.OnDurationChange(i)) },
+                            text = "$i min",
+                            variant = if (i == state.duration) ButtonVariant.Default else ButtonVariant.Outline,
+                        )
+                    }
                 }
             }
 
-            val availableTimes = state.availableSlots.map { LocalTime.parse(it.startTime) }.distinct()
-            val availableCourts = state.availableSlots
-                .filter { LocalTime.parse(it.startTime) == state.startTime }
-                .map { it.court }
+            Column {
+                Label(
+                    text = "Startzeit wählen",
+                )
 
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                for (availableTime in availableTimes) {
-                    Button(
-                        onClick = { onAction(BookingEditorAction.OnStartTimeChange(availableTime)) },
-                        text = availableTime.toString(),
-                        variant = if (availableTime == state.startTime) ButtonVariant.Default else ButtonVariant.Outline,
-                    )
+                val availableTimes = state.availableSlots.map { LocalTime.parse(it.startTime) }.distinct()
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    for (availableTime in availableTimes) {
+                        Button(
+                            onClick = { onAction(BookingEditorAction.OnStartTimeChange(availableTime)) },
+                            text = availableTime.toString(),
+                            variant = if (availableTime == state.startTime) ButtonVariant.Default else ButtonVariant.Outline,
+                        )
+                    }
                 }
             }
 
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                for (availableCourt in availableCourts) {
-                    Button(
-                        onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt.id)) },
-                        text = availableCourt.name,
-                        variant = if (availableCourt.id == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
-                    )
+            Column {
+                Label(
+                    text = "Platz wählen",
+                )
+
+                val availableCourts = state.availableSlots
+                    .filter { LocalTime.parse(it.startTime) == state.startTime }
+                    .map { it.court }
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    for (availableCourt in availableCourts) {
+                        Button(
+                            onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt.id)) },
+                            text = availableCourt.name,
+                            variant = if (availableCourt.id == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
+                        )
+                    }
                 }
             }
 

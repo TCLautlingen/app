@@ -26,6 +26,7 @@ import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
+import zed.rainxch.rikkaui.components.ui.label.Label
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
 import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
@@ -77,54 +78,72 @@ fun BookingCourtScreen(
                 .padding(RikkaTheme.spacing.lg),
             verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg)
         ) {
-            Button(
-                text = state.date.toString(),
-                onClick = { onAction(BookingCourtAction.OnDateClick) },
-                variant = ButtonVariant.Outline
-            )
+            Column {
+                Label(
+                    text = "Datum wählen",
+                )
 
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                for (court in state.courts) {
-                    Button(
-                        onClick = { onAction(BookingCourtAction.OnCourtChange(court.id)) },
-                        text = court.name,
-                        variant = if (court.id == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
-                    )
+                Button(
+                    text = state.date.toString(),
+                    onClick = { onAction(BookingCourtAction.OnDateClick) },
+                    variant = ButtonVariant.Outline
+                )
+            }
+
+            Column {
+                Label(
+                    text = "Platz wählen",
+                )
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    for (court in state.courts) {
+                        Button(
+                            onClick = { onAction(BookingCourtAction.OnCourtChange(court.id)) },
+                            text = court.name,
+                            variant = if (court.id == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
+                        )
+                    }
                 }
             }
 
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(1.dp),
-            ) {
-                for (courtSlot in state.courtSlots) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(if (courtSlot.taken) RikkaTheme.colors.destructive else RikkaTheme.colors.success)
-                            .clickable(
-                                enabled = !courtSlot.taken
-                            ) {
-                                onNavigate(AppGraph.CreateBooking(
-                                    date = state.date,
-                                    courtId = state.courtId,
-                                    startTime = LocalTime.parse(courtSlot.startTime)
-                                ))
-                            }
-                            .padding(RikkaTheme.spacing.md),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = courtSlot.startTime,
-                        )
-                        if (!courtSlot.taken) {
+            Column {
+                Label(
+                    text = "Startzeit",
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(1.dp),
+                ) {
+                    for (courtSlot in state.courtSlots) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(if (courtSlot.taken) RikkaTheme.colors.destructive else RikkaTheme.colors.success)
+                                .clickable(
+                                    enabled = !courtSlot.taken
+                                ) {
+                                    onNavigate(AppGraph.CreateBooking(
+                                        date = state.date,
+                                        courtId = state.courtId,
+                                        startTime = LocalTime.parse(courtSlot.startTime)
+                                    ))
+                                }
+                                .padding(RikkaTheme.spacing.md),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = "→",
+                                text = courtSlot.startTime,
                             )
+                            if (!courtSlot.taken) {
+                                Text(
+                                    text = "→",
+                                )
+                            }
                         }
                     }
                 }
