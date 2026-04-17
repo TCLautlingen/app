@@ -19,6 +19,7 @@ import zed.rainxch.rikkaui.components.ui.tabs.Tab
 import zed.rainxch.rikkaui.components.ui.tabs.TabAnimation
 import zed.rainxch.rikkaui.components.ui.tabs.TabContent
 import zed.rainxch.rikkaui.components.ui.tabs.TabList
+import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
@@ -147,6 +148,11 @@ fun AuthScreen(
                         )
                     }
                 }
+
+                Text(
+                    text = state.errorMessage ?: "",
+                    color = RikkaTheme.colors.destructive,
+                )
 
                 Button(
                     onClick = { if (state.selectedTab == 0) onAction(AuthAction.OnLoginClick) else onAction(AuthAction.OnRegisterClick) },

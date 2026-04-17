@@ -3,6 +3,7 @@ package org.tcl.app.user
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.or
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.tcl.app.User
 import org.tcl.app.plugins.withTransaction
 
@@ -13,14 +14,19 @@ class PostgresUserRepository : UserRepository {
         passwordSalt: String,
         firstName: String,
         lastName: String
-    ): User = withTransaction {
-        UserDAO.new {
-            this.email = email
-            this.passwordHash = passwordHash
-            this.passwordSalt = passwordSalt
-            this.firstName = firstName
-            this.lastName = lastName
-        }.let(::daoToUser)
+    ): User? = withTransaction {
+        try {
+            UserDAO.new {
+                this.email = email
+                this.passwordHash = passwordHash
+                this.passwordSalt = passwordSalt
+                this.firstName = firstName
+                this.lastName = lastName
+            }.let(::daoToUser)
+        } catch (e: ExposedSQLException) {
+            val sqlState = (e.cause as? java.sql.SQLException)?.sqlState
+            if (sqlState == "23505") null else throw e
+        }
     }
 
     override suspend fun allUsers(searchQuery: String): List<User> = withTransaction {

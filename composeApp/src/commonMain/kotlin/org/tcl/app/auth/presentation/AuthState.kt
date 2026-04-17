@@ -10,4 +10,5 @@ data class AuthState(
     val firstName: String = "",
     val lastName: String = "",
     val confirmPassword: String = "",
+    val errorMessage: String? = null,
 )

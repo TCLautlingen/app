@@ -8,7 +8,13 @@ import org.tcl.app.AuthTokens
 import org.tcl.app.LoginRequest
 import org.tcl.app.RefreshRequest
 import org.tcl.app.RegisterRequest
+import org.tcl.app.VALIDATION_ERROR_EMAIL
+import org.tcl.app.VALIDATION_ERROR_FIRST_NAME
+import org.tcl.app.VALIDATION_ERROR_LAST_NAME
+import org.tcl.app.VALIDATION_ERROR_PASSWORD
+import org.tcl.app.auth.domain.RegisterError
 import org.tcl.app.core.data.ApiClient
+import org.tcl.app.core.domain.util.Result
 
 class AuthApiService(
     private val apiClient: ApiClient
@@ -39,17 +45,26 @@ class AuthApiService(
         }
     }
 
-    suspend fun register(email: String, password: String, firstName: String, lastName: String): AuthTokens? {
+    suspend fun register(email: String, password: String, firstName: String, lastName: String): Result<AuthTokens, RegisterError>  {
         val registerRequest = RegisterRequest(email, password, firstName, lastName)
 
         val response = apiClient.client.post("/auth/register") {
             setBody(registerRequest)
         }
 
-        return if (response.status == HttpStatusCode.OK) {
-            response.body()
-        } else {
-            null
+        return when (response.status) {
+            HttpStatusCode.OK -> Result.Success(response.body<AuthTokens>())
+            HttpStatusCode.Conflict -> Result.Error(RegisterError.EmailAlreadyExists)
+            HttpStatusCode.BadRequest -> {
+                when (response.body<String>()) {
+                    VALIDATION_ERROR_EMAIL -> Result.Error(RegisterError.InvalidEmail)
+                    VALIDATION_ERROR_PASSWORD -> Result.Error(RegisterError.PasswordTooWeak)
+                    VALIDATION_ERROR_FIRST_NAME -> Result.Error(RegisterError.FirstNameEmpty)
+                    VALIDATION_ERROR_LAST_NAME -> Result.Error(RegisterError.LastNameEmpty)
+                    else -> Result.Error(RegisterError.Unknown)
+                }
+            }
+            else -> Result.Error(RegisterError.Unknown)
         }
     }
 }

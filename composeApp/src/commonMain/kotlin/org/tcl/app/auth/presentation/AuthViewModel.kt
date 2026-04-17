@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.auth.domain.AuthRepository
+import org.tcl.app.auth.domain.toText
 import org.tcl.app.core.data.TokenManager
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 
 class AuthViewModel(
     private val repository: AuthRepository,
@@ -66,21 +69,31 @@ class AuthViewModel(
         val currentState = _state.value
 
         if (currentState.password != currentState.confirmPassword) {
+            _state.update {
+                it.copy(errorMessage = "Passwörter stimmen nicht überein")
+            }
             return
         }
 
         viewModelScope.launch {
-            val authTokens = repository.register(
+            repository.register(
                 email = currentState.email,
                 password = currentState.password,
                 firstName = currentState.firstName,
                 lastName = currentState.lastName
             )
-
-            if (authTokens != null) {
-                tokenManager.tokens = authTokens
-                _events.send(AuthEvent.Registered)
-            }
+                .onSuccess { authTokens ->
+                    tokenManager.tokens = authTokens
+                    _state.update {
+                        it.copy(errorMessage = null)
+                    }
+                    _events.send(AuthEvent.Registered)
+                }
+                .onFailure { error ->
+                    _state.update {
+                        it.copy(errorMessage = error.toText())
+                    }
+                }
         }
     }
 }

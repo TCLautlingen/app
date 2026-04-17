@@ -9,7 +9,7 @@ interface UserRepository {
         passwordSalt: String,
         firstName: String,
         lastName: String
-    ) : User
+    ) : User?
 
     suspend fun allUsers(searchQuery: String): List<User>
 

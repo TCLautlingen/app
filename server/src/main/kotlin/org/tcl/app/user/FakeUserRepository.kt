@@ -28,7 +28,11 @@ class FakeUserRepository : UserRepository {
         passwordSalt: String,
         firstName: String,
         lastName: String
-    ): User {
+    ): User? {
+        if (users.any { user -> email == user.email }) {
+            return null
+        }
+
         val id = nextId++
         val storedUser = StoredUser(id, email, passwordHash, passwordSalt, firstName, lastName,
             isMember = true,

@@ -1,7 +1,12 @@
 package org.tcl.app.user
 
 import org.tcl.app.AuthTokens
+import org.tcl.app.RegisterResult
 import org.tcl.app.User
+import org.tcl.app.VALIDATION_ERROR_EMAIL
+import org.tcl.app.VALIDATION_ERROR_FIRST_NAME
+import org.tcl.app.VALIDATION_ERROR_LAST_NAME
+import org.tcl.app.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.auth.RefreshTokenRepository
 import org.tcl.app.security.JwtConfig
 import java.security.SecureRandom
@@ -20,9 +25,25 @@ class UserService(
         password: String,
         firstName: String,
         lastName: String
-    ): AuthTokens? {
+    ): RegisterResult {
         val passwordSalt = generateRandomSalt()
         val passwordHash = generateHash(password, passwordSalt)
+
+        if (!email.contains("@") || !email.contains(".")) {
+            return RegisterResult.ValidationError(VALIDATION_ERROR_EMAIL)
+        }
+
+        if (password.length < 8) {
+            return RegisterResult.ValidationError(VALIDATION_ERROR_PASSWORD)
+        }
+
+        if (firstName.isBlank()) {
+            return RegisterResult.ValidationError(VALIDATION_ERROR_FIRST_NAME)
+        }
+
+        if (lastName.isBlank()) {
+            return RegisterResult.ValidationError(VALIDATION_ERROR_LAST_NAME)
+        }
 
         val user = userRepository.createUser(
             email = email,
@@ -30,7 +51,7 @@ class UserService(
             passwordSalt = passwordSalt,
             firstName = firstName,
             lastName = lastName
-        )
+        ) ?: return RegisterResult.EmailAlreadyExists
 
         val accessToken = JwtConfig.generateAccessToken(user.id)
         val refreshToken = generateSecureOpaqueToken()
@@ -41,10 +62,7 @@ class UserService(
             expiresAt = System.currentTimeMillis() + REFRESH_TOKEN_DURATION_MS
         )
 
-        return AuthTokens(
-            accessToken = accessToken,
-            refreshToken = refreshToken
-        )
+        return RegisterResult.Success(AuthTokens(accessToken, refreshToken))
     }
 
     suspend fun login(email: String, password: String): AuthTokens? {
