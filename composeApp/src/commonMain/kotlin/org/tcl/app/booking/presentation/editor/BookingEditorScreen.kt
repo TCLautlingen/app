@@ -28,6 +28,7 @@ import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.YearMonth
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.ObserveAsEvents
@@ -43,16 +44,16 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
 fun BookingEditorRoot(
-    date: String? = null,
-    court: Int? = null,
-    startTime: String? = null,
+    date: LocalDate? = null,
+    courtId: Int? = null,
+    startTime: LocalTime? = null,
     onNavigateBack: () -> Unit,
     viewModel: BookingEditorViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(date, court, startTime) {
-        viewModel.initialize(date, court, startTime)
+    LaunchedEffect(date, courtId, startTime) {
+        viewModel.initialize(date, courtId, startTime)
     }
 
     ObserveAsEvents(viewModel.events) { event ->
@@ -171,10 +172,10 @@ fun BookingEditorScreen(
                 }
             }
 
-            val availableTimes = state.availableSlots.map { it.startTime }.distinct()
+            val availableTimes = state.availableSlots.map { LocalTime.parse(it.startTime) }.distinct()
             val availableCourts = state.availableSlots
-                .filter { it.startTime == state.startTime }
-                .map { it.court }
+                .filter { LocalTime.parse(it.startTime) == state.startTime }
+                .map { it.courtId }
 
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
@@ -183,7 +184,7 @@ fun BookingEditorScreen(
                 for (availableTime in availableTimes) {
                     Button(
                         onClick = { onAction(BookingEditorAction.OnStartTimeChange(availableTime)) },
-                        text = availableTime,
+                        text = availableTime.toString(),
                         variant = if (availableTime == state.startTime) ButtonVariant.Default else ButtonVariant.Outline,
                     )
                 }
@@ -197,7 +198,7 @@ fun BookingEditorScreen(
                     Button(
                         onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt)) },
                         text = "Platz $availableCourt",
-                        variant = if (availableCourt == state.court) ButtonVariant.Default else ButtonVariant.Outline,
+                        variant = if (availableCourt == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
                     )
                 }
             }

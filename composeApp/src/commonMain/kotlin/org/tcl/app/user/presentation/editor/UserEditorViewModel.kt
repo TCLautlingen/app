@@ -15,11 +15,9 @@ class UserEditorViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserEditorState(
-        user = savedStateHandle["user"] ?: User("", "", "", "", isAdmin = false, isMember = true)
+        user = savedStateHandle["user"] ?: User(0, "", "", "", isAdmin = false, isMember = true)
     ))
     val state = _state.asStateFlow()
-
-
 
     private val _events = Channel<UserEditorEvent>()
     val events = _events.receiveAsFlow()

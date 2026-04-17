@@ -26,7 +26,7 @@ class BookingCourtViewModel(
             is BookingCourtAction.OnCourtChange -> {
                 _state.update {
                     it.copy(
-                        court = action.court
+                        courtId = action.court
                     )
                 }
                 loadCourtSlots()
@@ -37,7 +37,7 @@ class BookingCourtViewModel(
     private fun loadCourtSlots() {
         viewModelScope.launch {
             val currentState = _state.value
-            val courtSlots = repository.getCourtSlots(currentState.date, currentState.court)
+            val courtSlots = repository.getCourtSlots(currentState.courtId, currentState.date.toString())
             _state.update {
                 it.copy(
                     courtSlots = courtSlots

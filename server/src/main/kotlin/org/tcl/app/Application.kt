@@ -4,6 +4,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import org.tcl.app.plugins.configureAuthentication
+import org.tcl.app.plugins.configureDatabases
 import org.tcl.app.plugins.configureRouting
 import org.tcl.app.plugins.configureSerialization
 
@@ -13,6 +14,7 @@ fun main() {
 }
 
 fun Application.module() {
+    configureDatabases()
     configureSerialization()
     configureAuthentication()
     configureRouting()

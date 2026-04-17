@@ -7,7 +7,7 @@ import org.tcl.app.CourtSlot
 
 @Stable
 data class BookingCourtState(
-    val date: String = LocalDate.now().toString(),
-    val court: Int = 1,
+    val date: LocalDate = LocalDate.now(),
+    val courtId: Int = 1,
     val courtSlots: List<CourtSlot> = emptyList(),
 )

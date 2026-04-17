@@ -6,7 +6,7 @@ import org.tcl.app.auth.data.AuthApiService
 class AuthRepository(
     private val api: AuthApiService
 ) {
-    suspend fun refresh(tokens: AuthTokens) : AuthTokens? = api.refresh(tokens)
+    suspend fun refresh(refreshToken: String) : AuthTokens? = api.refresh(refreshToken)
 
     suspend fun login(email: String, password: String) : AuthTokens? = api.login(email, password)
 

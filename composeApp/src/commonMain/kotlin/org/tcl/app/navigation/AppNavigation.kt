@@ -34,7 +34,7 @@ fun AppNavigation() {
 
     LaunchedEffect(Unit) {
         if (!tokenManager.tokens.refreshToken.isBlank()) {
-            val tokens = authRepository.refresh(tokenManager.tokens)
+            val tokens = authRepository.refresh(tokenManager.tokens.refreshToken)
 
             if (tokens != null) {
                 tokenManager.tokens = tokens
@@ -121,7 +121,7 @@ fun AppNavigation() {
             entry<AppGraph.CreateBooking> {
                 BookingEditorRoot(
                     date = it.date,
-                    court = it.court,
+                    courtId = it.courtId,
                     startTime = it.startTime,
                     onNavigateBack = { navStack.removeLastOrNull() },
                 )

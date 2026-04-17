@@ -13,10 +13,10 @@ data class BookingUi(
 
 fun Booking.toBookingUi(): BookingUi {
     return BookingUi(
-        id = id,
-        date = date,
-        startTime = startTime,
+        id = id.toString(),
+        date = date.toString(),
+        startTime = startTime.toString(),
         duration = duration.toString(),
-        court = court.toString(),
+        court = courtId.toString(),
     )
 }

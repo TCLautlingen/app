@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.COURT_COUNT
 import org.tcl.app.navigation.AppGraph
@@ -84,7 +85,7 @@ fun BookingCourtScreen(
                     Button(
                         onClick = { onAction(BookingCourtAction.OnCourtChange(i)) },
                         text = "Platz $i",
-                        variant = if (i == state.court) ButtonVariant.Default else ButtonVariant.Outline,
+                        variant = if (i == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
                     )
                 }
             }
@@ -103,8 +104,8 @@ fun BookingCourtScreen(
                             ) {
                                 onNavigate(AppGraph.CreateBooking(
                                     date = state.date,
-                                    court = state.court,
-                                    startTime = courtSlot.startTime
+                                    courtId = state.courtId,
+                                    startTime = LocalTime.parse(courtSlot.startTime)
                                 ))
                             }
                             .padding(RikkaTheme.spacing.md),

@@ -14,12 +14,23 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.tcl.app.AuthTokens
+import org.tcl.app.RefreshRequest
 import org.tcl.app.SERVER_PORT
 
 class ApiClient(
     private val tokenManager: TokenManager,
     baseUrl: String = "http://localhost:$SERVER_PORT"
 ) {
+    private val refreshClient = HttpClient {
+        install(ContentNegotiation) {
+            json(Json { ignoreUnknownKeys = true })
+        }
+
+        defaultRequest {
+            url(baseUrl)
+            contentType(ContentType.Application.Json)
+        }
+    }
 
     val client = HttpClient {
 
@@ -43,8 +54,9 @@ class ApiClient(
 
                 refreshTokens {
                     try {
-                        val response: AuthTokens = client.post("/auth/refresh") {
-                            setBody(tokenManager.tokens)
+                        val response: AuthTokens = refreshClient.post("/auth/refresh") {
+                            contentType(ContentType.Application.Json)
+                            setBody(RefreshRequest(tokenManager.tokens.refreshToken))
                         }.body()
 
                         tokenManager.tokens = response

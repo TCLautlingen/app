@@ -14,17 +14,21 @@ composeMultiplatform = "1.10.3"
 junit = "4.13.2"
 kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
-ktor = "3.4.1"
+ktor = "3.4.2"
 logback = "1.5.32"
 material3 = "1.10.0-alpha05"
 rikkaui = "0.3.0"
-koin = "4.0.4"
+koin = "4.2.1"
 calendar = "2.10.1"
-kotlinx-serialization = "1.10.0"
+kotlinx-serialization = "1.11.0"
 navigation3 = "1.1.0"
 androidx-lifecycle-nav3 = "2.10.0"
 cmpNavigation3 = "1.0.0-alpha06"
 ksafe = "1.8.0"
+postgres = "42.7.10"
+h2 = "2.4.240"
+exposed = "1.2.0"
+kotlinx-datetime = "0.7.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -56,7 +60,6 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 rikkaui-components = { module = "dev.rikkaui:components", version.ref = "rikkaui" }
@@ -72,6 +75,13 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 anifantakis-ksafe = { module = "eu.anifantakis:ksafe", version.ref = "ksafe" }
 anifantakis-ksafe-compose = { module = "eu.anifantakis:ksafe-compose", version.ref = "ksafe" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

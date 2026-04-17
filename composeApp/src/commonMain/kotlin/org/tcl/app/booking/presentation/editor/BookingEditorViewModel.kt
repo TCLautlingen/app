@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.tcl.app.Booking
 import org.tcl.app.booking.domain.BookingRepository
 import kotlin.math.abs
 import kotlin.time.Clock
@@ -24,7 +24,7 @@ class BookingEditorViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingEditorState(
         date = LocalDate.parse(savedStateHandle["date"] ?: LocalDate.now().toString()),
-        court = savedStateHandle["court"] ?: 1,
+        courtId = savedStateHandle["courtId"] ?: 1,
         startTime = savedStateHandle["startTime"] ?: currentTimeRounded(),
         duration = savedStateHandle["duration"] ?: 60,
     ))
@@ -37,17 +37,17 @@ class BookingEditorViewModel(
         loadAvailability()
     }
 
-    fun initialize(date: String?, court: Int?, startTime: String?) {
+    fun initialize(date: LocalDate?, court: Int?, startTime: LocalTime?) {
         if (date != null) {
             savedStateHandle["date"] = _state.value.date.toString()
-            _state.update { it.copy(date = LocalDate.parse(date)) }
+            _state.update { it.copy(date = date) }
         }
         if (court != null) {
-            savedStateHandle["court"] = _state.value.court
-            _state.update { it.copy(court = court) }
+            savedStateHandle["courtId"] = _state.value.courtId
+            _state.update { it.copy(courtId = court) }
         }
         if (startTime != null) {
-            savedStateHandle["startTime"] = _state.value.startTime
+            savedStateHandle["startTime"] = _state.value.startTime.toString()
             _state.update { it.copy(startTime = startTime) }
         }
         loadAvailability()
@@ -66,21 +66,21 @@ class BookingEditorViewModel(
                 loadAvailability()
             }
             is BookingEditorAction.OnStartTimeChange -> {
-                savedStateHandle["startTime"] = action.startTime
+                savedStateHandle["startTime"] = action.startTime.toString()
                 _state.update {
                     it.copy(
                         startTime = action.startTime,
-                        court = it.availableSlots
-                            .filter { slot -> slot.startTime == action.startTime }
-                            .map { slot -> slot.court }
+                        courtId = it.availableSlots
+                            .filter { slot -> LocalTime.parse(slot.startTime) == action.startTime }
+                            .map { slot -> slot.courtId }
                             .distinct()
                             .firstOrNull()
                     )
                 }
             }
             is BookingEditorAction.OnCourtChange -> {
-                savedStateHandle["court"] = action.court
-                _state.update { it.copy(court = action.court) }
+                savedStateHandle["courtId"] = action.courtId
+                _state.update { it.copy(courtId = action.courtId) }
             }
             is BookingEditorAction.OnBookClick -> bookCourt()
         }
@@ -99,21 +99,21 @@ class BookingEditorViewModel(
                 )
             }
 
-            val availableTimes = slots.map { it.startTime }.distinct()
+            val availableTimes = slots.map { LocalTime.parse(it.startTime) }.distinct()
             val selectedStartTime = _state.value.startTime
 
             if (selectedStartTime !in availableTimes) {
                 val currentStartTime = currentTimeRounded()
-                val closestTime = availableTimes.minByOrNull { timeDiff(currentStartTime, it) }
+                val closestTime = availableTimes.minByOrNull { currentStartTime.minutesTo(it) }
                 _state.update { it.copy(startTime = closestTime) }
             }
 
             val availableCourts = slots
-                .filter { it.startTime == _state.value.startTime }
-                .map { it.court }
+                .filter { LocalTime.parse(it.startTime) == _state.value.startTime }
+                .map { it.courtId }
 
-            if (_state.value.court !in availableCourts) {
-                _state.update { it.copy(court = availableCourts.firstOrNull()) }
+            if (_state.value.courtId !in availableCourts) {
+                _state.update { it.copy(courtId = availableCourts.firstOrNull()) }
             }
         }
     }
@@ -121,42 +121,33 @@ class BookingEditorViewModel(
     private fun bookCourt() {
         val currentState = _state.value
 
-        if (currentState.startTime == null || currentState.court == null) {
+        if (currentState.startTime == null || currentState.courtId == null) {
             return
         }
 
-        val booking = Booking(
-            date = currentState.date.toString(),
-            startTime = currentState.startTime,
-            duration = currentState.duration,
-            court = currentState.court,
-        )
-
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }
-            repository.addBooking(booking)
+            repository.createBooking(
+                courtId = currentState.courtId,
+                date = currentState.date,
+                startTime = currentState.startTime,
+                duration = currentState.duration
+            )
             _state.update { it.copy(isSaving = false) }
             _events.send(BookingEditorEvent.CourtBooked)
         }
     }
 }
 
-fun timeDiff(t1: String, t2: String): Int {
-    val (h1, m1) = t1.split(":").map { it.toInt() }
-    val (h2, m2) = t2.split(":").map { it.toInt() }
-    return abs((h1 * 60 + m1) - (h2 * 60 + m2))
+private fun LocalTime.minutesTo(t2: LocalTime): Int {
+    val minutes1 = this.hour * 60 + this.minute
+    val minutes2 = t2.hour * 60 + t2.minute
+    return abs(minutes1 - minutes2)
 }
 
-
-fun currentTimeRounded(): String {
+fun currentTimeRounded(): LocalTime {
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val roundedMinute = if (now.minute < 30) 30 else 0
     val roundedHour = if (now.minute < 30) now.hour else now.hour + 1
-    return formatTime(roundedHour, roundedMinute)
-}
-
-fun formatTime(hour: Int, minute: Int): String {
-    val h = hour.toString().padStart(2, '0')
-    val m = minute.toString().padStart(2, '0')
-    return "$h:$m"
+    return LocalTime(roundedHour, roundedMinute)
 }

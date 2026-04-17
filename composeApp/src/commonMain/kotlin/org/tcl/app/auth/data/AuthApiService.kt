@@ -6,15 +6,16 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpStatusCode
 import org.tcl.app.AuthTokens
 import org.tcl.app.LoginRequest
+import org.tcl.app.RefreshRequest
 import org.tcl.app.RegisterRequest
 import org.tcl.app.core.data.ApiClient
 
 class AuthApiService(
     private val apiClient: ApiClient
 ) {
-    suspend fun refresh(tokens: AuthTokens): AuthTokens? {
+    suspend fun refresh(refreshToken: String): AuthTokens? {
         val response = apiClient.client.post("/auth/refresh") {
-            setBody(tokens)
+            setBody(RefreshRequest(refreshToken))
         }
 
         return if (response.status == HttpStatusCode.OK) {
