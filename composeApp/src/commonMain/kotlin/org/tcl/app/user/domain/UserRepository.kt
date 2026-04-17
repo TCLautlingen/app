@@ -9,4 +9,6 @@ class UserRepository(
     suspend fun getUsers(searchQuery: String): List<User> = api.getUsers(searchQuery)
 
     suspend fun getCurrentUser(): User = api.getCurrentUser()
+
+    suspend fun getUserById(userId: Int): User = api.getUserById(userId)
 }

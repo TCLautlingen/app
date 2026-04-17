@@ -30,6 +30,25 @@ fun Route.userRoutes(
 
                 call.respond(user)
             }
+
+            get("/{id}") {
+                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
+                    ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+                val requestUser = userService.getUserById(authPrincipal.userId)
+                    ?: return@get call.respond("No user with id $authPrincipal.userId")
+
+                if (!requestUser.isAdmin) {
+                    return@get call.respond(HttpStatusCode.Forbidden)
+                }
+
+                val id = call.parameters["id"]?.toIntOrNull()
+                    ?: return@get call.respond(HttpStatusCode.BadRequest)
+
+                val user = userService.getUserById(id)
+                    ?: return@get call.respond("No user with id $id")
+                call.respond(user)
+            }
         }
     }
 }

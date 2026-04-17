@@ -9,22 +9,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tcl.app.User
+import org.tcl.app.user.domain.UserRepository
 
 class UserEditorViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserEditorState(
-        user = savedStateHandle["user"] ?: User(0, "", "", "", isAdmin = false, isMember = true)
+        userId = savedStateHandle["userId"] ?: 0
     ))
     val state = _state.asStateFlow()
 
     private val _events = Channel<UserEditorEvent>()
     val events = _events.receiveAsFlow()
 
-    fun initialize(user: User) {
-        _state.update { it.copy(user = user) }
-        savedStateHandle["user"] = user
+    fun initialize(userId: Int) {
+        _state.update { it.copy(userId = userId) }
+        savedStateHandle["userId"] = userId
+        loadUser(userId)
     }
 
     fun onAction(action: UserEditorAction) {
@@ -34,6 +36,13 @@ class UserEditorViewModel(
                     _events.send(UserEditorEvent.UserSaved)
                 }
             }
+        }
+    }
+
+    fun loadUser(userId: Int) {
+        viewModelScope.launch {
+            val user = userRepository.getUserById(userId)
+            _state.update { it.copy(user = user) }
         }
     }
 }

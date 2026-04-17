@@ -15,11 +15,12 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.tcl.app.AuthTokens
 import org.tcl.app.RefreshRequest
+import org.tcl.app.SERVER_IP
 import org.tcl.app.SERVER_PORT
 
 class ApiClient(
     private val tokenManager: TokenManager,
-    baseUrl: String = "http://localhost:$SERVER_PORT"
+    baseUrl: String = "http://$SERVER_IP:$SERVER_PORT"
 ) {
     private val refreshClient = HttpClient {
         install(ContentNegotiation) {

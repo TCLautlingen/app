@@ -33,6 +33,6 @@ sealed interface AppGraph : NavKey {
 
     @Serializable
     data class UserEditor(
-        val user: User
+        val userId: Int
     ) : AppGraph
 }

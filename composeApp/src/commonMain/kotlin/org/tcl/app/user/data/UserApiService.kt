@@ -20,4 +20,8 @@ class UserApiService(
     suspend fun getCurrentUser(): User {
         return apiClient.client.get("/users/me").body()
     }
+
+    suspend fun getUserById(userId: Int): User {
+        return apiClient.client.get("/users/$userId").body()
+    }
 }

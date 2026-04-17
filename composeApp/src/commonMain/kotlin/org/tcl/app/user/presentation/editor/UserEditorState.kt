@@ -5,5 +5,6 @@ import org.tcl.app.User
 
 @Stable
 data class UserEditorState(
-    val user: User
+    val userId: Int,
+    val user: User? = null,
 )

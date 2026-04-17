@@ -100,7 +100,7 @@ fun UserListScreen(
                         ) { user ->
                             UserItem(
                                 user = user,
-                                onClick = { onNavigate(AppGraph.UserEditor(user)) }
+                                onClick = { onNavigate(AppGraph.UserEditor(user.id)) }
                             )
                         }
                     }

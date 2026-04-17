@@ -157,7 +157,7 @@ fun AppNavigation() {
 
             entry<AppGraph.UserEditor> {
                 UserEditorRoot(
-                    user = it.user,
+                    userId = it.userId,
                     onNavigateBack = { navStack.removeLastOrNull() },
                 )
             }
