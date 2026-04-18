@@ -127,7 +127,6 @@ fun UserItem(
             Avatar(
                 fallback =  "${user.firstName.first()}${user.lastName.first()}",
                 size = AvatarSize.Default,
-                animation = AvatarAnimation.Scale,
             )
 
             Column() {

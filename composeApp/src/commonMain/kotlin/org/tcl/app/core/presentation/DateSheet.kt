@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.now
@@ -17,7 +18,8 @@ import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
-import org.tcl.app.booking.presentation.editor.DayCell
+import zed.rainxch.rikkaui.components.ui.button.Button
+import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.sheet.Sheet
@@ -26,6 +28,7 @@ import zed.rainxch.rikkaui.components.ui.sheet.SheetContent
 import zed.rainxch.rikkaui.components.ui.sheet.SheetHeader
 import zed.rainxch.rikkaui.components.ui.sheet.SheetSide
 import zed.rainxch.rikkaui.components.ui.text.Text
+import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
 fun DateSheet(
@@ -109,5 +112,31 @@ fun DateSheet(
                 }
             )
         }
+    }
+}
+
+@Composable
+fun DayCell(
+    day: CalendarDay,
+    isSelected: Boolean,
+    onClick: (CalendarDay) -> Unit
+) {
+    val isToday = day.date == LocalDate.now()
+
+    Button(
+        onClick = { onClick(day) },
+        variant = when {
+            isSelected -> ButtonVariant.Default
+            isToday -> ButtonVariant.Secondary
+            else -> ButtonVariant.Ghost
+        }
+    ) {
+        Text(
+            text = day.date.day.toString(),
+            color = when {
+                isSelected -> RikkaTheme.colors.onPrimary
+                else -> RikkaTheme.colors.onBackground
+            }
+        )
     }
 }

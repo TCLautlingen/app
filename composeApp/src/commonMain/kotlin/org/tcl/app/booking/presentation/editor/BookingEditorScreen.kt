@@ -187,29 +187,3 @@ fun BookingEditorScreen(
         )
     }
 }
-
-@Composable
-fun DayCell(
-    day: CalendarDay,
-    isSelected: Boolean,
-    onClick: (CalendarDay) -> Unit
-) {
-    val isToday = day.date == LocalDate.now()
-
-    Button(
-        onClick = { onClick(day) },
-        variant = when {
-            isSelected -> ButtonVariant.Default
-            isToday -> ButtonVariant.Secondary
-            else -> ButtonVariant.Ghost
-        }
-    ) {
-        Text(
-            text = day.date.day.toString(),
-            color = when {
-                isSelected -> RikkaTheme.colors.onPrimary
-                else -> RikkaTheme.colors.onBackground
-            }
-        )
-    }
-}

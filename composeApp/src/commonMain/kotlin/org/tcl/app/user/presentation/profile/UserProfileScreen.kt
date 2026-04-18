@@ -107,9 +107,8 @@ fun UserProfileScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Avatar(
-                            fallback =  "${state.user?.firstName?.firstOrNull()}${state.user?.lastName?.firstOrNull()}",
-                            size = AvatarSize.Lg,
-                            animation = AvatarAnimation.Scale,
+                            fallback = "${state.user?.firstName?.firstOrNull()}${state.user?.lastName?.firstOrNull()}",
+                            size = AvatarSize.Lg
                         )
                         Text(
                             text = state.user?.firstName + " " + state.user?.lastName,
