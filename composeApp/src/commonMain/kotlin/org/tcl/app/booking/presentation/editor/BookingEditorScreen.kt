@@ -1,12 +1,6 @@
 package org.tcl.app.booking.presentation.editor
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -16,11 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.now
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
+import kotlinx.datetime.*
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.core.domain.CalendarService
 import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
 import zed.rainxch.rikkaui.components.ui.button.Button
@@ -29,7 +21,6 @@ import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.label.Label
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
-import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
 
@@ -173,6 +164,28 @@ fun BookingEditorScreen(
                     onClick = { onAction(BookingEditorAction.OnBookClick) },
                     text = "Buchen",
                     enabled = !state.isSaving
+                )
+            }
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = {
+                        val startInstant = LocalDateTime(state.date, state.startTime!!)
+                            .toInstant(TimeZone.currentSystemDefault())
+                        val startMillis = startInstant.toEpochMilliseconds()
+                        val endMillis = startMillis + state.duration * 60 * 1000L
+                        CalendarService().openCalendarWithEvent(
+                        title = "Tennis",
+                        description = "Platz ${state.courtId}",
+                        location = "Tennisplatz Lautlingen",
+                        startTimeMillis = startMillis,
+                        endTimeMillis = endMillis,
+                    ) },
+                    text = "Kalender",
+                    enabled = true
                 )
             }
         }

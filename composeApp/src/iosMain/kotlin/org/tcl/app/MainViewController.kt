@@ -8,8 +8,12 @@ import org.tcl.app.di.coreModule
 import org.tcl.app.di.courtModule
 import org.tcl.app.di.platformModule
 import org.tcl.app.di.userModule
+import platform.UIKit.UIViewController
 
-fun MainViewController() = ComposeUIViewController { App() }
+fun MainViewController(): UIViewController {
+    initKoin()
+    return ComposeUIViewController { App() }
+}
 
 fun initKoin() {
     startKoin {

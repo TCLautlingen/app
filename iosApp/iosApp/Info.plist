@@ -4,5 +4,7 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Buchungen können direkt in den Kalender eingetragen werden</string>
 </dict>
 </plist>
