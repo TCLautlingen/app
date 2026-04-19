@@ -30,6 +30,8 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.util.formatDdMmYyyy
+import org.tcl.app.util.plusMinutes
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.card.Card
@@ -181,7 +183,7 @@ private fun BookingDetailCard(
     Card(modifier = modifier) {
         CardContent {
             Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
-                BookingDetailRow(label = "Datum", value = state.date.toString())
+                BookingDetailRow(label = "Datum", value = state.date.formatDdMmYyyy())
                 BookingDetailRow(label = "Uhrzeit", value = "${state.startTime} – $endTime")
                 BookingDetailRow(label = "Platz", value = state.courtName)
                 BookingDetailRow(label = "Dauer", value = "${state.durationMinutes} Minuten")
@@ -209,9 +211,4 @@ private fun BookingDetailRow(
             variant = TextVariant.Small,
         )
     }
-}
-
-private fun LocalTime.plusMinutes(minutes: Int): LocalTime {
-    val totalMinutes = hour * 60 + minute + minutes
-    return LocalTime(totalMinutes / 60 % 24, totalMinutes % 60)
 }

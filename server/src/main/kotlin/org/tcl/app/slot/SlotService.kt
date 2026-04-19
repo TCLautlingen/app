@@ -7,6 +7,7 @@ import org.tcl.app.Booking
 import org.tcl.app.CourtSlot
 import org.tcl.app.booking.BookingRepository
 import org.tcl.app.court.CourtRepository
+import org.tcl.app.util.plusMinutes
 
 class SlotService(
     private val bookingRepository: BookingRepository,
@@ -63,11 +64,6 @@ class SlotService(
 
 private const val START_HOUR = 8
 private const val END_HOUR = 22
-
-fun LocalTime.plusMinutes(minutes: Int): LocalTime {
-    val totalMinutes = hour * 60 + minute + minutes
-    return LocalTime(totalMinutes / 60, totalMinutes % 60)
-}
 
 val END_TIME = LocalTime(END_HOUR, 0)
 

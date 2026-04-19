@@ -194,7 +194,7 @@ fun BookingCard(
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.drone),
-                        contentDescription = "Platz${booking.court}",
+                        contentDescription = booking.courtName,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -205,7 +205,7 @@ fun BookingCard(
                         variant = TextVariant.Small,
                     )
                     Text(
-                        text = "${booking.duration} Minuten auf Platz ${booking.court}",
+                        text = "${booking.duration} Minuten auf ${booking.courtName}",
                         variant = TextVariant.Small,
                     )
                 }

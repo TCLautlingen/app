@@ -21,6 +21,7 @@ import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
+import org.tcl.app.util.formatDdMmYyyy
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
@@ -104,7 +105,7 @@ fun BookingEditorScreen(
                 )
 
                 Button(
-                    text = state.date.toString(),
+                    text = state.date.formatDdMmYyyy(),
                     onClick = { onAction(BookingEditorAction.OnDateClick) },
                     variant = ButtonVariant.Outline
                 )

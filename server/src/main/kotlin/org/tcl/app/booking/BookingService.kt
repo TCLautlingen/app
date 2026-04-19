@@ -6,7 +6,7 @@ import org.tcl.app.Booking
 import org.tcl.app.court.CourtRepository
 import org.tcl.app.slot.END_TIME
 import org.tcl.app.slot.overlapsWith
-import org.tcl.app.slot.plusMinutes
+import org.tcl.app.util.plusMinutes
 
 class BookingService(
     private val bookingRepository: BookingRepository,
