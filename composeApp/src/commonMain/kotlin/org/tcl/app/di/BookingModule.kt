@@ -7,6 +7,7 @@ import org.tcl.app.booking.domain.BookingRepository
 import org.tcl.app.booking.presentation.court.BookingCourtViewModel
 import org.tcl.app.booking.presentation.editor.BookingEditorViewModel
 import org.tcl.app.booking.presentation.list.BookingListViewModel
+import org.tcl.app.booking.presentation.success.BookingSuccessViewModel
 
 val bookingModule = module {
     single { BookingApiService(get()) }
@@ -15,5 +16,6 @@ val bookingModule = module {
 
     viewModelOf(::BookingListViewModel)
     viewModelOf(::BookingEditorViewModel)
+    viewModelOf(::BookingSuccessViewModel)
     viewModelOf(::BookingCourtViewModel)
 }

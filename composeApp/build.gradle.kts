@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.ktor.client.auth)
             implementation(libs.anifantakis.ksafe)
             implementation(libs.anifantakis.ksafe.compose)
+            implementation(libs.compottie.lite)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

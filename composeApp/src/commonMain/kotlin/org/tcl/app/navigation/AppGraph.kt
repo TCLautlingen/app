@@ -23,6 +23,14 @@ sealed interface AppGraph : NavKey {
     ) : AppGraph
 
     @Serializable
+    data class BookingSuccess(
+        val date: LocalDate,
+        val startTime: LocalTime,
+        val durationMinutes: Int,
+        val courtName: String,
+    ) : AppGraph
+
+    @Serializable
     data object BookingCourt : AppGraph
 
     @Serializable

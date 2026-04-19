@@ -136,7 +136,16 @@ class BookingEditorViewModel(
                 duration = currentState.duration
             )
             _state.update { it.copy(isSaving = false) }
-            _events.send(BookingEditorEvent.CourtBooked)
+            _events.send(
+                BookingEditorEvent.CourtBooked(
+                    date = currentState.date,
+                    startTime = currentState.startTime,
+                    durationMinutes = currentState.duration,
+                    courtName = currentState.availableSlots
+                        .firstOrNull { it.court.id == currentState.courtId }
+                        ?.court?.name ?: "",
+                )
+            )
         }
     }
 }

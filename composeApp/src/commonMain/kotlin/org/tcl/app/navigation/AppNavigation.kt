@@ -21,6 +21,7 @@ import org.tcl.app.auth.presentation.AuthRoot
 import org.tcl.app.booking.presentation.court.BookingCourtRoot
 import org.tcl.app.booking.presentation.editor.BookingEditorRoot
 import org.tcl.app.booking.presentation.list.BookingListRoot
+import org.tcl.app.booking.presentation.success.BookingSuccessRoot
 import org.tcl.app.core.data.TokenManager
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
@@ -60,6 +61,10 @@ fun AppNavigation() {
                     subclass(
                         AppGraph.CreateBooking::class,
                         AppGraph.CreateBooking.serializer(),
+                    )
+                    subclass(
+                        AppGraph.BookingSuccess::class,
+                        AppGraph.BookingSuccess.serializer(),
                     )
                     subclass(
                         AppGraph.BookingCourt::class,
@@ -123,7 +128,30 @@ fun AppNavigation() {
                     date = it.date,
                     courtId = it.courtId,
                     startTime = it.startTime,
+                    onCourtBooked = { date, startTime, durationMinutes, courtName ->
+                        navStack.add(
+                            AppGraph.BookingSuccess(
+                                date = date,
+                                startTime = startTime,
+                                durationMinutes = durationMinutes,
+                                courtName = courtName,
+                            )
+                        )
+                    },
                     onNavigateBack = { navStack.removeLastOrNull() },
+                )
+            }
+
+            entry<AppGraph.BookingSuccess> {
+                BookingSuccessRoot(
+                    date = it.date,
+                    startTime = it.startTime,
+                    durationMinutes = it.durationMinutes,
+                    courtName = it.courtName,
+                    onNavigateHome = {
+                        navStack.clear()
+                        navStack.add(AppGraph.BookingList)
+                    }
                 )
             }
 
