@@ -30,6 +30,7 @@ import org.tcl.app.booking.presentation.success.BookingSuccessRoot
 import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
+import org.tcl.app.notification.presentation.builder.NotificationBuilderRoot
 import org.tcl.app.user.domain.UserRepository
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
@@ -117,6 +118,10 @@ fun AppNavigation() {
                     subclass(
                         AppGraph.UserEditor::class,
                         AppGraph.UserEditor.serializer()
+                    )
+                    subclass(
+                        AppGraph.NotificationBuilder::class,
+                        AppGraph.NotificationBuilder.serializer()
                     )
                 }
             }
@@ -225,6 +230,10 @@ fun AppNavigation() {
                     onNavigateBack = { navStack.removeLastOrNull() },
                 )
             }
-        },
+
+            entry<AppGraph.NotificationBuilder> {
+                NotificationBuilderRoot()
+            }
+        }
     )
 }

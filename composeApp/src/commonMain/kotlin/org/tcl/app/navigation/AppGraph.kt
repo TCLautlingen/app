@@ -43,4 +43,7 @@ sealed interface AppGraph : NavKey {
     data class UserEditor(
         val userId: Int
     ) : AppGraph
+
+    @Serializable
+    data object NotificationBuilder : AppGraph
 }

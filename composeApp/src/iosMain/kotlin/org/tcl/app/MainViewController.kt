@@ -6,6 +6,7 @@ import org.tcl.app.di.authModule
 import org.tcl.app.di.bookingModule
 import org.tcl.app.di.coreModule
 import org.tcl.app.di.courtModule
+import org.tcl.app.di.notificationModule
 import org.tcl.app.di.platformModule
 import org.tcl.app.di.userModule
 import platform.UIKit.UIViewController
@@ -17,6 +18,6 @@ fun MainViewController(): UIViewController {
 
 fun initKoin() {
     startKoin {
-        modules(platformModule, coreModule, authModule, bookingModule, userModule, courtModule)
+        modules(platformModule, coreModule, authModule, bookingModule, userModule, courtModule, notificationModule)
     }
 }

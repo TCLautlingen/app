@@ -39,6 +39,14 @@ CREATE TABLE device (
     notification_token VARCHAR(256) NOT NULL
 );
 
+CREATE TABLE notification (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(256) NOT NULL,
+    body TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by INT NOT NULL REFERENCES "user"(id)
+);
+
 INSERT INTO court (name) VALUES
     ('Platz 1'),
     ('Platz 2'),

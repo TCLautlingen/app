@@ -23,4 +23,8 @@ class FakeDeviceRepository : DeviceRepository {
     override suspend fun removeDevice(deviceUniqueId: String) {
         devices.removeAll { it.deviceUniqueId == deviceUniqueId }
     }
+
+    override suspend fun getAllDevices(): List<Device> {
+        return devices.toList()
+    }
 }

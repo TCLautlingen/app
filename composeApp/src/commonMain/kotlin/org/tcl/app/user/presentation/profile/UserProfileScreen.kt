@@ -71,6 +71,11 @@ fun UserProfileScreen(
                             contentDescription = "User List",
                             onClick = { onNavigate(AppGraph.UserList) },
                         )
+                        IconButton(
+                            icon = RikkaIcons.Send,
+                            contentDescription = "Send Notification",
+                            onClick = { onNavigate(AppGraph.NotificationBuilder) },
+                        )
                     }
                 }
             )

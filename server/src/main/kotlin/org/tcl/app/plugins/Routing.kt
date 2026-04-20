@@ -15,6 +15,10 @@ import org.tcl.app.court.FakeCourtRepository
 import org.tcl.app.court.PostgresCourtRepository
 import org.tcl.app.court.courtRoutes
 import org.tcl.app.device.PostgresDeviceRepository
+import org.tcl.app.firebase.FirebaseService
+import org.tcl.app.notification.NotificationService
+import org.tcl.app.notification.PostgresNotificationRepository
+import org.tcl.app.notification.notificationRoutes
 import org.tcl.app.slot.SlotService
 import org.tcl.app.slot.slotRoutes
 import org.tcl.app.user.PostgresUserRepository
@@ -31,6 +35,9 @@ fun Application.configureRouting() {
     val bookingService = BookingService(bookingRepository, courtRepository)
     val slotService = SlotService(bookingRepository, courtRepository)
     val courtService = CourtService(courtRepository)
+    val notificationRepository = PostgresNotificationRepository()
+    val firebaseService = FirebaseService()
+    val notificationService = NotificationService(notificationRepository, deviceRepository, userRepository, firebaseService)
 
     routing {
         authRoutes(userService)
@@ -38,5 +45,6 @@ fun Application.configureRouting() {
         bookingRoutes(bookingService)
         slotRoutes(slotService)
         courtRoutes(courtService)
+        notificationRoutes(userService, notificationService)
     }
 }

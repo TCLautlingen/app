@@ -32,4 +32,9 @@ class PostgresDeviceRepository : DeviceRepository {
             .find { (DeviceTable.deviceUniqueId eq deviceUniqueId) }
             .forEach { it.delete() }
     }
+
+    override suspend fun getAllDevices(): List<Device> = withTransaction {
+        DeviceDAO.all()
+            .map(::daoToDevice)
+    }
 }

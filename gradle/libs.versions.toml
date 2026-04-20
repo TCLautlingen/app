@@ -32,6 +32,7 @@ kotlinx-datetime = "0.7.1"
 compottie = "2.1.0"
 googleServices="4.4.4"
 kmpNotifier = "1.6.1"
+firebase-admin = "9.2.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -87,6 +88,7 @@ exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datet
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 compottie-lite = { module = "io.github.alexzhirkevich:compottie-lite", version.ref = "compottie" }
 kmpNotifier = { group = "io.github.mirzemehdi", name = "kmpnotifier", version.ref = "kmpNotifier" }
+firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebase-admin" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
