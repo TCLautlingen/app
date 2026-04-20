@@ -8,6 +8,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.tcl.app.EMAIL_ALREADY_EXISTS_ERROR
 import org.tcl.app.LoginRequest
+import org.tcl.app.LogoutRequest
 import org.tcl.app.RefreshRequest
 import org.tcl.app.RegisterRequest
 import org.tcl.app.RegisterResult
@@ -58,6 +59,15 @@ fun Route.authRoutes(
                 ?: return@post call.respond(HttpStatusCode.Unauthorized)
 
             call.respond(authTokens)
+        }
+
+        post("/logout") {
+            val request = call.receive<LogoutRequest>()
+            val success = userService.logout(request.refreshToken)
+            if (!success) {
+                return@post call.respond(HttpStatusCode.BadRequest)
+            }
+            call.respond(HttpStatusCode.OK)
         }
     }
 }

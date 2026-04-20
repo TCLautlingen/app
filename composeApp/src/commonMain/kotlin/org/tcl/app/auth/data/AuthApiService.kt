@@ -6,6 +6,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpStatusCode
 import org.tcl.app.AuthTokens
 import org.tcl.app.LoginRequest
+import org.tcl.app.LogoutRequest
 import org.tcl.app.RefreshRequest
 import org.tcl.app.RegisterRequest
 import org.tcl.app.VALIDATION_ERROR_EMAIL
@@ -16,6 +17,7 @@ import org.tcl.app.auth.domain.LoginError
 import org.tcl.app.auth.domain.RegisterError
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError
+import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
 
@@ -39,6 +41,12 @@ class AuthApiService(
             HttpStatusCode.OK -> Result.Success(response.body<AuthTokens>())
             HttpStatusCode.Unauthorized -> Result.Error(LoginError.InvalidCredentials)
             else -> Result.Error(LoginError.Unknown)
+        }
+    }
+
+    suspend fun logout(refreshToken: String): EmptyResult<DataError> = safeApiCall {
+        apiClient.client.post("/auth/logout") {
+            setBody(LogoutRequest(refreshToken))
         }
     }
 

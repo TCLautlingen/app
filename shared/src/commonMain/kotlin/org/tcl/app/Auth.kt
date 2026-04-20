@@ -26,3 +26,8 @@ data class LoginRequest(
 data class RefreshRequest(
     val refreshToken: String = "",
 )
+
+@Serializable
+data class LogoutRequest(
+    val refreshToken: String = "",
+)

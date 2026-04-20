@@ -88,6 +88,10 @@ class UserService(
         )
     }
 
+    suspend fun logout(refreshToken: String): Boolean {
+        return refreshTokenRepository.removeRefreshToken(refreshToken)
+    }
+
     suspend fun refreshTokens(refreshToken: String): AuthTokens? {
         val storedToken = refreshTokenRepository.tokenByToken(refreshToken)
             ?: return null

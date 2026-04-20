@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.tcl.app.auth.domain.AuthRepository
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.data.TokenManager
 import org.tcl.app.core.domain.util.onFailure
@@ -18,7 +19,8 @@ import org.tcl.app.user.domain.UserRepository
 class UserProfileViewModel(
     private val tokenManager: TokenManager,
     private val apiClient: ApiClient,
-    private val repository: UserRepository
+    private val repository: UserRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserProfileState())
     val state = _state.asStateFlow()
@@ -56,6 +58,14 @@ class UserProfileViewModel(
 
     private fun logout() {
         viewModelScope.launch {
+            authRepository.logout(tokenManager.tokens.refreshToken)
+                .onSuccess {
+
+                }
+                .onFailure {
+                    
+                }
+
             tokenManager.clear()
             apiClient.client.clearAuthTokens()
             _events.send(UserProfileEvent.LoggedOut)
