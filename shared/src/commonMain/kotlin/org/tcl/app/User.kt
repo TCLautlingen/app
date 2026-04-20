@@ -11,3 +11,8 @@ data class User(
     val isMember: Boolean,
     val isAdmin: Boolean,
 )
+
+@Serializable
+data class DeviceTokenRequest(
+    val deviceToken: String
+)

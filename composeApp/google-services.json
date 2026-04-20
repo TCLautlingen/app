@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "643760445731",
+    "project_id": "tc-lautlingen-ec846",
+    "storage_bucket": "tc-lautlingen-ec846.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643760445731:android:d498ded7d74fa890e81496",
+        "android_client_info": {
+          "package_name": "org.tcl.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ06sMhBtRZ-NklMt5tF7r_YCSPRjLPCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

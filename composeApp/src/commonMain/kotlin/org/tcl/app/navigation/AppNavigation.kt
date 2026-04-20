@@ -13,6 +13,11 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.mmk.kmpnotifier.notification.NotifierManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.getKoin
@@ -25,6 +30,7 @@ import org.tcl.app.booking.presentation.success.BookingSuccessRoot
 import org.tcl.app.core.data.TokenManager
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
+import org.tcl.app.user.domain.UserRepository
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
 import org.tcl.app.user.presentation.profile.UserProfileRoot
@@ -33,7 +39,20 @@ import org.tcl.app.user.presentation.profile.UserProfileRoot
 fun AppNavigation() {
     val tokenManager = getKoin().get<TokenManager>()
     val authRepository = getKoin().get<AuthRepository>()
+    val userRepository = getKoin().get<UserRepository>()
     var loggedIn by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        NotifierManager.addListener(object : NotifierManager.Listener {
+            override fun onNewToken(token: String) {
+                if (loggedIn) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        userRepository.updateDeviceToken(token)
+                    }
+                }
+            }
+        })
+    }
 
     LaunchedEffect(Unit) {
         if (!tokenManager.tokens.refreshToken.isBlank()) {
@@ -41,6 +60,11 @@ fun AppNavigation() {
                 .onSuccess { authTokens ->
                     tokenManager.tokens = authTokens
                     loggedIn = true
+
+                    val token = NotifierManager.getPushNotifier().getToken()
+                    if (token != null) {
+                        userRepository.updateDeviceToken(token)
+                    }
                 }
                 .onFailure {
                     loggedIn = false

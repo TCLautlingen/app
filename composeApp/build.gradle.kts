@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -25,6 +26,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            export(libs.kmpNotifier)
         }
     }
     
@@ -64,6 +66,7 @@ kotlin {
             implementation(libs.anifantakis.ksafe)
             implementation(libs.anifantakis.ksafe.compose)
             implementation(libs.compottie.lite)
+            api(libs.kmpNotifier)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
