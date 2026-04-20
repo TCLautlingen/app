@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRepository
 
 class UserEditorViewModel(
@@ -41,8 +43,13 @@ class UserEditorViewModel(
 
     fun loadUser(userId: Int) {
         viewModelScope.launch {
-            val user = userRepository.getUserById(userId)
-            _state.update { it.copy(user = user) }
+            userRepository.getUserById(userId)
+                .onSuccess { user ->
+                    _state.update { it.copy(user = user) }
+                }
+                .onFailure {
+
+                }
         }
     }
 }

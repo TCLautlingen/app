@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 
 class BookingListViewModel(
     private val repository: BookingRepository
@@ -45,17 +47,21 @@ class BookingListViewModel(
     private fun updateBookings() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            try {
-                val bookings = repository.getBookings()
-                _state.update {
-                    it.copy(
-                        bookings = bookings.map { b -> b.toBookingUi() },
-                        isLoading = false
-                    )
+            repository.getBookings()
+                .onSuccess { bookings ->
+                    _state.update {
+                        it.copy(
+                            bookings = bookings.map { b -> b.toBookingUi() },
+                            isLoading = false
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false) }
-            }
+                .onFailure {
+                    _state.update { it.copy(
+                        bookings = emptyList(),
+                        isLoading = false
+                    ) }
+                }
         }
     }
 }

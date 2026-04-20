@@ -12,36 +12,33 @@ import org.tcl.app.VALIDATION_ERROR_EMAIL
 import org.tcl.app.VALIDATION_ERROR_FIRST_NAME
 import org.tcl.app.VALIDATION_ERROR_LAST_NAME
 import org.tcl.app.VALIDATION_ERROR_PASSWORD
+import org.tcl.app.auth.domain.LoginError
 import org.tcl.app.auth.domain.RegisterError
 import org.tcl.app.core.data.ApiClient
+import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.Result
+import org.tcl.app.core.domain.util.safeApiCall
 
 class AuthApiService(
     private val apiClient: ApiClient
 ) {
-    suspend fun refresh(refreshToken: String): AuthTokens? {
-        val response = apiClient.client.post("/auth/refresh") {
+    suspend fun refresh(refreshToken: String): Result<AuthTokens, DataError> = safeApiCall {
+        apiClient.client.post("/auth/refresh") {
             setBody(RefreshRequest(refreshToken))
-        }
-
-        return if (response.status == HttpStatusCode.OK) {
-            response.body()
-        } else {
-            null
         }
     }
 
-    suspend fun login(email: String, password: String): AuthTokens? {
+    suspend fun login(email: String, password: String): Result<AuthTokens, LoginError> {
         val loginRequest = LoginRequest(email, password)
 
         val response = apiClient.client.post("/auth/login") {
             setBody(loginRequest)
         }
 
-        return if (response.status == HttpStatusCode.OK) {
-            response.body()
-        } else {
-            null
+        return when (response.status) {
+            HttpStatusCode.OK -> Result.Success(response.body<AuthTokens>())
+            HttpStatusCode.Unauthorized -> Result.Error(LoginError.InvalidCredentials)
+            else -> Result.Error(LoginError.Unknown)
         }
     }
 

@@ -1,12 +1,10 @@
 package org.tcl.app.booking.data
 
-import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.HttpStatusCode
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.tcl.app.AvailableSlot
@@ -14,15 +12,24 @@ import org.tcl.app.Booking
 import org.tcl.app.BookingRequest
 import org.tcl.app.CourtSlot
 import org.tcl.app.core.data.ApiClient
+import org.tcl.app.core.domain.util.DataError
+import org.tcl.app.core.domain.util.EmptyResult
+import org.tcl.app.core.domain.util.Result
+import org.tcl.app.core.domain.util.safeApiCall
 
 class BookingApiService(
     private val apiClient: ApiClient
 ) {
-    suspend fun getBookings(): List<Booking> {
-        return apiClient.client.get("/bookings").body()
+    suspend fun getBookings(): Result<List<Booking>, DataError> = safeApiCall {
+            apiClient.client.get("/bookings")
     }
 
-    suspend fun createBooking(courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int): Booking {
+    suspend fun createBooking(
+        courtId: Int,
+        date: LocalDate,
+        startTime: LocalTime,
+        duration: Int
+    ): Result<Booking, DataError> {
         val bookingRequest = BookingRequest(
             courtId = courtId,
             date = date.toString(),
@@ -30,26 +37,27 @@ class BookingApiService(
             duration = duration
         )
 
-        return apiClient.client.post("/bookings") {
-            setBody(bookingRequest)
-        }.body()
+        return safeApiCall {
+            apiClient.client.post("/bookings") {
+                setBody(bookingRequest)
+            }
+        }
     }
 
-    suspend fun deleteBooking(id: String): Boolean {
-        val response = apiClient.client.delete("/bookings/$id")
-        return HttpStatusCode.NoContent == response.status
+    suspend fun deleteBooking(id: String): EmptyResult<DataError> = safeApiCall {
+        apiClient.client.delete("/bookings/$id")
     }
 
-    suspend fun getCourtSlots(courtId: Int, date: String): List<CourtSlot> {
-        return apiClient.client.get("/slots/court/$courtId") {
+    suspend fun getCourtSlots(courtId: Int, date: String): Result<List<CourtSlot>, DataError> = safeApiCall {
+        apiClient.client.get("/slots/court/$courtId") {
             parameter("date", date)
-        }.body()
+        }
     }
 
-    suspend fun getAvailableSlots(date: String, duration: Int): List<AvailableSlot> {
-        return apiClient.client.get("/slots/available") {
+    suspend fun getAvailableSlots(date: String, duration: Int): Result<List<AvailableSlot>, DataError> = safeApiCall {
+        apiClient.client.get("/slots/available") {
             parameter("date", date)
             parameter("duration", duration)
-        }.body()
+        }
     }
 }

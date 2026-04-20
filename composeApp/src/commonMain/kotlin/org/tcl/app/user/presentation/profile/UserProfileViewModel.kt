@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.data.TokenManager
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRepository
 
 class UserProfileViewModel(
@@ -37,13 +39,18 @@ class UserProfileViewModel(
     private fun loadUserProfile() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val user = repository.getCurrentUser()
-            _state.update {
-                it.copy(
-                    user = user,
-                    isLoading = false
-                )
-            }
+            repository.getCurrentUser()
+                .onSuccess { user ->
+                    _state.update {
+                        it.copy(
+                            user = user,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
         }
     }
 

@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRepository
 
 class UserListViewModel(
@@ -30,13 +32,18 @@ class UserListViewModel(
     private fun updateUsers() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val users = repository.getUsers(_state.value.searchQuery)
-            _state.update {
-                it.copy(
-                    users = users,
-                    isLoading = false
-                )
-            }
+            repository.getUsers(_state.value.searchQuery)
+                .onSuccess { users ->
+                    _state.update {
+                        it.copy(
+                            users = users,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
         }
     }
 }

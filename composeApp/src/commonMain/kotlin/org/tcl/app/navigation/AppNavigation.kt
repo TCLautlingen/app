@@ -23,6 +23,8 @@ import org.tcl.app.booking.presentation.editor.BookingEditorRoot
 import org.tcl.app.booking.presentation.list.BookingListRoot
 import org.tcl.app.booking.presentation.success.BookingSuccessRoot
 import org.tcl.app.core.data.TokenManager
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
 import org.tcl.app.user.presentation.profile.UserProfileRoot
@@ -35,14 +37,14 @@ fun AppNavigation() {
 
     LaunchedEffect(Unit) {
         if (!tokenManager.tokens.refreshToken.isBlank()) {
-            val tokens = authRepository.refresh(tokenManager.tokens.refreshToken)
-
-            if (tokens != null) {
-                tokenManager.tokens = tokens
-                loggedIn = true
-            } else {
-                loggedIn = false
-            }
+            authRepository.refresh(tokenManager.tokens.refreshToken)
+                .onSuccess { authTokens ->
+                    tokenManager.tokens = authTokens
+                    loggedIn = true
+                }
+                .onFailure {
+                    loggedIn = false
+                }
         }
     }
 

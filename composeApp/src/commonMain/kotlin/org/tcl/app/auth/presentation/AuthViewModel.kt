@@ -53,15 +53,22 @@ class AuthViewModel(
         val currentState = _state.value
 
         viewModelScope.launch {
-            val authTokens = repository.login(
+            repository.login(
                 email = currentState.email,
                 password = currentState.password
             )
-
-            if (authTokens != null) {
-                tokenManager.tokens = authTokens
-                _events.send(AuthEvent.LoggedIn)
-            }
+                .onSuccess { authTokens ->
+                    tokenManager.tokens = authTokens
+                    _state.update {
+                        it.copy(errorMessage = null)
+                    }
+                    _events.send(AuthEvent.LoggedIn)
+                }
+                .onFailure { error ->
+                    _state.update {
+                        it.copy(errorMessage = error.toText())
+                    }
+                }
         }
     }
 

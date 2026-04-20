@@ -5,24 +5,19 @@ import kotlinx.datetime.LocalTime
 import org.tcl.app.AvailableSlot
 import org.tcl.app.Booking
 import org.tcl.app.CourtSlot
-import org.tcl.app.booking.data.BookingApiService
+import org.tcl.app.core.domain.util.DataError
+import org.tcl.app.core.domain.util.EmptyResult
+import org.tcl.app.core.domain.util.Result
 
-class BookingRepository(
-    private val api: BookingApiService
-) {
-    suspend fun getBookings(): List<Booking> =
-        api.getBookings()
+interface BookingRepository {
+    suspend fun getBookings(): Result<List<Booking>, DataError>
 
-    suspend fun createBooking(courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int): Booking =
-        api.createBooking(courtId, date, startTime, duration)
+    suspend fun createBooking(courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int): Result<Booking, DataError>
 
-    suspend fun deleteBooking(id: String): Boolean =
-        api.deleteBooking(id)
+    suspend fun deleteBooking(id: String): EmptyResult<DataError>
 
-    suspend fun getCourtSlots(courtId: Int, date: String): List<CourtSlot> =
-        api.getCourtSlots(courtId, date)
+    suspend fun getCourtSlots(courtId: Int, date: String): Result<List<CourtSlot>, DataError>
 
-    suspend fun getAvailableSlots(date: String, duration: Int): List<AvailableSlot> =
-        api.getAvailableSlots(date, duration)
+    suspend fun getAvailableSlots(date: String, duration: Int): Result<List<AvailableSlot>, DataError>
 
 }

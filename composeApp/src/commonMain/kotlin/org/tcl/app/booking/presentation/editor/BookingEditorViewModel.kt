@@ -15,6 +15,8 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 import kotlin.math.abs
 import kotlin.time.Clock
 
@@ -94,29 +96,34 @@ class BookingEditorViewModel(
         if (duration == 0) return
 
         viewModelScope.launch {
-            val slots = repository.getAvailableSlots(date, duration)
-            _state.update { it ->
-                it.copy(
-                    availableSlots = slots,
-                )
-            }
+            repository.getAvailableSlots(date, duration)
+                .onSuccess { slots ->
+                    _state.update { it ->
+                        it.copy(
+                            availableSlots = slots,
+                        )
+                    }
 
-            val availableTimes = slots.map { LocalTime.parse(it.startTime) }.distinct()
-            val selectedStartTime = _state.value.startTime
+                    val availableTimes = slots.map { LocalTime.parse(it.startTime) }.distinct()
+                    val selectedStartTime = _state.value.startTime
 
-            if (selectedStartTime !in availableTimes) {
-                val currentStartTime = currentTimeRounded()
-                val closestTime = availableTimes.minByOrNull { currentStartTime.minutesTo(it) }
-                _state.update { it.copy(startTime = closestTime) }
-            }
+                    if (selectedStartTime !in availableTimes) {
+                        val currentStartTime = currentTimeRounded()
+                        val closestTime = availableTimes.minByOrNull { currentStartTime.minutesTo(it) }
+                        _state.update { it.copy(startTime = closestTime) }
+                    }
 
-            val availableCourts = slots
-                .filter { LocalTime.parse(it.startTime) == _state.value.startTime }
-                .map { it.court.id }
+                    val availableCourts = slots
+                        .filter { LocalTime.parse(it.startTime) == _state.value.startTime }
+                        .map { it.court.id }
 
-            if (_state.value.courtId !in availableCourts) {
-                _state.update { it.copy(courtId = availableCourts.firstOrNull()) }
-            }
+                    if (_state.value.courtId !in availableCourts) {
+                        _state.update { it.copy(courtId = availableCourts.firstOrNull()) }
+                    }
+                }
+                .onFailure {
+
+                }
         }
     }
 

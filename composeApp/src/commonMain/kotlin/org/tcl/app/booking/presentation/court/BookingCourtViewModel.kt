@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.core.domain.util.onFailure
+import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.court.domain.CourtRepository
 
 class BookingCourtViewModel(
@@ -47,23 +49,30 @@ class BookingCourtViewModel(
     private fun loadCourtSlots() {
         viewModelScope.launch {
             val currentState = _state.value
-            val courtSlots = repository.getCourtSlots(currentState.courtId, currentState.date.toString())
-            _state.update {
-                it.copy(
-                    courtSlots = courtSlots
-                )
-            }
+            repository.getCourtSlots(currentState.courtId, currentState.date.toString())
+                .onSuccess { courtSlots ->
+                    _state.update {
+                        it.copy(
+                            courtSlots = courtSlots
+                        )
+                    }
+                }
+                .onFailure {
+
+                }
         }
     }
 
     private fun loadCourts() {
         viewModelScope.launch {
-            val courts = courtRepository.getCourts()
-            _state.update {
-                it.copy(
-                    courts = courts
-                )
-            }
+            courtRepository.getCourts()
+                .onSuccess { courts ->
+                    _state.update {
+                        it.copy(
+                            courts = courts
+                        )
+                    }
+                }
         }
     }
 }

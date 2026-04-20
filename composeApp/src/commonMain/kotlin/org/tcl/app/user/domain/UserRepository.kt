@@ -1,14 +1,11 @@
 package org.tcl.app.user.domain
 
 import org.tcl.app.User
-import org.tcl.app.user.data.UserApiService
+import org.tcl.app.core.domain.util.DataError
+import org.tcl.app.core.domain.util.Result
 
-class UserRepository(
-    private val api: UserApiService
-) {
-    suspend fun getUsers(searchQuery: String): List<User> = api.getUsers(searchQuery)
-
-    suspend fun getCurrentUser(): User = api.getCurrentUser()
-
-    suspend fun getUserById(userId: Int): User = api.getUserById(userId)
+interface UserRepository {
+    suspend fun getUsers(searchQuery: String): Result<List<User>, DataError>
+    suspend fun getCurrentUser(): Result<User, DataError>
+    suspend fun getUserById(userId: Int): Result<User, DataError>
 }
