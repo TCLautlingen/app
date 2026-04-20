@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.auth.domain.AuthRepository
 import org.tcl.app.core.data.ApiClient
-import org.tcl.app.core.data.TokenManager
+import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRepository
 
 class UserProfileViewModel(
-    private val tokenManager: TokenManager,
+    private val secureStorage: SecureStorage,
     private val apiClient: ApiClient,
     private val repository: UserRepository,
     private val authRepository: AuthRepository
@@ -58,7 +58,10 @@ class UserProfileViewModel(
 
     private fun logout() {
         viewModelScope.launch {
-            authRepository.logout(tokenManager.tokens.refreshToken)
+            authRepository.logout(
+                deviceUniqueId = secureStorage.deviceUniqueId,
+                refreshToken = secureStorage.tokens.refreshToken
+            )
                 .onSuccess {
 
                 }
@@ -66,7 +69,7 @@ class UserProfileViewModel(
                     
                 }
 
-            tokenManager.clear()
+            secureStorage.clearAuthTokens()
             apiClient.client.clearAuthTokens()
             _events.send(UserProfileEvent.LoggedOut)
         }

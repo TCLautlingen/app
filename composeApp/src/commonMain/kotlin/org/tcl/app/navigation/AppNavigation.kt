@@ -27,7 +27,7 @@ import org.tcl.app.booking.presentation.court.BookingCourtRoot
 import org.tcl.app.booking.presentation.editor.BookingEditorRoot
 import org.tcl.app.booking.presentation.list.BookingListRoot
 import org.tcl.app.booking.presentation.success.BookingSuccessRoot
-import org.tcl.app.core.data.TokenManager
+import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRepository
@@ -37,7 +37,7 @@ import org.tcl.app.user.presentation.profile.UserProfileRoot
 
 @Composable
 fun AppNavigation() {
-    val tokenManager = getKoin().get<TokenManager>()
+    val secureStorage = getKoin().get<SecureStorage>()
     val authRepository = getKoin().get<AuthRepository>()
     val userRepository = getKoin().get<UserRepository>()
     var loggedIn by remember { mutableStateOf(false) }
@@ -47,7 +47,10 @@ fun AppNavigation() {
             override fun onNewToken(token: String) {
                 if (loggedIn) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        userRepository.updateDeviceToken(token)
+                        userRepository.updateNotificationToken(
+                            deviceUniqueId = secureStorage.deviceUniqueId,
+                            notificationToken = token,
+                        )
                     }
                 }
             }
@@ -55,20 +58,27 @@ fun AppNavigation() {
     }
 
     LaunchedEffect(Unit) {
-        if (!tokenManager.tokens.refreshToken.isBlank()) {
-            authRepository.refresh(tokenManager.tokens.refreshToken)
+        if (!secureStorage.tokens.refreshToken.isBlank()) {
+            authRepository.refresh(secureStorage.tokens.refreshToken)
                 .onSuccess { authTokens ->
-                    tokenManager.tokens = authTokens
+                    secureStorage.tokens = authTokens
                     loggedIn = true
-
-                    val token = NotifierManager.getPushNotifier().getToken()
-                    if (token != null) {
-                        userRepository.updateDeviceToken(token)
-                    }
                 }
                 .onFailure {
                     loggedIn = false
                 }
+        }
+    }
+
+    LaunchedEffect(loggedIn) {
+        if (loggedIn) {
+            val token = NotifierManager.getPushNotifier().getToken()
+            if (token != null) {
+                userRepository.updateNotificationToken(
+                    deviceUniqueId = secureStorage.deviceUniqueId,
+                    notificationToken = token,
+                )
+            }
         }
     }
 

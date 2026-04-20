@@ -8,6 +8,7 @@ import org.tcl.app.VALIDATION_ERROR_FIRST_NAME
 import org.tcl.app.VALIDATION_ERROR_LAST_NAME
 import org.tcl.app.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.auth.RefreshTokenRepository
+import org.tcl.app.device.DeviceRepository
 import org.tcl.app.security.JwtConfig
 import java.security.SecureRandom
 import java.security.spec.KeySpec
@@ -18,7 +19,8 @@ import javax.crypto.spec.PBEKeySpec
 
 class UserService(
     private val userRepository: UserRepository,
-    private val refreshTokenRepository: RefreshTokenRepository
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val deviceRepository: DeviceRepository
 ) {
     suspend fun registerUser(
         email: String,
@@ -88,8 +90,10 @@ class UserService(
         )
     }
 
-    suspend fun logout(refreshToken: String): Boolean {
+    suspend fun logout(deviceUniqueId: String, refreshToken: String): Boolean {
+        deviceRepository.removeDevice(deviceUniqueId)
         return refreshTokenRepository.removeRefreshToken(refreshToken)
+
     }
 
     suspend fun refreshTokens(refreshToken: String): AuthTokens? {
@@ -125,6 +129,10 @@ class UserService(
      suspend fun getUserById(id: Int): User? {
         return userRepository.userById(id)
      }
+
+    suspend fun updateDevice(userId: Int, deviceUniqueId: String, notificationToken: String) {
+        deviceRepository.upsertDevice(userId, deviceUniqueId, notificationToken)
+    }
 }
 
 private fun ByteArray.toHexString(): String = HexFormat.of().formatHex(this)

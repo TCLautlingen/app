@@ -13,7 +13,8 @@ class UserRepositoryImpl(
 
     override suspend fun getCurrentUser(): Result<User, DataError> = api.getCurrentUser()
 
-    override suspend fun updateDeviceToken(deviceToken: String): EmptyResult<DataError> = api.updateDeviceToken(deviceToken)
+    override suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError> =
+        api.updateNotificationToken(deviceUniqueId, notificationToken)
 
     override suspend fun getUserById(userId: Int): Result<User, DataError> = api.getUserById(userId)
 }

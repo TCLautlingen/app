@@ -14,6 +14,7 @@ import org.tcl.app.court.CourtService
 import org.tcl.app.court.FakeCourtRepository
 import org.tcl.app.court.PostgresCourtRepository
 import org.tcl.app.court.courtRoutes
+import org.tcl.app.device.PostgresDeviceRepository
 import org.tcl.app.slot.SlotService
 import org.tcl.app.slot.slotRoutes
 import org.tcl.app.user.PostgresUserRepository
@@ -24,7 +25,8 @@ fun Application.configureRouting() {
     val userRepository = PostgresUserRepository()
     val bookingRepository = PostgresBookingRepository()
     val refreshTokenRepository = PostgresRefreshTokenRepository()
-    val userService = UserService(userRepository, refreshTokenRepository)
+    val deviceRepository = PostgresDeviceRepository()
+    val userService = UserService(userRepository, refreshTokenRepository, deviceRepository)
     val courtRepository = PostgresCourtRepository()
     val bookingService = BookingService(bookingRepository, courtRepository)
     val slotService = SlotService(bookingRepository, courtRepository)

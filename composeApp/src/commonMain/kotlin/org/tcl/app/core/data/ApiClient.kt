@@ -19,7 +19,7 @@ import org.tcl.app.SERVER_IP
 import org.tcl.app.SERVER_PORT
 
 class ApiClient(
-    private val tokenManager: TokenManager,
+    private val secureStorage: SecureStorage,
     baseUrl: String = "http://$SERVER_IP:$SERVER_PORT"
 ) {
     private val refreshClient = HttpClient {
@@ -48,8 +48,8 @@ class ApiClient(
             bearer {
                 loadTokens {
                     BearerTokens(
-                        tokenManager.tokens.accessToken,
-                        tokenManager.tokens.refreshToken
+                        secureStorage.tokens.accessToken,
+                        secureStorage.tokens.refreshToken
                     )
                 }
 
@@ -57,14 +57,14 @@ class ApiClient(
                     try {
                         val response: AuthTokens = refreshClient.post("/auth/refresh") {
                             contentType(ContentType.Application.Json)
-                            setBody(RefreshRequest(tokenManager.tokens.refreshToken))
+                            setBody(RefreshRequest(secureStorage.tokens.refreshToken))
                         }.body()
 
-                        tokenManager.tokens = response
+                        secureStorage.tokens = response
 
                         BearerTokens(response.accessToken, response.refreshToken)
                     } catch (e: Exception) {
-                        tokenManager.clear()
+                        secureStorage.clearAuthTokens()
                         null
                     }
                 }

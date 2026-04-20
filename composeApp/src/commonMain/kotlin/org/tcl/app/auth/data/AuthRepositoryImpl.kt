@@ -15,7 +15,8 @@ class AuthRepositoryImpl(
 
     override suspend fun login(email: String, password: String) : Result<AuthTokens, LoginError> = api.login(email, password)
 
-    override suspend fun logout(refreshToken: String) : EmptyResult<DataError> = api.logout(refreshToken)
+    override suspend fun logout(deviceUniqueId: String, refreshToken: String) : EmptyResult<DataError> =
+        api.logout(deviceUniqueId, refreshToken)
 
     override suspend fun register(email: String, password: String, firstName: String, lastName: String) : Result<AuthTokens, RegisterError>
             = api.register(email, password, firstName, lastName)

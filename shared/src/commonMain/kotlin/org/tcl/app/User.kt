@@ -13,6 +13,7 @@ data class User(
 )
 
 @Serializable
-data class DeviceTokenRequest(
-    val deviceToken: String
+data class NotificationTokenRequest(
+    val deviceUniqueId: String,
+    val notificationToken: String
 )

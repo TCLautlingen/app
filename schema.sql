@@ -32,6 +32,13 @@ CREATE TABLE booking (
     duration INT NOT NULL
 );
 
+CREATE TABLE device (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES "user"(id),
+    device_unique_id VARCHAR(256) NOT NULL UNIQUE,
+    notification_token VARCHAR(256) NOT NULL
+);
+
 INSERT INTO court (name) VALUES
     ('Platz 1'),
     ('Platz 2'),

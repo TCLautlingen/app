@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.auth.domain.AuthRepository
 import org.tcl.app.auth.domain.toText
-import org.tcl.app.core.data.TokenManager
+import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 
 class AuthViewModel(
     private val repository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val secureStorage: SecureStorage
 ) : ViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state = _state.asStateFlow()
@@ -58,7 +58,7 @@ class AuthViewModel(
                 password = currentState.password
             )
                 .onSuccess { authTokens ->
-                    tokenManager.tokens = authTokens
+                    secureStorage.tokens = authTokens
                     _state.update {
                         it.copy(errorMessage = null)
                     }
@@ -90,7 +90,7 @@ class AuthViewModel(
                 lastName = currentState.lastName
             )
                 .onSuccess { authTokens ->
-                    tokenManager.tokens = authTokens
+                    secureStorage.tokens = authTokens
                     _state.update {
                         it.copy(errorMessage = null)
                     }

@@ -44,9 +44,12 @@ class AuthApiService(
         }
     }
 
-    suspend fun logout(refreshToken: String): EmptyResult<DataError> = safeApiCall {
+    suspend fun logout(deviceUniqueId: String, refreshToken: String): EmptyResult<DataError> = safeApiCall {
         apiClient.client.post("/auth/logout") {
-            setBody(LogoutRequest(refreshToken))
+            setBody(LogoutRequest(
+                deviceUniqueId = deviceUniqueId,
+                refreshToken = refreshToken
+            ))
         }
     }
 

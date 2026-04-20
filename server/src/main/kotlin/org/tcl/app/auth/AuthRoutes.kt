@@ -63,7 +63,10 @@ fun Route.authRoutes(
 
         post("/logout") {
             val request = call.receive<LogoutRequest>()
-            val success = userService.logout(request.refreshToken)
+            val success = userService.logout(
+                deviceUniqueId = request.deviceUniqueId,
+                refreshToken = request.refreshToken
+            )
             if (!success) {
                 return@post call.respond(HttpStatusCode.BadRequest)
             }

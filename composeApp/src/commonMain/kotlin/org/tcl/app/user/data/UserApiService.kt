@@ -5,7 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import org.tcl.app.DeviceTokenRequest
+import org.tcl.app.NotificationTokenRequest
 import org.tcl.app.User
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError
@@ -28,9 +28,12 @@ class UserApiService(
         apiClient.client.get("/users/me")
     }
 
-    suspend fun updateDeviceToken(deviceToken: String): EmptyResult<DataError> = safeApiCall {
-        apiClient.client.post("/users/device-token") {
-            setBody(DeviceTokenRequest(deviceToken))
+    suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError> = safeApiCall {
+        apiClient.client.post("/users/notificationToken") {
+            setBody(NotificationTokenRequest(
+                deviceUniqueId = deviceUniqueId,
+                notificationToken = notificationToken
+            ))
         }
     }
 
