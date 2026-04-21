@@ -21,7 +21,7 @@ class FirebaseService {
         FirebaseApp.initializeApp(options)
     }
 
-    fun sendToTokens(tokens: List<String>, title: String, body: String, data: Map<String, String>) {
+    fun sendToTokens(tokens: List<String>, title: String, body: String, data: Map<String, String> = emptyMap()) {
         tokens.chunked(500).forEach { chunk ->
             val message = MulticastMessage.builder()
                 .setNotification(
