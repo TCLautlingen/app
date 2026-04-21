@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalTime
 
 interface BookingRepository {
     suspend fun allBookingsForUser(userId: Int): List<Booking>
+    suspend fun upcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking>
     suspend fun allBookingsForDate(date: LocalDate): List<Booking>
     suspend fun allBookingsForCourtAndDate(courtId: Int, date: LocalDate): List<Booking>
     suspend fun createBooking(

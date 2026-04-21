@@ -209,11 +209,13 @@ fun BookingCard(
                         variant = TextVariant.Small,
                     )
                 }
-                IconButton(
-                    icon = RikkaIcons.Trash,
-                    contentDescription = "Delete booking",
-                    onClick = onDelete,
-                )
+                if (booking.isOwner) {
+                    IconButton(
+                        icon = RikkaIcons.Trash,
+                        contentDescription = "Delete booking",
+                        onClick = onDelete,
+                    )
+                }
             }
         }
     }

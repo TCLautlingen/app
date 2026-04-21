@@ -21,11 +21,17 @@ fun Route.bookingRoutes() {
 
     authenticate("auth-jwt") {
         route("/bookings") {
-            get {
+            get("/upcoming") {
                 val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
                     ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-                val bookings = bookingService.getAllBookingsForUser(authPrincipal.userId)
+                val date = call.queryParameters["from"]
+                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date query parameter")
+
+                val bookings = bookingService.getUpcomingBookingsForUser(
+                    userId = authPrincipal.userId,
+                    from = LocalDate.parse(date)
+                )
 
                 call.respond(bookings)
             }

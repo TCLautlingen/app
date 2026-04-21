@@ -2,10 +2,12 @@ package org.tcl.app.booking.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kizitonwose.calendar.core.now
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
@@ -47,7 +49,7 @@ class BookingListViewModel(
     private fun updateBookings() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            dataSource.getBookings()
+            dataSource.getUpcomingBookings(LocalDate.now().toString())
                 .onSuccess { bookings ->
                     _state.update {
                         it.copy(

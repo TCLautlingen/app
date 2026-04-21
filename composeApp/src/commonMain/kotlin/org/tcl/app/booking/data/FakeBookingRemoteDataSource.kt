@@ -17,7 +17,7 @@ class FakeBookingRemoteDataSource : BookingRemoteDataSource {
         Booking(id = 2, userId = 1, courtId = 2, date = LocalDate(2026, 4, 22), startTime = LocalTime(14, 0), duration = 90, players = emptyList()),
     )
 
-    override suspend fun getBookings(): Result<List<Booking>, DataError> =
+    override suspend fun getUpcomingBookings(from: String): Result<List<Booking>, DataError> =
         Result.Success(bookings)
 
     override suspend fun createBooking(

@@ -4,13 +4,29 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.greaterEq
+import org.jetbrains.exposed.v1.core.inSubQuery
+import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.batchInsert
+import org.jetbrains.exposed.v1.jdbc.select
 import org.tcl.app.plugins.withTransaction
 
 class PostgresBookingRepository() : BookingRepository {
     override suspend fun allBookingsForUser(userId: Int): List<Booking> = withTransaction {
         BookingDAO
             .find { BookingTable.userId eq userId }
+            .map(::daoToBooking)
+    }
+
+    override suspend fun upcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> = withTransaction {
+        BookingDAO.find {
+            (BookingTable.date greaterEq from) and
+                    (BookingTable.userId eq userId or (BookingTable.id inSubQuery
+                            BookingPlayerTable
+                                .select(BookingPlayerTable.bookingId)
+                                .where { BookingPlayerTable.userId eq userId }
+                            ))
+        }
             .map(::daoToBooking)
     }
 

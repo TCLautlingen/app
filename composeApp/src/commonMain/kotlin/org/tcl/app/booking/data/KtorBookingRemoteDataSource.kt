@@ -21,8 +21,10 @@ import org.tcl.app.core.domain.util.safeApiCall
 class KtorBookingRemoteDataSource(
     private val apiClient: ApiClient
 ) : BookingRemoteDataSource {
-    override suspend fun getBookings(): Result<List<Booking>, DataError> = safeApiCall {
-            apiClient.client.get("/bookings")
+    override suspend fun getUpcomingBookings(from: String): Result<List<Booking>, DataError> = safeApiCall {
+            apiClient.client.get("/bookings/upcoming") {
+                parameter("from", from)
+            }
     }
 
     override suspend fun createBooking(

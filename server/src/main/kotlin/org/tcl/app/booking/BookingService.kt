@@ -20,6 +20,12 @@ class BookingService(
 ) {
     suspend fun getAllBookingsForUser(userId: Int): List<Booking> {
         return bookingRepository.allBookingsForUser(userId)
+            .map { it.copy(isOwner = it.userId == userId) }
+    }
+
+    suspend fun getUpcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> {
+        return bookingRepository.upcomingBookingsForUser(userId, from)
+            .map { it.copy(isOwner = it.userId == userId) }
     }
 
     suspend fun createBooking(
@@ -37,9 +43,7 @@ class BookingService(
         if (userId in playerIds) return null
 
         val creator = userRepository.userById(userId)
-        if (creator == null) {
-            return null
-        }
+            ?: return null
 
         val existingBookings = bookingRepository.allBookingsForCourtAndDate(courtId, date)
         val requestedEndTime = startTime.plusMinutes(duration)

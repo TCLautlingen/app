@@ -35,7 +35,7 @@ val appModule = module {
         else PostgresUserRepository()
     }
     single<BookingRepository> {
-        if (TESTING) FakeBookingRepository()
+        if (TESTING) FakeBookingRepository(get())
         else PostgresBookingRepository()
     }
     single<RefreshTokenRepository> {

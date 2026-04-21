@@ -2,13 +2,23 @@ package org.tcl.app.booking
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import org.tcl.app.user.UserRepository
 
-class FakeBookingRepository() : BookingRepository {
+class FakeBookingRepository(
+    private val userRepository: UserRepository
+) : BookingRepository {
     private val bookings = mutableListOf<Booking>()
     private var nextId = 1
 
     override suspend fun allBookingsForUser(userId: Int): List<Booking> {
         return bookings.filter { it.userId == userId }
+    }
+
+    override suspend fun upcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> {
+        return bookings.filter { booking ->
+            booking.date >= from &&
+                    (booking.userId == userId || booking.players.any { it.id == userId })
+        }
     }
 
     override suspend fun allBookingsForDate(date: LocalDate): List<Booking> {
@@ -27,7 +37,8 @@ class FakeBookingRepository() : BookingRepository {
         duration: Int,
         playerIds: List<Int>
     ): Booking {
-        val booking = Booking(nextId++, userId, courtId, date, startTime, duration, emptyList())
+        val players = playerIds.mapNotNull { playerId -> userRepository.userById(playerId) }
+        val booking = Booking(nextId++, userId, courtId, date, startTime, duration, players)
         bookings.add(booking)
         return booking
     }

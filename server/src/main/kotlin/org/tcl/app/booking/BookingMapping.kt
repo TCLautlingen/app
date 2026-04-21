@@ -48,6 +48,6 @@ fun daoToBooking(dao: BookingDAO): Booking {
         date = dao.date,
         startTime = dao.startTime,
         duration = dao.duration,
-        players = players
+        players = players,
     )
 }
