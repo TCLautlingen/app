@@ -15,10 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
-import org.tcl.app.User
+import org.tcl.app.user.User
 import org.tcl.app.navigation.AppGraph
 import zed.rainxch.rikkaui.components.ui.avatar.Avatar
-import zed.rainxch.rikkaui.components.ui.avatar.AvatarAnimation
 import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant

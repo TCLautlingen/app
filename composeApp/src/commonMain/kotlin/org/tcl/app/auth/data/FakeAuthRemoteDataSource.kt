@@ -1,6 +1,6 @@
 package org.tcl.app.auth.data
 
-import org.tcl.app.AuthTokens
+import org.tcl.app.auth.AuthTokens
 import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.domain.LoginError
 import org.tcl.app.auth.domain.RegisterError

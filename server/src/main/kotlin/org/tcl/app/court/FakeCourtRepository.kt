@@ -1,7 +1,5 @@
 package org.tcl.app.court
 
-import org.tcl.app.Court
-
 class FakeCourtRepository() : CourtRepository {
     private val courts = mutableListOf(
         Court(id = 1, name = "Court 1"),

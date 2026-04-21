@@ -1,4 +1,4 @@
-package org.tcl.app
+package org.tcl.app.court
 
 import kotlinx.serialization.Serializable
 

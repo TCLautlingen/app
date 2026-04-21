@@ -1,6 +1,6 @@
 package org.tcl.app.user.data
 
-import org.tcl.app.User
+import org.tcl.app.user.User
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result

@@ -4,7 +4,6 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
-import org.tcl.app.User
 
 @Serializable
 sealed interface AppGraph : NavKey {

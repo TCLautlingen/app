@@ -1,7 +1,5 @@
 package org.tcl.app.user
 
-import org.tcl.app.User
-
 interface UserRepository {
     suspend fun createUser(
         email: String,

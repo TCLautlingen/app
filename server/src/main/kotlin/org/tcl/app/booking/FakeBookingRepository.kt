@@ -2,7 +2,6 @@ package org.tcl.app.booking
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.Booking
 
 class FakeBookingRepository() : BookingRepository {
     private val bookings = mutableListOf<Booking>()

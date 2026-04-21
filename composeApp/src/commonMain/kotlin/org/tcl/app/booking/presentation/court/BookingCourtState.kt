@@ -3,8 +3,8 @@ package org.tcl.app.booking.presentation.court
 import androidx.compose.runtime.Stable
 import com.kizitonwose.calendar.core.now
 import kotlinx.datetime.LocalDate
-import org.tcl.app.Court
-import org.tcl.app.CourtSlot
+import org.tcl.app.court.Court
+import org.tcl.app.booking.CourtSlot
 
 @Stable
 data class BookingCourtState(

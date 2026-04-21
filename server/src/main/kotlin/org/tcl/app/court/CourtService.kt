@@ -1,7 +1,5 @@
 package org.tcl.app.court
 
-import org.tcl.app.Court
-
 class CourtService(
     private val courtRepository: CourtRepository
 ) {

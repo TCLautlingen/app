@@ -1,12 +1,11 @@
 package org.tcl.app.user
 
-import org.tcl.app.AuthTokens
-import org.tcl.app.RegisterResult
-import org.tcl.app.User
-import org.tcl.app.VALIDATION_ERROR_EMAIL
-import org.tcl.app.VALIDATION_ERROR_FIRST_NAME
-import org.tcl.app.VALIDATION_ERROR_LAST_NAME
-import org.tcl.app.VALIDATION_ERROR_PASSWORD
+import org.tcl.app.auth.AuthTokens
+import org.tcl.app.auth.RegisterResult
+import org.tcl.app.auth.VALIDATION_ERROR_EMAIL
+import org.tcl.app.auth.VALIDATION_ERROR_FIRST_NAME
+import org.tcl.app.auth.VALIDATION_ERROR_LAST_NAME
+import org.tcl.app.auth.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.auth.RefreshTokenRepository
 import org.tcl.app.device.DeviceRepository
 import org.tcl.app.security.JwtConfig

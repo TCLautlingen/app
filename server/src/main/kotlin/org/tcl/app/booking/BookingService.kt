@@ -2,7 +2,6 @@ package org.tcl.app.booking
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.Booking
 import org.tcl.app.court.CourtRepository
 import org.tcl.app.slot.END_TIME
 import org.tcl.app.slot.overlapsWith

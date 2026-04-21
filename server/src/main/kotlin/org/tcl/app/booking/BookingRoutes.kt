@@ -13,7 +13,6 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.BookingRequest
 import org.tcl.app.security.JwtConfig.toAuthPrincipal
 
 fun Route.bookingRoutes(

@@ -1,6 +1,6 @@
 package org.tcl.app.booking.presentation.list
 
-import org.tcl.app.Booking
+import org.tcl.app.booking.Booking
 import org.tcl.app.util.formatDdMmYyyy
 
 

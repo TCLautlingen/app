@@ -6,7 +6,6 @@ import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.datetime.time
-import org.tcl.app.Booking
 
 object BookingTable: IntIdTable("booking") {
     val userId = integer("user_id")

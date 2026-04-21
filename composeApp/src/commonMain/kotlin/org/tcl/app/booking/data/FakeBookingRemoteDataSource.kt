@@ -2,10 +2,10 @@ package org.tcl.app.booking.data
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.AvailableSlot
-import org.tcl.app.Booking
-import org.tcl.app.Court
-import org.tcl.app.CourtSlot
+import org.tcl.app.booking.AvailableSlot
+import org.tcl.app.booking.Booking
+import org.tcl.app.court.Court
+import org.tcl.app.booking.CourtSlot
 import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult

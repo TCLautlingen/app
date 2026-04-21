@@ -1,7 +1,5 @@
 package org.tcl.app.user
 
-import org.tcl.app.User
-
 class FakeUserRepository : UserRepository {
     private data class StoredUser(
         val id: Int,

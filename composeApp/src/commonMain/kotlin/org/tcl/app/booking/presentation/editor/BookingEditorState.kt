@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import com.kizitonwose.calendar.core.now
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.AvailableSlot
+import org.tcl.app.booking.AvailableSlot
 
 @Stable
 data class BookingEditorState (

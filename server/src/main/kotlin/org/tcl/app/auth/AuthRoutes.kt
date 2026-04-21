@@ -6,12 +6,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import org.tcl.app.EMAIL_ALREADY_EXISTS_ERROR
-import org.tcl.app.LoginRequest
-import org.tcl.app.LogoutRequest
-import org.tcl.app.RefreshRequest
-import org.tcl.app.RegisterRequest
-import org.tcl.app.RegisterResult
 import org.tcl.app.user.UserService
 
 fun Route.authRoutes(

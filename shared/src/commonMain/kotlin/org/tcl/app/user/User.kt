@@ -1,4 +1,4 @@
-package org.tcl.app
+package org.tcl.app.user
 
 import kotlinx.serialization.Serializable
 
@@ -10,10 +10,4 @@ data class User(
     val lastName: String,
     val isMember: Boolean,
     val isAdmin: Boolean,
-)
-
-@Serializable
-data class NotificationTokenRequest(
-    val deviceUniqueId: String,
-    val notificationToken: String
 )

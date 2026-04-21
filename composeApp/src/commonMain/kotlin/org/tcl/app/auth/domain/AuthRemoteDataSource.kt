@@ -1,6 +1,6 @@
 package org.tcl.app.auth.domain
 
-import org.tcl.app.AuthTokens
+import org.tcl.app.auth.AuthTokens
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result

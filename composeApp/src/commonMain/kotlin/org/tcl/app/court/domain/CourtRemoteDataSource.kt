@@ -1,6 +1,6 @@
 package org.tcl.app.court.domain
 
-import org.tcl.app.Court
+import org.tcl.app.court.Court
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.Result
 

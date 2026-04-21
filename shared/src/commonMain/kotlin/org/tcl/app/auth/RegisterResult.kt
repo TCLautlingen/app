@@ -1,4 +1,4 @@
-package org.tcl.app
+package org.tcl.app.auth
 
 sealed class RegisterResult {
     data class Success(val tokens: AuthTokens) : RegisterResult()

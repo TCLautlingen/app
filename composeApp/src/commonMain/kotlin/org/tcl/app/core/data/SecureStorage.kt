@@ -2,7 +2,7 @@ package org.tcl.app.core.data
 
 import eu.anifantakis.lib.ksafe.KSafe
 import eu.anifantakis.lib.ksafe.invoke
-import org.tcl.app.AuthTokens
+import org.tcl.app.auth.AuthTokens
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

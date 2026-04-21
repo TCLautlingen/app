@@ -13,8 +13,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import org.tcl.app.AuthTokens
-import org.tcl.app.RefreshRequest
+import org.tcl.app.auth.AuthTokens
+import org.tcl.app.auth.RefreshRequest
 import org.tcl.app.SERVER_IP
 import org.tcl.app.SERVER_PORT
 

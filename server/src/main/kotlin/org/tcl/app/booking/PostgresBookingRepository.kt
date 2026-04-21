@@ -4,7 +4,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.tcl.app.Booking
 import org.tcl.app.plugins.withTransaction
 
 class PostgresBookingRepository() : BookingRepository {

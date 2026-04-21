@@ -1,6 +1,5 @@
 package org.tcl.app.court
 
-import org.tcl.app.Court
 import org.tcl.app.plugins.withTransaction
 
 class PostgresCourtRepository() : CourtRepository {

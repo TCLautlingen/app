@@ -2,7 +2,7 @@ package org.tcl.app.court.data
 
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import org.tcl.app.Court
+import org.tcl.app.court.Court
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.Result

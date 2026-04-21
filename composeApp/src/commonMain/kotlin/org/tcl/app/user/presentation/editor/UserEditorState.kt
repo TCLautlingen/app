@@ -1,7 +1,7 @@
 package org.tcl.app.user.presentation.editor
 
 import androidx.compose.runtime.Stable
-import org.tcl.app.User
+import org.tcl.app.user.User
 
 @Stable
 data class UserEditorState(

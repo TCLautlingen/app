@@ -2,9 +2,9 @@ package org.tcl.app.slot
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.AvailableSlot
-import org.tcl.app.Booking
-import org.tcl.app.CourtSlot
+import org.tcl.app.booking.AvailableSlot
+import org.tcl.app.booking.Booking
+import org.tcl.app.booking.CourtSlot
 import org.tcl.app.booking.BookingRepository
 import org.tcl.app.court.CourtRepository
 import org.tcl.app.util.plusMinutes

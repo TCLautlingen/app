@@ -7,10 +7,10 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.AvailableSlot
-import org.tcl.app.Booking
-import org.tcl.app.BookingRequest
-import org.tcl.app.CourtSlot
+import org.tcl.app.booking.AvailableSlot
+import org.tcl.app.booking.Booking
+import org.tcl.app.booking.BookingRequest
+import org.tcl.app.booking.CourtSlot
 import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError

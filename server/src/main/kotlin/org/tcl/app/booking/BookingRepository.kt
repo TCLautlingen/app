@@ -2,7 +2,6 @@ package org.tcl.app.booking
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import org.tcl.app.Booking
 
 interface BookingRepository {
     suspend fun allBookingsForUser(userId: Int): List<Booking>
