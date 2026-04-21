@@ -1,13 +1,9 @@
 package org.tcl.app.booking.presentation.editor
 
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
+import org.tcl.app.booking.Booking
 
 sealed interface BookingEditorEvent {
     data class CourtBooked(
-        val date: LocalDate,
-        val startTime: LocalTime,
-        val durationMinutes: Int,
-        val courtName: String,
+        val booking: Booking,
     ) : BookingEditorEvent
 }

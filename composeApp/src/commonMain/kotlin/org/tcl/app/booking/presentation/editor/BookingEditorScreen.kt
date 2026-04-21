@@ -1,12 +1,6 @@
 package org.tcl.app.booking.presentation.editor
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -19,9 +13,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.booking.Booking
 import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
+import org.tcl.app.core.presentation.PlayerSelectSheet
 import org.tcl.app.util.formatDdMmYyyy
+import zed.rainxch.rikkaicons.core.DecorativeAppIcon
+import zed.rainxch.rikkaicons.tokens.Calendar
+import zed.rainxch.rikkaicons.tokens.UserPlus
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
@@ -38,10 +37,7 @@ fun BookingEditorRoot(
     courtId: Int? = null,
     startTime: LocalTime? = null,
     onCourtBooked: (
-        date: LocalDate,
-        startTime: LocalTime,
-        durationMinutes: Int,
-        courtName: String,
+        booking: Booking
     ) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: BookingEditorViewModel = koinViewModel(),
@@ -55,10 +51,7 @@ fun BookingEditorRoot(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is BookingEditorEvent.CourtBooked -> onCourtBooked(
-                event.date,
-                event.startTime,
-                event.durationMinutes,
-                event.courtName,
+                event.booking
             )
         }
     }
@@ -107,7 +100,12 @@ fun BookingEditorScreen(
                 Button(
                     text = state.date.formatDdMmYyyy(),
                     onClick = { onAction(BookingEditorAction.OnDateClick) },
-                    variant = ButtonVariant.Outline
+                    variant = ButtonVariant.Outline,
+                    leadingIcon = {
+                        DecorativeAppIcon(
+                            token = zed.rainxch.rikkaicons.tokens.RikkaIcons.Calendar
+                        )
+                    }
                 )
             }
 
@@ -174,6 +172,19 @@ fun BookingEditorScreen(
                 }
             }
 
+            Button(
+                text = "Mitspieler hinzufügen",
+                onClick = { onAction(BookingEditorAction.OnAddPlayerClick) },
+                modifier = Modifier.fillMaxWidth(),
+                variant = ButtonVariant.Outline,
+                leadingIcon = {
+                    DecorativeAppIcon(
+                        token = zed.rainxch.rikkaicons.tokens.RikkaIcons.UserPlus,
+                        tint = RikkaTheme.colors.onSurface,
+                    )
+                },
+            )
+
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -193,6 +204,16 @@ fun BookingEditorScreen(
             onDateSelected = {
                 onAction(BookingEditorAction.OnDateChange(it))
             },
+        )
+
+        PlayerSelectSheet(
+            open = state.showPlayerSelectSheet,
+            onDismiss = { onAction(BookingEditorAction.OnPlayerSheetDismiss) },
+            onPlayerSelected = { onAction(BookingEditorAction.OnPlayerToggle(it)) },
+            selectedPlayerIds = state.selectedPlayerIds,
+            players = state.players,
+            searchQuery = state.playerSearchQuery,
+            onSearchQueryChange = { onAction(BookingEditorAction.OnPlayerSearchChange(it)) }
         )
     }
 }

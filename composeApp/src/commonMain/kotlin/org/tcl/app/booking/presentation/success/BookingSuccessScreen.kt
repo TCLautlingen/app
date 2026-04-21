@@ -30,8 +30,10 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.booking.Booking
 import org.tcl.app.util.formatDdMmYyyy
 import org.tcl.app.util.plusMinutes
+import zed.rainxch.rikkaui.components.ui.avatar.Avatar
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.card.Card
@@ -43,17 +45,14 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
 fun BookingSuccessRoot(
-    date: LocalDate,
-    startTime: LocalTime,
-    durationMinutes: Int,
-    courtName: String,
+    booking: Booking,
     onNavigateHome: () -> Unit,
     viewModel: BookingSuccessViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(date, startTime, durationMinutes, courtName) {
-        viewModel.initialize(date, startTime, durationMinutes, courtName)
+    LaunchedEffect(booking) {
+        viewModel.initialize(booking)
     }
 
     BookingSuccessScreen(
@@ -178,15 +177,37 @@ private fun BookingDetailCard(
     modifier: Modifier = Modifier,
     state: BookingSuccessState,
 ) {
-    val endTime = state.startTime.plusMinutes(state.durationMinutes)
+    if (state.booking == null) {
+        return
+    }
+
+    val endTime = state.booking.startTime.plusMinutes(state.booking.duration)
 
     Card(modifier = modifier) {
         CardContent {
             Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
-                BookingDetailRow(label = "Datum", value = state.date.formatDdMmYyyy())
-                BookingDetailRow(label = "Uhrzeit", value = "${state.startTime} – $endTime")
-                BookingDetailRow(label = "Platz", value = state.courtName)
-                BookingDetailRow(label = "Dauer", value = "${state.durationMinutes} Minuten")
+                BookingDetailRow(label = "Datum", value = state.booking.date.formatDdMmYyyy())
+                BookingDetailRow(label = "Uhrzeit", value = "${state.booking.startTime} – $endTime")
+                BookingDetailRow(label = "Platz", value = state.booking.courtId.toString())
+                BookingDetailRow(label = "Dauer", value = "${state.booking.duration} Minuten")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Mitspieler",
+                        variant = TextVariant.Small,
+                        color = RikkaTheme.colors.onMuted,
+                    )
+                    Row {
+                        for (player in state.booking.players) {
+                            Avatar(
+                                fallback = "${player.firstName.first()}${player.lastName.first()}",
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -9,4 +9,5 @@ data class BookingRequest(
     val date: String,
     val startTime: String,
     val duration: Int,
+    val playerIds: List<Int>,
 )

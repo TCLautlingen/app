@@ -174,13 +174,10 @@ fun AppNavigation() {
                     date = it.date,
                     courtId = it.courtId,
                     startTime = it.startTime,
-                    onCourtBooked = { date, startTime, durationMinutes, courtName ->
+                    onCourtBooked = { booking ->
                         navStack.add(
                             AppGraph.BookingSuccess(
-                                date = date,
-                                startTime = startTime,
-                                durationMinutes = durationMinutes,
-                                courtName = courtName,
+                                booking = booking
                             )
                         )
                     },
@@ -190,10 +187,7 @@ fun AppNavigation() {
 
             entry<AppGraph.BookingSuccess> {
                 BookingSuccessRoot(
-                    date = it.date,
-                    startTime = it.startTime,
-                    durationMinutes = it.durationMinutes,
-                    courtName = it.courtName,
+                    booking = it.booking,
                     onNavigateHome = {
                         navStack.clear()
                         navStack.add(AppGraph.BookingList)

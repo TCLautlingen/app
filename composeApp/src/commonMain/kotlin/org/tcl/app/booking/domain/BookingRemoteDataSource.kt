@@ -12,7 +12,7 @@ import org.tcl.app.core.domain.util.Result
 interface BookingRemoteDataSource {
     suspend fun getBookings(): Result<List<Booking>, DataError>
 
-    suspend fun createBooking(courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int): Result<Booking, DataError>
+    suspend fun createBooking(courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int, playerIds: List<Int>): Result<Booking, DataError>
 
     suspend fun deleteBooking(id: String): EmptyResult<DataError>
 

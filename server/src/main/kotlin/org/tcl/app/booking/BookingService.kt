@@ -15,10 +15,20 @@ class BookingService(
         return bookingRepository.allBookingsForUser(userId)
     }
 
-    suspend fun createBooking(userId: Int, courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int): Booking? {
+    suspend fun createBooking(
+        userId: Int,
+        courtId: Int,
+        date: LocalDate,
+        startTime: LocalTime,
+        duration: Int,
+        playerIds: List<Int>
+    ): Booking? {
         courtRepository.courtById(courtId) ?: return null
 
         if (startTime.plusMinutes(duration) > END_TIME) return null
+
+        if (userId in playerIds) return null
+
         val existingBookings = bookingRepository.allBookingsForCourtAndDate(courtId, date)
         val requestedEndTime = startTime.plusMinutes(duration)
         val overlaps = existingBookings.any { booking ->
@@ -28,7 +38,7 @@ class BookingService(
             return null
         }
 
-        return bookingRepository.createBooking(userId, courtId, date, startTime, duration)
+        return bookingRepository.createBooking(userId, courtId, date, startTime, duration, playerIds)
     }
 
     suspend fun removeBooking(userId: Int, id: Int): Boolean {

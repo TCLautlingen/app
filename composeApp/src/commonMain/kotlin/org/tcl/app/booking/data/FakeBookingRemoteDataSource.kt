@@ -13,8 +13,8 @@ import org.tcl.app.core.domain.util.Result
 
 class FakeBookingRemoteDataSource : BookingRemoteDataSource {
     private val bookings = mutableListOf(
-        Booking(id = 1, userId = 1, courtId = 1, date = LocalDate(2026, 4, 21), startTime = LocalTime(10, 0), duration = 60),
-        Booking(id = 2, userId = 1, courtId = 2, date = LocalDate(2026, 4, 22), startTime = LocalTime(14, 0), duration = 90),
+        Booking(id = 1, userId = 1, courtId = 1, date = LocalDate(2026, 4, 21), startTime = LocalTime(10, 0), duration = 60, players = emptyList()),
+        Booking(id = 2, userId = 1, courtId = 2, date = LocalDate(2026, 4, 22), startTime = LocalTime(14, 0), duration = 90, players = emptyList()),
     )
 
     override suspend fun getBookings(): Result<List<Booking>, DataError> =
@@ -24,7 +24,8 @@ class FakeBookingRemoteDataSource : BookingRemoteDataSource {
         courtId: Int,
         date: LocalDate,
         startTime: LocalTime,
-        duration: Int
+        duration: Int,
+        playerIds: List<Int>
     ): Result<Booking, DataError> {
         val new = Booking(
             id = bookings.size + 1,
@@ -32,7 +33,8 @@ class FakeBookingRemoteDataSource : BookingRemoteDataSource {
             courtId = courtId,
             date = date,
             startTime = startTime,
-            duration = duration
+            duration = duration,
+            players = emptyList(),
         )
         bookings.add(new)
         return Result.Success(new)

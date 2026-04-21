@@ -3,6 +3,7 @@ package org.tcl.app.booking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
+import org.tcl.app.user.User
 
 
 @Serializable
@@ -13,4 +14,5 @@ data class Booking(
     val date: LocalDate,
     val startTime: LocalTime,
     val duration: Int,
+    val players: List<User>,
 )

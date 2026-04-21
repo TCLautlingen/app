@@ -42,6 +42,8 @@ fun Route.bookingRoutes() {
                     date = LocalDate.parse(bookingRequest.date),
                     startTime = LocalTime.parse(bookingRequest.startTime),
                     duration = bookingRequest.duration,
+                    playerIds = bookingRequest.playerIds,
+
                 ) ?: return@post call.respond(HttpStatusCode.BadRequest, "Could not create booking")
 
                 call.respond(booking)

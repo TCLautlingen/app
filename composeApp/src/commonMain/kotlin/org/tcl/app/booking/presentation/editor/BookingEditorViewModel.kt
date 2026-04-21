@@ -17,12 +17,14 @@ import kotlinx.datetime.toLocalDateTime
 import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
+import org.tcl.app.user.domain.UserRemoteDataSource
 import kotlin.math.abs
 import kotlin.time.Clock
 
 class BookingEditorViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val dataSource: BookingRemoteDataSource
+    private val dataSource: BookingRemoteDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingEditorState(
         date = LocalDate.parse(savedStateHandle["date"] ?: LocalDate.now().toString()),
@@ -53,6 +55,7 @@ class BookingEditorViewModel(
             _state.update { it.copy(startTime = startTime) }
         }
         loadAvailability()
+        loadPlayers(_state.value.playerSearchQuery)
     }
 
     fun onAction(action: BookingEditorAction) {
@@ -87,6 +90,26 @@ class BookingEditorViewModel(
                 _state.update { it.copy(courtId = action.courtId) }
             }
             is BookingEditorAction.OnBookClick -> bookCourt()
+            is BookingEditorAction.OnAddPlayerClick -> {
+                _state.update { it.copy(showPlayerSelectSheet = true) }
+            }
+            is BookingEditorAction.OnPlayerSheetDismiss -> {
+                _state.update { it.copy(showPlayerSelectSheet = false) }
+            }
+            is BookingEditorAction.OnPlayerToggle -> {
+                _state.update {
+                    val updatedIds = if (action.user.id in it.selectedPlayerIds) {
+                        it.selectedPlayerIds - action.user.id
+                    } else {
+                        it.selectedPlayerIds + action.user.id
+                    }
+                    it.copy(selectedPlayerIds = updatedIds)
+                }
+            }
+            is BookingEditorAction.OnPlayerSearchChange -> {
+                _state.update { it.copy(playerSearchQuery = action.query) }
+                loadPlayers(action.query)
+            }
         }
     }
 
@@ -98,11 +121,7 @@ class BookingEditorViewModel(
         viewModelScope.launch {
             dataSource.getAvailableSlots(date, duration)
                 .onSuccess { slots ->
-                    _state.update { it ->
-                        it.copy(
-                            availableSlots = slots,
-                        )
-                    }
+                    _state.update { it.copy(availableSlots = slots) }
 
                     val availableTimes = slots.map { LocalTime.parse(it.startTime) }.distinct()
                     val selectedStartTime = _state.value.startTime
@@ -127,6 +146,18 @@ class BookingEditorViewModel(
         }
     }
 
+    private fun loadPlayers(query: String) {
+        viewModelScope.launch {
+            userRemoteDataSource.getUsers(query)
+                .onSuccess { users ->
+                    _state.update { it.copy(players = users) }
+                }
+                .onFailure {
+
+                }
+        }
+    }
+
     private fun bookCourt() {
         val currentState = _state.value
 
@@ -140,19 +171,18 @@ class BookingEditorViewModel(
                 courtId = currentState.courtId,
                 date = currentState.date,
                 startTime = currentState.startTime,
-                duration = currentState.duration
+                duration = currentState.duration,
+                playerIds = currentState.selectedPlayerIds
             )
-            _state.update { it.copy(isSaving = false) }
-            _events.send(
-                BookingEditorEvent.CourtBooked(
-                    date = currentState.date,
-                    startTime = currentState.startTime,
-                    durationMinutes = currentState.duration,
-                    courtName = currentState.availableSlots
-                        .firstOrNull { it.court.id == currentState.courtId }
-                        ?.court?.name ?: "",
-                )
-            )
+                .onSuccess { booking ->
+                    _state.update { it.copy(isSaving = false) }
+                    _events.send(
+                        BookingEditorEvent.CourtBooked(booking)
+                    )
+                }
+                .onFailure {
+                    _state.update { it.copy(isSaving = false) }
+                }
         }
     }
 }

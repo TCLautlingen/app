@@ -32,6 +32,12 @@ CREATE TABLE booking (
     duration INT NOT NULL
 );
 
+CREATE TABLE booking_player(
+    booking_id INT NOT NULL REFERENCES booking(id),
+    user_id INT NOT NULL REFERENCES "user"(id),
+    PRIMARY KEY (booking_id, user_id)
+)
+
 CREATE TABLE device (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES "user"(id),

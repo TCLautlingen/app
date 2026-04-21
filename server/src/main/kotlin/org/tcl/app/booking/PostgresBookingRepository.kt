@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.tcl.app.plugins.withTransaction
 
 class PostgresBookingRepository() : BookingRepository {
@@ -30,15 +31,23 @@ class PostgresBookingRepository() : BookingRepository {
         courtId: Int,
         date: LocalDate,
         startTime: LocalTime,
-        duration: Int
+        duration: Int,
+        playerIds: List<Int>
     ): Booking = withTransaction {
-        BookingDAO.new {
+        val booking = BookingDAO.new {
             this.userId = userId
             this.courtId = courtId
             this.date = date
             this.startTime = startTime
             this.duration = duration
-        }.let(::daoToBooking)
+        }
+
+        BookingPlayerTable.batchInsert(playerIds) { playerId ->
+            this[BookingPlayerTable.bookingId] = booking.id.value
+            this[BookingPlayerTable.userId] = playerId
+        }
+
+        daoToBooking(booking)
     }
     override suspend fun removeBooking(userId: Int, id: Int): Boolean = withTransaction {
         BookingDAO

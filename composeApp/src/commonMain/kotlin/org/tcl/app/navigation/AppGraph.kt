@@ -4,6 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
+import org.tcl.app.booking.Booking
 
 @Serializable
 sealed interface AppGraph : NavKey {
@@ -23,10 +24,7 @@ sealed interface AppGraph : NavKey {
 
     @Serializable
     data class BookingSuccess(
-        val date: LocalDate,
-        val startTime: LocalTime,
-        val durationMinutes: Int,
-        val courtName: String,
+        val booking: Booking
     ) : AppGraph
 
     @Serializable

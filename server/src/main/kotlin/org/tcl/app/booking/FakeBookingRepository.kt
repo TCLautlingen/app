@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalTime
 
 class FakeBookingRepository() : BookingRepository {
     private val bookings = mutableListOf<Booking>()
-
     private var nextId = 1
 
     override suspend fun allBookingsForUser(userId: Int): List<Booking> {
@@ -25,9 +24,10 @@ class FakeBookingRepository() : BookingRepository {
         courtId: Int,
         date: LocalDate,
         startTime: LocalTime,
-        duration: Int
+        duration: Int,
+        playerIds: List<Int>
     ): Booking {
-        val booking = Booking(nextId++, userId, courtId, date, startTime, duration)
+        val booking = Booking(nextId++, userId, courtId, date, startTime, duration, emptyList())
         bookings.add(booking)
         return booking
     }

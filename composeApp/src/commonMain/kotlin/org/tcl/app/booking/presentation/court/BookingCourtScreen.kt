@@ -25,6 +25,8 @@ import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import org.tcl.app.util.formatDdMmYyyy
+import zed.rainxch.rikkaicons.core.DecorativeAppIcon
+import zed.rainxch.rikkaicons.tokens.Calendar
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.label.Label
@@ -87,7 +89,12 @@ fun BookingCourtScreen(
                 Button(
                     text = state.date.formatDdMmYyyy(),
                     onClick = { onAction(BookingCourtAction.OnDateClick) },
-                    variant = ButtonVariant.Outline
+                    variant = ButtonVariant.Outline,
+                    leadingIcon = {
+                        DecorativeAppIcon(
+                            token = zed.rainxch.rikkaicons.tokens.RikkaIcons.Calendar
+                        )
+                    }
                 )
             }
 

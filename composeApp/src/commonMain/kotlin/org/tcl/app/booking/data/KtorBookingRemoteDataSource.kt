@@ -29,13 +29,15 @@ class KtorBookingRemoteDataSource(
         courtId: Int,
         date: LocalDate,
         startTime: LocalTime,
-        duration: Int
+        duration: Int,
+        playerIds: List<Int>,
     ): Result<Booking, DataError> {
         val bookingRequest = BookingRequest(
             courtId = courtId,
             date = date.toString(),
             startTime = startTime.toString(),
-            duration = duration
+            duration = duration,
+            playerIds = playerIds
         )
 
         return safeApiCall {
