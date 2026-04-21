@@ -2,8 +2,10 @@ package org.tcl.app.notification.presentation.builder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.core.domain.util.onFailure
@@ -15,6 +17,9 @@ class NotificationBuilderViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(NotificationBuilderState())
     val state = _state.asStateFlow()
+
+    private val _events = Channel<NotificationBuilderEvent>()
+    val events = _events.receiveAsFlow()
 
     fun onAction(action: NotificationBuilderAction) {
         when (action) {
@@ -31,7 +36,7 @@ class NotificationBuilderViewModel(
                         body = state.value.body
                     )
                         .onSuccess {
-
+                            _events.send(NotificationBuilderEvent.NotificationSent)
                         }
                         .onFailure {
 

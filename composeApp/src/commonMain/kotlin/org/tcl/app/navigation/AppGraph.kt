@@ -44,5 +44,8 @@ sealed interface AppGraph : NavKey {
     ) : AppGraph
 
     @Serializable
+    data object NotificationInbox : AppGraph
+
+    @Serializable
     data object NotificationBuilder : AppGraph
 }

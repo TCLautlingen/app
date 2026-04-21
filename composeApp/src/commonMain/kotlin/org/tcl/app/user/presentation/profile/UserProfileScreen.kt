@@ -1,11 +1,6 @@
 package org.tcl.app.user.presentation.profile
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -16,7 +11,6 @@ import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import zed.rainxch.rikkaui.components.ui.avatar.Avatar
-import zed.rainxch.rikkaui.components.ui.avatar.AvatarAnimation
 import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
@@ -65,16 +59,21 @@ fun UserProfileScreen(
             TopAppBar(
                 title = "Profil",
                 actions = {
+                    IconButton(
+                        icon = RikkaIcons.Mail,
+                        contentDescription = "Notifications",
+                        onClick = { onNavigate(AppGraph.NotificationInbox) },
+                    )
                     if (state.user?.isAdmin ?: false) {
-                        IconButton(
-                            icon = RikkaIcons.Settings,
-                            contentDescription = "User List",
-                            onClick = { onNavigate(AppGraph.UserList) },
-                        )
                         IconButton(
                             icon = RikkaIcons.Send,
                             contentDescription = "Send Notification",
                             onClick = { onNavigate(AppGraph.NotificationBuilder) },
+                        )
+                        IconButton(
+                            icon = RikkaIcons.User,
+                            contentDescription = "User List",
+                            onClick = { onNavigate(AppGraph.UserList) },
                         )
                     }
                 }
@@ -125,13 +124,12 @@ fun UserProfileScreen(
                     }
 
                     Button(
+                        text = "Abmelden",
                         onClick = {
                             onAction(UserProfileAction.OnLogoutClick)
                         },
                         variant = ButtonVariant.Destructive
-                    ) {
-                        Text("Abmelden")
-                    }
+                    )
                 }
             }
         }

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.tcl.app.navigation.AppNavigation
+import zed.rainxch.rikkaicons.core.ProvideIconPack
+import zed.rainxch.rikkaicons.pack.lucide.LucidePack
 import zed.rainxch.rikkaui.foundation.RikkaPalette
 import zed.rainxch.rikkaui.foundation.RikkaTheme
 
@@ -15,13 +17,15 @@ fun App() {
     val colors = RikkaPalette.Zinc.resolve(isDark = false)
 
     RikkaTheme(colors = colors) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(RikkaTheme.colors.background)
-                .safeDrawingPadding(),
-        ) {
-            AppNavigation()
+        ProvideIconPack(LucidePack) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(RikkaTheme.colors.background)
+                    .safeDrawingPadding(),
+            ) {
+                AppNavigation()
+            }
         }
     }
 }

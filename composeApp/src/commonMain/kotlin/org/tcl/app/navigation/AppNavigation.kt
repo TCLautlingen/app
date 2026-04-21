@@ -31,6 +31,7 @@ import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.notification.presentation.builder.NotificationBuilderRoot
+import org.tcl.app.notification.presentation.inbox.NotificationInboxRoot
 import org.tcl.app.user.domain.UserRemoteDataSource
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
@@ -118,6 +119,10 @@ fun AppNavigation() {
                     subclass(
                         AppGraph.UserEditor::class,
                         AppGraph.UserEditor.serializer()
+                    )
+                    subclass(
+                        AppGraph.NotificationInbox::class,
+                        AppGraph.NotificationInbox.serializer()
                     )
                     subclass(
                         AppGraph.NotificationBuilder::class,
@@ -231,8 +236,16 @@ fun AppNavigation() {
                 )
             }
 
+            entry<AppGraph.NotificationInbox> {
+                NotificationInboxRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                )
+            }
+
             entry<AppGraph.NotificationBuilder> {
-                NotificationBuilderRoot()
+                NotificationBuilderRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                )
             }
         }
     )

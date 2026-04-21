@@ -143,8 +143,8 @@ fun BookingEditorScreen(
                 ) {
                     for (availableTime in availableTimes) {
                         Button(
-                            onClick = { onAction(BookingEditorAction.OnStartTimeChange(availableTime)) },
                             text = availableTime.toString(),
+                            onClick = { onAction(BookingEditorAction.OnStartTimeChange(availableTime)) },
                             variant = if (availableTime == state.startTime) ButtonVariant.Default else ButtonVariant.Outline,
                         )
                     }
@@ -166,8 +166,8 @@ fun BookingEditorScreen(
                 ) {
                     for (availableCourt in availableCourts) {
                         Button(
-                            onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt.id)) },
                             text = availableCourt.name,
+                            onClick = { onAction(BookingEditorAction.OnCourtChange(availableCourt.id)) },
                             variant = if (availableCourt.id == state.courtId) ButtonVariant.Default else ButtonVariant.Outline,
                         )
                     }
@@ -179,8 +179,8 @@ fun BookingEditorScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick = { onAction(BookingEditorAction.OnBookClick) },
                     text = "Buchen",
+                    onClick = { onAction(BookingEditorAction.OnBookClick) },
                     enabled = !state.isSaving
                 )
             }

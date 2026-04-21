@@ -18,6 +18,7 @@ ktor = "3.4.2"
 logback = "1.5.32"
 material3 = "1.10.0-alpha05"
 rikkaui = "0.3.0"
+rikkaui-icons = "0.1.0"
 koin = "4.2.1"
 calendar = "2.10.1"
 kotlinx-serialization = "1.11.0"
@@ -68,6 +69,9 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 rikkaui-components = { module = "dev.rikkaui:components", version.ref = "rikkaui" }
 rikkaui-foundation = { module = "dev.rikkaui:foundation", version.ref = "rikkaui" }
+rikkaui-icons-core ={ module = "dev.rikkaui.icons:core", version.ref = "rikkaui-icons" }
+rikkaui-icons-tokens-core ={ module = "dev.rikkaui.icons:tokens-core", version.ref = "rikkaui-icons" }
+rikkaui-icons-lucide ={ module = "dev.rikkaui.icons:pack-lucide", version.ref = "rikkaui-icons" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
