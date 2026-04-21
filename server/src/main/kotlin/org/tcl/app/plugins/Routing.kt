@@ -26,25 +26,12 @@ import org.tcl.app.user.UserService
 import org.tcl.app.user.userRoutes
 
 fun Application.configureRouting() {
-    val userRepository = PostgresUserRepository()
-    val bookingRepository = PostgresBookingRepository()
-    val refreshTokenRepository = PostgresRefreshTokenRepository()
-    val deviceRepository = PostgresDeviceRepository()
-    val userService = UserService(userRepository, refreshTokenRepository, deviceRepository)
-    val courtRepository = PostgresCourtRepository()
-    val bookingService = BookingService(bookingRepository, courtRepository)
-    val slotService = SlotService(bookingRepository, courtRepository)
-    val courtService = CourtService(courtRepository)
-    val notificationRepository = PostgresNotificationRepository()
-    val firebaseService = FirebaseService()
-    val notificationService = NotificationService(notificationRepository, deviceRepository, userRepository, firebaseService)
-
     routing {
-        authRoutes(userService)
-        userRoutes(userService)
-        bookingRoutes(bookingService)
-        slotRoutes(slotService)
-        courtRoutes(courtService)
-        notificationRoutes(userService, notificationService)
+        authRoutes()
+        userRoutes()
+        bookingRoutes()
+        slotRoutes()
+        courtRoutes()
+        notificationRoutes()
     }
 }

@@ -13,11 +13,12 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import org.koin.ktor.ext.inject
 import org.tcl.app.security.JwtConfig.toAuthPrincipal
 
-fun Route.bookingRoutes(
-    bookingService: BookingService
-) {
+fun Route.bookingRoutes() {
+    val bookingService by inject<BookingService>()
+
     authenticate("auth-jwt") {
         route("/bookings") {
             get {

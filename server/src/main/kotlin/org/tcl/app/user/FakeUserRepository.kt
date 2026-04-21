@@ -34,7 +34,7 @@ class FakeUserRepository : UserRepository {
         val id = nextId++
         val storedUser = StoredUser(id, email, passwordHash, passwordSalt, firstName, lastName,
             isMember = true,
-            isAdmin = false,
+            isAdmin = true,
         )
         users.add(storedUser)
 

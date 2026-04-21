@@ -7,10 +7,11 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import kotlinx.datetime.LocalDate
+import org.koin.ktor.ext.inject
 
-fun Route.slotRoutes(
-    slotService: SlotService
-) {
+fun Route.slotRoutes() {
+    val slotService by inject<SlotService>()
+
     authenticate("auth-jwt") {
         route("/slots") {
             get("court/{courtId}") {

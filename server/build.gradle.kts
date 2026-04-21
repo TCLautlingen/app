@@ -31,6 +31,8 @@ dependencies {
     implementation(libs.exposed.kotlin.datetime)
     implementation(libs.kotlinx.datetime)
     implementation(libs.firebase.admin)
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger.slf4j)
 
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)

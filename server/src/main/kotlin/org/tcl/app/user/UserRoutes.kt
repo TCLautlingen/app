@@ -10,12 +10,13 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import org.koin.ktor.ext.inject
 import org.tcl.app.notification.NotificationTokenRequest
 import org.tcl.app.security.JwtConfig.toAuthPrincipal
 
-fun Route.userRoutes(
-    userService: UserService
-) {
+fun Route.userRoutes() {
+    val userService by inject<UserService>()
+
     authenticate("auth-jwt") {
         route("/users") {
             get {

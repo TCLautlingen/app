@@ -11,13 +11,13 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import org.koin.ktor.ext.inject
 import org.tcl.app.security.JwtConfig.toAuthPrincipal
 import org.tcl.app.user.UserService
 
-fun Route.notificationRoutes(
-    userService: UserService,
-    notificationService: NotificationService
-) {
+fun Route.notificationRoutes() {
+    val notificationService by inject<NotificationService>()
+
     authenticate("auth-jwt") {
         route("/notifications") {
             post("/send") {
