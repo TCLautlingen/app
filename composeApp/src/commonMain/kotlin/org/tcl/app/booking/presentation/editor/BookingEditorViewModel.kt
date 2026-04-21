@@ -14,7 +14,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import kotlin.math.abs
@@ -22,7 +22,7 @@ import kotlin.time.Clock
 
 class BookingEditorViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: BookingRepository
+    private val dataSource: BookingRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingEditorState(
         date = LocalDate.parse(savedStateHandle["date"] ?: LocalDate.now().toString()),
@@ -96,7 +96,7 @@ class BookingEditorViewModel(
         if (duration == 0) return
 
         viewModelScope.launch {
-            repository.getAvailableSlots(date, duration)
+            dataSource.getAvailableSlots(date, duration)
                 .onSuccess { slots ->
                     _state.update { it ->
                         it.copy(
@@ -136,7 +136,7 @@ class BookingEditorViewModel(
 
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }
-            repository.createBooking(
+            dataSource.createBooking(
                 courtId = currentState.courtId,
                 date = currentState.date,
                 startTime = currentState.startTime,

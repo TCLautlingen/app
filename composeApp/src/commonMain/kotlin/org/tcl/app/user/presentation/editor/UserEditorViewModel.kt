@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
-import org.tcl.app.user.domain.UserRepository
+import org.tcl.app.user.domain.UserRemoteDataSource
 
 class UserEditorViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val userRepository: UserRepository
+    private val userRemoteDataSource: UserRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserEditorState(
         userId = savedStateHandle["userId"] ?: 0
@@ -43,7 +43,7 @@ class UserEditorViewModel(
 
     fun loadUser(userId: Int) {
         viewModelScope.launch {
-            userRepository.getUserById(userId)
+            userRemoteDataSource.getUserById(userId)
                 .onSuccess { user ->
                     _state.update { it.copy(user = user) }
                 }

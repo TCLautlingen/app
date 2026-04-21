@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.getKoin
-import org.tcl.app.auth.domain.AuthRepository
+import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.presentation.AuthRoot
 import org.tcl.app.booking.presentation.court.BookingCourtRoot
 import org.tcl.app.booking.presentation.editor.BookingEditorRoot
@@ -31,7 +31,7 @@ import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.notification.presentation.builder.NotificationBuilderRoot
-import org.tcl.app.user.domain.UserRepository
+import org.tcl.app.user.domain.UserRemoteDataSource
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
 import org.tcl.app.user.presentation.profile.UserProfileRoot
@@ -39,8 +39,8 @@ import org.tcl.app.user.presentation.profile.UserProfileRoot
 @Composable
 fun AppNavigation() {
     val secureStorage = getKoin().get<SecureStorage>()
-    val authRepository = getKoin().get<AuthRepository>()
-    val userRepository = getKoin().get<UserRepository>()
+    val authRemoteDataSource = getKoin().get<AuthRemoteDataSource>()
+    val userRemoteDataSource = getKoin().get<UserRemoteDataSource>()
     var loggedIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -48,7 +48,7 @@ fun AppNavigation() {
             override fun onNewToken(token: String) {
                 if (loggedIn) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        userRepository.updateNotificationToken(
+                        userRemoteDataSource.updateNotificationToken(
                             deviceUniqueId = secureStorage.deviceUniqueId,
                             notificationToken = token,
                         )
@@ -60,7 +60,7 @@ fun AppNavigation() {
 
     LaunchedEffect(Unit) {
         if (!secureStorage.tokens.refreshToken.isBlank()) {
-            authRepository.refresh(secureStorage.tokens.refreshToken)
+            authRemoteDataSource.refresh(secureStorage.tokens.refreshToken)
                 .onSuccess { authTokens ->
                     secureStorage.tokens = authTokens
                     loggedIn = true
@@ -75,7 +75,7 @@ fun AppNavigation() {
         if (loggedIn) {
             val token = NotifierManager.getPushNotifier().getToken()
             if (token != null) {
-                userRepository.updateNotificationToken(
+                userRemoteDataSource.updateNotificationToken(
                     deviceUniqueId = secureStorage.deviceUniqueId,
                     notificationToken = token,
                 )

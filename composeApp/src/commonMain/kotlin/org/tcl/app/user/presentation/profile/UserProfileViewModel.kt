@@ -9,18 +9,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tcl.app.auth.domain.AuthRepository
+import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
-import org.tcl.app.user.domain.UserRepository
+import org.tcl.app.user.domain.UserRemoteDataSource
 
 class UserProfileViewModel(
     private val secureStorage: SecureStorage,
     private val apiClient: ApiClient,
-    private val repository: UserRepository,
-    private val authRepository: AuthRepository
+    private val dataSource: UserRemoteDataSource,
+    private val authRemoteDataSource: AuthRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserProfileState())
     val state = _state.asStateFlow()
@@ -41,7 +41,7 @@ class UserProfileViewModel(
     private fun loadUserProfile() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            repository.getCurrentUser()
+            dataSource.getCurrentUser()
                 .onSuccess { user ->
                     _state.update {
                         it.copy(
@@ -58,7 +58,7 @@ class UserProfileViewModel(
 
     private fun logout() {
         viewModelScope.launch {
-            authRepository.logout(
+            authRemoteDataSource.logout(
                 deviceUniqueId = secureStorage.deviceUniqueId,
                 refreshToken = secureStorage.tokens.refreshToken
             )

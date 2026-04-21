@@ -13,6 +13,7 @@ import org.tcl.app.VALIDATION_ERROR_EMAIL
 import org.tcl.app.VALIDATION_ERROR_FIRST_NAME
 import org.tcl.app.VALIDATION_ERROR_LAST_NAME
 import org.tcl.app.VALIDATION_ERROR_PASSWORD
+import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.domain.LoginError
 import org.tcl.app.auth.domain.RegisterError
 import org.tcl.app.core.data.ApiClient
@@ -21,16 +22,16 @@ import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
 
-class AuthApiService(
+class KtorAuthRemoteDataSource(
     private val apiClient: ApiClient
-) {
-    suspend fun refresh(refreshToken: String): Result<AuthTokens, DataError> = safeApiCall {
+) : AuthRemoteDataSource {
+    override suspend fun refresh(refreshToken: String): Result<AuthTokens, DataError> = safeApiCall {
         apiClient.client.post("/auth/refresh") {
             setBody(RefreshRequest(refreshToken))
         }
     }
 
-    suspend fun login(email: String, password: String): Result<AuthTokens, LoginError> {
+    override suspend fun login(email: String, password: String): Result<AuthTokens, LoginError> {
         val loginRequest = LoginRequest(email, password)
 
         val response = apiClient.client.post("/auth/login") {
@@ -44,7 +45,7 @@ class AuthApiService(
         }
     }
 
-    suspend fun logout(deviceUniqueId: String, refreshToken: String): EmptyResult<DataError> = safeApiCall {
+    override suspend fun logout(deviceUniqueId: String, refreshToken: String): EmptyResult<DataError> = safeApiCall {
         apiClient.client.post("/auth/logout") {
             setBody(LogoutRequest(
                 deviceUniqueId = deviceUniqueId,
@@ -53,7 +54,7 @@ class AuthApiService(
         }
     }
 
-    suspend fun register(email: String, password: String, firstName: String, lastName: String): Result<AuthTokens, RegisterError>  {
+    override suspend fun register(email: String, password: String, firstName: String, lastName: String): Result<AuthTokens, RegisterError>  {
         val registerRequest = RegisterRequest(email, password, firstName, lastName)
 
         val response = apiClient.client.post("/auth/register") {

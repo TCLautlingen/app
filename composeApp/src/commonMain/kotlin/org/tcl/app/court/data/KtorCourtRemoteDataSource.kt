@@ -7,15 +7,16 @@ import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
+import org.tcl.app.court.domain.CourtRemoteDataSource
 
-class CourtApiService(
+class KtorCourtRemoteDataSource(
     private val apiClient: ApiClient
-) {
-    suspend fun getCourts(): Result<List<Court>, DataError> = safeApiCall {
+) : CourtRemoteDataSource {
+    override suspend fun getCourts(): Result<List<Court>, DataError> = safeApiCall {
         apiClient.client.get("/courts").body()
     }
 
-    suspend fun getCourtById(id: Int): Result<Court, DataError> = safeApiCall {
+    override suspend fun getCourtById(id: Int): Result<Court, DataError> = safeApiCall {
         apiClient.client.get("/courts/$id").body()
     }
 }

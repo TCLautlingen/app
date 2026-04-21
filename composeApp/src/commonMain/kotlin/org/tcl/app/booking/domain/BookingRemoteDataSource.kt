@@ -9,7 +9,7 @@ import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 
-interface BookingRepository {
+interface BookingRemoteDataSource {
     suspend fun getBookings(): Result<List<Booking>, DataError>
 
     suspend fun createBooking(courtId: Int, date: LocalDate, startTime: LocalTime, duration: Int): Result<Booking, DataError>

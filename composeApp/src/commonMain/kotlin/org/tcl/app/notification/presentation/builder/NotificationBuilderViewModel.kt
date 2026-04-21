@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
-import org.tcl.app.notification.domain.NotificationRepository
+import org.tcl.app.notification.domain.NotificationRemoteDataSource
 
 class NotificationBuilderViewModel(
-    private val repository: NotificationRepository
+    private val dataSource: NotificationRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(NotificationBuilderState())
     val state = _state.asStateFlow()
@@ -26,7 +26,7 @@ class NotificationBuilderViewModel(
             }
             is NotificationBuilderAction.OnSendClick -> {
                 viewModelScope.launch {
-                    repository.sendNotification(
+                    dataSource.sendNotification(
                         title = state.value.title,
                         body = state.value.body
                     )

@@ -5,7 +5,7 @@ import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 
-interface AuthRepository {
+interface AuthRemoteDataSource {
     suspend fun refresh(refreshToken: String) : Result<AuthTokens, DataError>
     suspend fun login(email: String, password: String) : Result<AuthTokens, LoginError>
     suspend fun logout(deviceUniqueId: String, refreshToken: String) : EmptyResult<DataError>

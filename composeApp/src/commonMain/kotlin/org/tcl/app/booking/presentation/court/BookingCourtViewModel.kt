@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
-import org.tcl.app.court.domain.CourtRepository
+import org.tcl.app.court.domain.CourtRemoteDataSource
 
 class BookingCourtViewModel(
-    private val repository: BookingRepository,
-    private val courtRepository: CourtRepository
+    private val dataSource: BookingRemoteDataSource,
+    private val courtRemoteDataSource: CourtRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingCourtState())
     val state = _state.asStateFlow()
@@ -49,7 +49,7 @@ class BookingCourtViewModel(
     private fun loadCourtSlots() {
         viewModelScope.launch {
             val currentState = _state.value
-            repository.getCourtSlots(currentState.courtId, currentState.date.toString())
+            dataSource.getCourtSlots(currentState.courtId, currentState.date.toString())
                 .onSuccess { courtSlots ->
                     _state.update {
                         it.copy(
@@ -65,7 +65,7 @@ class BookingCourtViewModel(
 
     private fun loadCourts() {
         viewModelScope.launch {
-            courtRepository.getCourts()
+            courtRemoteDataSource.getCourts()
                 .onSuccess { courts ->
                     _state.update {
                         it.copy(

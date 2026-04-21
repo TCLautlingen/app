@@ -1,11 +1,13 @@
 package org.tcl.app.di
 
 import org.koin.dsl.module
-import org.tcl.app.court.data.CourtApiService
-import org.tcl.app.court.data.CourtRepositoryImpl
-import org.tcl.app.court.domain.CourtRepository
+import org.tcl.app.court.data.FakeCourtRemoteDataSource
+import org.tcl.app.court.data.KtorCourtRemoteDataSource
+import org.tcl.app.court.domain.CourtRemoteDataSource
 
 val courtModule = module {
-    single { CourtApiService(get()) }
-    single<CourtRepository> { CourtRepositoryImpl(get()) }
+    single<CourtRemoteDataSource> {
+        if (TESTING) FakeCourtRemoteDataSource()
+        else KtorCourtRemoteDataSource(get())
+    }
 }

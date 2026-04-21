@@ -12,11 +12,12 @@ import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
+import org.tcl.app.user.domain.UserRemoteDataSource
 
-class UserApiService(
+class KtorUserRemoteDataSource(
     private val apiClient: ApiClient
-) {
-    suspend fun getUsers(searchQuery: String): Result<List<User>, DataError> = safeApiCall {
+) : UserRemoteDataSource {
+    override suspend fun getUsers(searchQuery: String): Result<List<User>, DataError> = safeApiCall {
         apiClient.client.get("/users") {
             if (searchQuery.isNotBlank()) {
                 parameter("searchQuery", searchQuery)
@@ -24,11 +25,11 @@ class UserApiService(
         }
     }
 
-    suspend fun getCurrentUser(): Result<User, DataError> = safeApiCall {
+    override suspend fun getCurrentUser(): Result<User, DataError> = safeApiCall {
         apiClient.client.get("/users/me")
     }
 
-    suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError> = safeApiCall {
+    override suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError> = safeApiCall {
         apiClient.client.post("/users/notificationToken") {
             setBody(NotificationTokenRequest(
                 deviceUniqueId = deviceUniqueId,
@@ -37,7 +38,7 @@ class UserApiService(
         }
     }
 
-    suspend fun getUserById(userId: Int): Result<User, DataError> = safeApiCall {
+    override suspend fun getUserById(userId: Int): Result<User, DataError> = safeApiCall {
         apiClient.client.get("/users/$userId").body()
     }
 }

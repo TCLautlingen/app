@@ -11,20 +11,21 @@ import org.tcl.app.AvailableSlot
 import org.tcl.app.Booking
 import org.tcl.app.BookingRequest
 import org.tcl.app.CourtSlot
+import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
 
-class BookingApiService(
+class KtorBookingRemoteDataSource(
     private val apiClient: ApiClient
-) {
-    suspend fun getBookings(): Result<List<Booking>, DataError> = safeApiCall {
+) : BookingRemoteDataSource {
+    override suspend fun getBookings(): Result<List<Booking>, DataError> = safeApiCall {
             apiClient.client.get("/bookings")
     }
 
-    suspend fun createBooking(
+    override suspend fun createBooking(
         courtId: Int,
         date: LocalDate,
         startTime: LocalTime,
@@ -44,17 +45,17 @@ class BookingApiService(
         }
     }
 
-    suspend fun deleteBooking(id: String): EmptyResult<DataError> = safeApiCall {
+    override suspend fun deleteBooking(id: String): EmptyResult<DataError> = safeApiCall {
         apiClient.client.delete("/bookings/$id")
     }
 
-    suspend fun getCourtSlots(courtId: Int, date: String): Result<List<CourtSlot>, DataError> = safeApiCall {
+    override suspend fun getCourtSlots(courtId: Int, date: String): Result<List<CourtSlot>, DataError> = safeApiCall {
         apiClient.client.get("/slots/court/$courtId") {
             parameter("date", date)
         }
     }
 
-    suspend fun getAvailableSlots(date: String, duration: Int): Result<List<AvailableSlot>, DataError> = safeApiCall {
+    override suspend fun getAvailableSlots(date: String, duration: Int): Result<List<AvailableSlot>, DataError> = safeApiCall {
         apiClient.client.get("/slots/available") {
             parameter("date", date)
             parameter("duration", duration)

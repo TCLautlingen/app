@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tcl.app.booking.domain.BookingRepository
+import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 
 class BookingListViewModel(
-    private val repository: BookingRepository
+    private val dataSource: BookingRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingListState())
     val state = _state.asStateFlow()
@@ -29,7 +29,7 @@ class BookingListViewModel(
                 viewModelScope.launch {
                     _state.update { it.copy(isLoading = true) }
                     try {
-                        repository.deleteBooking(_state.value.bookingIdToDelete ?: "")
+                        dataSource.deleteBooking(_state.value.bookingIdToDelete ?: "")
                         updateBookings()
                         _state.update { it.copy(showDeleteDialog = false, bookingIdToDelete = null) }
                     } catch (e: Exception) {
@@ -47,7 +47,7 @@ class BookingListViewModel(
     private fun updateBookings() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            repository.getBookings()
+            dataSource.getBookings()
                 .onSuccess { bookings ->
                     _state.update {
                         it.copy(

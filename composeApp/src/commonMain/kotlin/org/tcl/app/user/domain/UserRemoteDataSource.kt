@@ -5,7 +5,7 @@ import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 
-interface UserRepository {
+interface UserRemoteDataSource {
     suspend fun getUsers(searchQuery: String): Result<List<User>, DataError>
     suspend fun getCurrentUser(): Result<User, DataError>
     suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError>
