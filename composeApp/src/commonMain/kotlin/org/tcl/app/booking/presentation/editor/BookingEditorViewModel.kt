@@ -39,6 +39,12 @@ class BookingEditorViewModel(
 
     init {
         loadAvailability()
+        viewModelScope.launch {
+            userRemoteDataSource.getCurrentUser()
+                .onSuccess { user ->
+                    _state.update { it.copy(currentUserId = user.id) }
+                }
+        }
     }
 
     fun initialize(date: LocalDate?, court: Int?, startTime: LocalTime?) {
@@ -150,7 +156,8 @@ class BookingEditorViewModel(
         viewModelScope.launch {
             userRemoteDataSource.getUsers(query)
                 .onSuccess { users ->
-                    _state.update { it.copy(players = users) }
+                    val filtered = users.filter { it.id != _state.value.currentUserId }
+                    _state.update { it.copy(players = filtered) }
                 }
                 .onFailure {
 

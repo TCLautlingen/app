@@ -19,6 +19,7 @@ data class BookingEditorState (
     val showDateSheet: Boolean = false,
     val showPlayerPlayerSelectSheet: Boolean = false,
     val showPlayerSelectSheet: Boolean = false,
+    val currentUserId: Int? = null,
     val players: List<User> = emptyList(),
     val selectedPlayerIds: List<Int> = emptyList(),
     val playerSearchQuery: String = "",
