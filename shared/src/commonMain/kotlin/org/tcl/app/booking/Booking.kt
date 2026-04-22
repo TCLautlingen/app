@@ -17,3 +17,6 @@ data class Booking(
     val players: List<User>,
     val isOwner: Boolean? = null,
 )
+
+
+val VALID_BOOKING_DURATIONS = listOf(30, 60, 90, 120)

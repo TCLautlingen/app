@@ -36,7 +36,7 @@ fun Route.bookingRoutes() {
             post {
                 val userId = call.userId()
                 val req = call.receive<BookingRequest>()
-                require(req.duration > 0) { "duration must be > 0" }
+                require(req.duration in VALID_BOOKING_DURATIONS) { "duration must be one of $VALID_BOOKING_DURATIONS" }
                 require(userId !in req.playerIds) { "Creator cannot be added as a player" }
                 val startTime = LocalTime.parse(req.startTime)
                 require(startTime.plusMinutes(req.duration) <= END_TIME) { "Booking extends past closing time (${END_TIME})" }

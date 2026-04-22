@@ -14,6 +14,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.booking.Booking
+import org.tcl.app.booking.VALID_BOOKING_DURATIONS
 import org.tcl.app.core.presentation.DateSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.core.presentation.PlayerSelectSheet
@@ -118,7 +119,7 @@ fun BookingEditorScreen(
                     horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
                     verticalArrangement = Arrangement.spacedBy(0.dp),
                 ) {
-                    for (i in intArrayOf(30, 60, 90, 120)) {
+                    for (i in VALID_BOOKING_DURATIONS) {
                         Button(
                             onClick = { onAction(BookingEditorAction.OnDurationChange(i)) },
                             text = "$i min",
