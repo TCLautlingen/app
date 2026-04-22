@@ -12,7 +12,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.tcl.app.notification.NotificationTokenRequest
-import org.tcl.app.security.JwtConfig.toAuthPrincipal
+import org.tcl.app.security.JwtConfig.userId
 
 fun Route.userRoutes() {
     val userService by inject<UserService>()
@@ -26,22 +26,20 @@ fun Route.userRoutes() {
             }
 
             get("/me") {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@get call.respond(HttpStatusCode.Unauthorized)
+                val userId = call.userId()
 
-                val user = userService.getUserById(authPrincipal.userId)
-                    ?: return@get call.respond("No user with id $authPrincipal.userId")
+                val user = userService.getUserById(userId)
+                    ?: return@get call.respond("No user with id $userId")
 
                 call.respond(user)
             }
 
             post("/notificationToken") {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@post call.respond(HttpStatusCode.Unauthorized)
+                val userId = call.userId()
 
                 val request = call.receive<NotificationTokenRequest>()
                 userService.updateDevice(
-                    userId = authPrincipal.userId,
+                    userId = userId,
                     deviceUniqueId = request.deviceUniqueId,
                     notificationToken = request.notificationToken
                 )
@@ -49,11 +47,10 @@ fun Route.userRoutes() {
             }
 
             get("/{id}") {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@get call.respond(HttpStatusCode.Unauthorized)
+                val calledUserId = call.userId()
 
-                val requestUser = userService.getUserById(authPrincipal.userId)
-                    ?: return@get call.respond("No user with id $authPrincipal.userId")
+                val requestUser = userService.getUserById(calledUserId)
+                    ?: return@get call.respond("No user with id $calledUserId")
 
                 if (!requestUser.isAdmin) {
                     return@get call.respond(HttpStatusCode.Forbidden)

@@ -12,8 +12,7 @@ import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
-import org.tcl.app.security.JwtConfig.toAuthPrincipal
-import org.tcl.app.user.UserService
+import org.tcl.app.security.JwtConfig.userId
 
 fun Route.notificationRoutes() {
     val notificationService by inject<NotificationService>()
@@ -21,11 +20,10 @@ fun Route.notificationRoutes() {
     authenticate("auth-jwt") {
         route("/notifications") {
             post("/send") {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@post call.respond(HttpStatusCode.Unauthorized)
+                val userId = call.userId()
 
                 val request = call.receive<SendNotificationRequest>()
-                notificationService.sendToAll(request.title, request.body, authPrincipal.userId)
+                notificationService.sendToAll(request.title, request.body, userId)
                 call.respond(HttpStatusCode.OK)
             }
 

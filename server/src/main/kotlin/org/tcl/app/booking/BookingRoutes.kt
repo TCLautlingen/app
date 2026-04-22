@@ -14,7 +14,7 @@ import io.ktor.server.routing.route
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.koin.ktor.ext.inject
-import org.tcl.app.security.JwtConfig.toAuthPrincipal
+import org.tcl.app.security.JwtConfig.userId
 
 fun Route.bookingRoutes() {
     val bookingService by inject<BookingService>()
@@ -22,14 +22,12 @@ fun Route.bookingRoutes() {
     authenticate("auth-jwt") {
         route("/bookings") {
             get("/upcoming") {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@get call.respond(HttpStatusCode.Unauthorized)
-
+                val userId = call.userId()
                 val date = call.queryParameters["from"]
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date query parameter")
 
                 val bookings = bookingService.getUpcomingBookingsForUser(
-                    userId = authPrincipal.userId,
+                    userId = userId,
                     from = LocalDate.parse(date)
                 )
 
@@ -37,13 +35,11 @@ fun Route.bookingRoutes() {
             }
 
             post {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@post call.respond(HttpStatusCode.Unauthorized)
-
                 val bookingRequest = call.receive<BookingRequest>()
+                val userId = call.userId()
 
                 val booking = bookingService.createBooking(
-                    userId = authPrincipal.userId,
+                    userId = userId,
                     courtId = bookingRequest.courtId,
                     date = LocalDate.parse(bookingRequest.date),
                     startTime = LocalTime.parse(bookingRequest.startTime),
@@ -56,14 +52,12 @@ fun Route.bookingRoutes() {
             }
 
             delete("/{bookingId}") {
-                val authPrincipal = call.principal<JWTPrincipal>()?.toAuthPrincipal()
-                    ?: return@delete call.respond(HttpStatusCode.Unauthorized)
-
+                val userId = call.userId()
                 val bookingId = call.parameters["bookingId"]?.toIntOrNull()
                     ?: return@delete call.respond(HttpStatusCode.BadRequest)
 
                 val success = bookingService.removeBooking(
-                    userId = authPrincipal.userId,
+                    userId = userId,
                     id = bookingId
                 )
                 if (success) {

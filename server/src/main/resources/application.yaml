@@ -1,0 +1,18 @@
+ktor:
+  application:
+    modules:
+      - org.tcl.app.ApplicationKt.module
+  deployment:
+    port: 8080
+    host: 0.0.0.0
+
+app:
+  testing: true
+
+database:
+  url: jdbc:postgresql://localhost:5432/mydatabase
+  user: myuser
+  password: mypassword
+
+jwt:
+  secret: dev-secret-change-in-prod

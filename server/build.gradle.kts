@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
+    implementation(libs.ktor.server.config.yaml)
     implementation(libs.postgresql)
     implementation(libs.h2)
     implementation(libs.exposed.core)
@@ -33,6 +34,7 @@ dependencies {
     implementation(libs.firebase.admin)
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
+    implementation(libs.hikaricp)
 
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
