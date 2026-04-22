@@ -2,8 +2,6 @@ package org.tcl.app.notification
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -21,8 +19,10 @@ fun Route.notificationRoutes() {
         route("/notifications") {
             post("/send") {
                 val userId = call.userId()
-
                 val request = call.receive<SendNotificationRequest>()
+                require(request.title.isNotBlank()) { "title must not be blank" }
+                require(request.body.isNotBlank()) { "body must not be blank" }
+
                 notificationService.sendToAll(request.title, request.body, userId)
                 call.respond(HttpStatusCode.OK)
             }

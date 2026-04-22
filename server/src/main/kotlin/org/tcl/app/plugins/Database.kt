@@ -8,8 +8,13 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.JdbcTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.inTopLevelSuspendTransaction
+import org.tcl.app.di.TESTING
 
 fun Application.configureDatabases() {
+    if (TESTING) {
+        return
+    }
+
     val dbUrl = environment.config.property("database.url").getString()
     val dbUser = environment.config.property("database.user").getString()
     val dbPassword = environment.config.property("database.password").getString()

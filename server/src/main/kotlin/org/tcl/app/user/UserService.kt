@@ -2,10 +2,6 @@ package org.tcl.app.user
 
 import org.tcl.app.auth.AuthTokens
 import org.tcl.app.auth.RegisterResult
-import org.tcl.app.auth.VALIDATION_ERROR_EMAIL
-import org.tcl.app.auth.VALIDATION_ERROR_FIRST_NAME
-import org.tcl.app.auth.VALIDATION_ERROR_LAST_NAME
-import org.tcl.app.auth.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.auth.RefreshTokenRepository
 import org.tcl.app.device.DeviceRepository
 import org.tcl.app.security.JwtConfig
@@ -29,22 +25,6 @@ class UserService(
     ): RegisterResult {
         val passwordSalt = generateRandomSalt()
         val passwordHash = generateHash(password, passwordSalt)
-
-        if (!email.contains("@") || !email.contains(".")) {
-            return RegisterResult.ValidationError(VALIDATION_ERROR_EMAIL)
-        }
-
-        if (password.length < 8) {
-            return RegisterResult.ValidationError(VALIDATION_ERROR_PASSWORD)
-        }
-
-        if (firstName.isBlank()) {
-            return RegisterResult.ValidationError(VALIDATION_ERROR_FIRST_NAME)
-        }
-
-        if (lastName.isBlank()) {
-            return RegisterResult.ValidationError(VALIDATION_ERROR_LAST_NAME)
-        }
 
         val user = userRepository.createUser(
             email = email,

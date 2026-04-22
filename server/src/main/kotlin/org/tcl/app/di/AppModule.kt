@@ -27,7 +27,7 @@ import org.tcl.app.user.PostgresUserRepository
 import org.tcl.app.user.UserRepository
 import org.tcl.app.user.UserService
 
-private const val TESTING = true
+const val TESTING = true
 
 val appModule = module {
     single<UserRepository> {

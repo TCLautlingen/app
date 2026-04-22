@@ -2,8 +2,6 @@ package org.tcl.app.user
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -36,8 +34,10 @@ fun Route.userRoutes() {
 
             post("/notificationToken") {
                 val userId = call.userId()
-
                 val request = call.receive<NotificationTokenRequest>()
+                require(request.deviceUniqueId.isNotBlank()) { "deviceUniqueId must not be blank" }
+                require(request.notificationToken.isNotBlank()) { "notificationToken must not be blank" }
+
                 userService.updateDevice(
                     userId = userId,
                     deviceUniqueId = request.deviceUniqueId,
@@ -56,8 +56,7 @@ fun Route.userRoutes() {
                     return@get call.respond(HttpStatusCode.Forbidden)
                 }
 
-                val id = call.parameters["id"]?.toIntOrNull()
-                    ?: return@get call.respond(HttpStatusCode.BadRequest)
+                val id = requireNotNull(call.parameters["id"]?.toIntOrNull()) { "Invalid id" }
 
                 val user = userService.getUserById(id)
                     ?: return@get call.respond("No user with id $id")

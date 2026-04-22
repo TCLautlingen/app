@@ -3,7 +3,6 @@ package org.tcl.app.auth
 sealed class RegisterResult {
     data class Success(val tokens: AuthTokens) : RegisterResult()
     data object EmailAlreadyExists : RegisterResult()
-    data class ValidationError(val message: String) : RegisterResult()
 }
 
 const val EMAIL_ALREADY_EXISTS_ERROR = "Email already exists"

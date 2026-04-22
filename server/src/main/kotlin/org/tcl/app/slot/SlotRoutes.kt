@@ -1,6 +1,5 @@
 package org.tcl.app.slot
 
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -15,11 +14,8 @@ fun Route.slotRoutes() {
     authenticate("auth-jwt") {
         route("/slots") {
             get("court/{courtId}") {
-                val courtId = call.parameters["courtId"]?.toIntOrNull()
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing or invalid courtId parameter")
-
-                val date = call.queryParameters["date"]
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date query parameter")
+                val courtId = requireNotNull(call.parameters["courtId"]?.toIntOrNull()) { "Invalid courtId" }
+                val date = requireNotNull(call.queryParameters["date"]) { "Missing 'date' query parameter" }
 
                 val courtSlots = slotService.getCourtSlots(
                     courtId = courtId,
@@ -29,11 +25,8 @@ fun Route.slotRoutes() {
             }
 
             get("/available") {
-                val date = call.queryParameters["date"]
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date query parameter")
-
-                val duration = call.queryParameters["duration"]?.toIntOrNull()
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing or invalid duration query parameter")
+                val date = requireNotNull(call.queryParameters["date"]) { "Missing 'date' query parameter" }
+                val duration = requireNotNull(call.queryParameters["duration"]?.toIntOrNull()) { "Missing or invalid 'duration' query parameter" }
 
                 val availableSlots = slotService.getAvailableSlots(
                     date = LocalDate.parse(date),

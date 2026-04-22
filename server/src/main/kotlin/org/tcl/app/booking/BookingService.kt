@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalTime
 import org.tcl.app.court.CourtRepository
 import org.tcl.app.device.DeviceRepository
 import org.tcl.app.firebase.FirebaseService
-import org.tcl.app.slot.END_TIME
 import org.tcl.app.slot.overlapsWith
 import org.tcl.app.user.UserRepository
 import org.tcl.app.util.formatDdMmYyyy
@@ -37,10 +36,6 @@ class BookingService(
         playerIds: List<Int>
     ): Booking? {
         courtRepository.courtById(courtId) ?: return null
-
-        if (startTime.plusMinutes(duration) > END_TIME) return null
-
-        if (userId in playerIds) return null
 
         val creator = userRepository.userById(userId)
             ?: return null

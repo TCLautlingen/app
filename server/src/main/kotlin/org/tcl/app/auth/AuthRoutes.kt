@@ -13,6 +13,10 @@ fun Route.authRoutes() {
     route("/auth") {
         post("/register") {
             val request = call.receive<RegisterRequest>()
+            require(request.email.matches(Regex(".+@.+\\..+"))) { VALIDATION_ERROR_EMAIL }
+            require(request.password.length >= 8) { VALIDATION_ERROR_PASSWORD }
+            require(request.firstName.isNotBlank()) { VALIDATION_ERROR_FIRST_NAME }
+            require(request.lastName.isNotBlank()) { VALIDATION_ERROR_LAST_NAME }
 
             val registerResult = userService.registerUser(
                 email = request.email,
@@ -22,14 +26,7 @@ fun Route.authRoutes() {
             )
 
             when (registerResult) {
-                is RegisterResult.EmailAlreadyExists -> call.respond(
-                    HttpStatusCode.Conflict,
-                    EMAIL_ALREADY_EXISTS_ERROR
-                )
-                is RegisterResult.ValidationError -> call.respond(
-                    HttpStatusCode.BadRequest,
-                    registerResult.message
-                )
+                is RegisterResult.EmailAlreadyExists -> call.respond(HttpStatusCode.Conflict, EMAIL_ALREADY_EXISTS_ERROR)
                 is RegisterResult.Success -> call.respond(registerResult.tokens)
             }
         }

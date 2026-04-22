@@ -2,8 +2,6 @@ package org.tcl.app.booking
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -15,6 +13,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.koin.ktor.ext.inject
 import org.tcl.app.security.JwtConfig.userId
+import org.tcl.app.slot.END_TIME
+import org.tcl.app.util.plusMinutes
 
 fun Route.bookingRoutes() {
     val bookingService by inject<BookingService>()
@@ -23,29 +23,31 @@ fun Route.bookingRoutes() {
         route("/bookings") {
             get("/upcoming") {
                 val userId = call.userId()
-                val date = call.queryParameters["from"]
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing date query parameter")
+                val from = requireNotNull(call.queryParameters["from"]) { "Missing 'from' query parameter" }
 
                 val bookings = bookingService.getUpcomingBookingsForUser(
                     userId = userId,
-                    from = LocalDate.parse(date)
+                    from = LocalDate.parse(from)
                 )
 
                 call.respond(bookings)
             }
 
             post {
-                val bookingRequest = call.receive<BookingRequest>()
                 val userId = call.userId()
+                val req = call.receive<BookingRequest>()
+                require(req.duration > 0) { "duration must be > 0" }
+                require(userId !in req.playerIds) { "Creator cannot be added as a player" }
+                val startTime = LocalTime.parse(req.startTime)
+                require(startTime.plusMinutes(req.duration) <= END_TIME) { "Booking extends past closing time (${END_TIME})" }
 
                 val booking = bookingService.createBooking(
                     userId = userId,
-                    courtId = bookingRequest.courtId,
-                    date = LocalDate.parse(bookingRequest.date),
-                    startTime = LocalTime.parse(bookingRequest.startTime),
-                    duration = bookingRequest.duration,
-                    playerIds = bookingRequest.playerIds,
-
+                    courtId = req.courtId,
+                    date = LocalDate.parse(req.date),
+                    startTime = startTime,
+                    duration = req.duration,
+                    playerIds = req.playerIds,
                 ) ?: return@post call.respond(HttpStatusCode.BadRequest, "Could not create booking")
 
                 call.respond(booking)
@@ -53,13 +55,9 @@ fun Route.bookingRoutes() {
 
             delete("/{bookingId}") {
                 val userId = call.userId()
-                val bookingId = call.parameters["bookingId"]?.toIntOrNull()
-                    ?: return@delete call.respond(HttpStatusCode.BadRequest)
+                val bookingId = requireNotNull(call.parameters["bookingId"]?.toIntOrNull()) { "Invalid bookingId" }
 
-                val success = bookingService.removeBooking(
-                    userId = userId,
-                    id = bookingId
-                )
+                val success = bookingService.removeBooking(userId = userId, id = bookingId)
                 if (success) {
                     call.respond(HttpStatusCode.OK)
                 } else {
