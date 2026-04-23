@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import org.koin.ktor.plugin.Koin
 import org.tcl.app.di.appModule
 import org.tcl.app.plugins.configureAuthentication
+import org.tcl.app.plugins.configureCors
 import org.tcl.app.plugins.configureDatabases
 import org.tcl.app.plugins.configureRouting
 import org.tcl.app.plugins.configureSerialization
@@ -18,6 +19,7 @@ fun Application.module() {
     configureDatabases()
     configureSerialization()
     configureStatusPages()
+    configureCors()
     configureAuthentication()
     configureRouting()
 }

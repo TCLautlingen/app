@@ -203,7 +203,7 @@ private fun BookingDetailCard(
                     Row {
                         for (player in state.booking.players) {
                             Avatar(
-                                fallback = "${player.firstName.first()}${player.lastName.first()}",
+                                fallback = "${player.firstName.firstOrNull()}${player.lastName.firstOrNull()}",
                             )
                         }
                     }

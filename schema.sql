@@ -40,7 +40,7 @@ CREATE TABLE bookings (
 );
 
 CREATE TABLE booking_players (
-    booking INT NOT NULL REFERENCES bookings(id),
+    booking INT NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
     "user" INT NOT NULL REFERENCES users(id),
     PRIMARY KEY (booking, "user")
 );

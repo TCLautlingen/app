@@ -203,6 +203,6 @@ private fun LocalTime.minutesTo(t2: LocalTime): Int {
 fun currentTimeRounded(): LocalTime {
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val roundedMinute = if (now.minute < 30) 30 else 0
-    val roundedHour = if (now.minute < 30) now.hour else now.hour + 1
+    val roundedHour = if (now.minute < 30) now.hour else (now.hour + 1) % 24
     return LocalTime(roundedHour, roundedMinute)
 }
