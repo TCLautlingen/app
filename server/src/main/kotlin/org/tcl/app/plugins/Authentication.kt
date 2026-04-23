@@ -6,7 +6,7 @@ import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.response.respond
-import org.tcl.app.security.JwtConfig.verifier
+import org.tcl.app.plugins.JwtConfig.verifier
 
 fun Application.configureAuthentication() {
     authentication {

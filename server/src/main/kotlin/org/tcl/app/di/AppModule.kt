@@ -2,30 +2,30 @@ package org.tcl.app.di
 
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import org.tcl.app.auth.FakeRefreshTokenRepository
-import org.tcl.app.auth.PostgresRefreshTokenRepository
-import org.tcl.app.auth.RefreshTokenRepository
-import org.tcl.app.booking.BookingRepository
-import org.tcl.app.booking.BookingService
-import org.tcl.app.booking.FakeBookingRepository
-import org.tcl.app.booking.PostgresBookingRepository
-import org.tcl.app.court.CourtRepository
-import org.tcl.app.court.CourtService
-import org.tcl.app.court.FakeCourtRepository
-import org.tcl.app.court.PostgresCourtRepository
-import org.tcl.app.device.DeviceRepository
-import org.tcl.app.device.FakeDeviceRepository
-import org.tcl.app.device.PostgresDeviceRepository
-import org.tcl.app.firebase.FirebaseService
-import org.tcl.app.notification.FakeNotificationRepository
-import org.tcl.app.notification.NotificationRepository
-import org.tcl.app.notification.NotificationService
-import org.tcl.app.notification.PostgresNotificationRepository
-import org.tcl.app.slot.SlotService
-import org.tcl.app.user.FakeUserRepository
-import org.tcl.app.user.PostgresUserRepository
-import org.tcl.app.user.UserRepository
-import org.tcl.app.user.UserService
+import org.tcl.app.repositories.BookingRepository
+import org.tcl.app.repositories.CourtRepository
+import org.tcl.app.repositories.DeviceRepository
+import org.tcl.app.repositories.FakeBookingRepository
+import org.tcl.app.repositories.FakeCourtRepository
+import org.tcl.app.repositories.FakeDeviceRepository
+import org.tcl.app.repositories.FakeNotificationRepository
+import org.tcl.app.repositories.FakeRefreshTokenRepository
+import org.tcl.app.repositories.FakeUserRepository
+import org.tcl.app.repositories.NotificationRepository
+import org.tcl.app.repositories.PostgresBookingRepository
+import org.tcl.app.repositories.PostgresCourtRepository
+import org.tcl.app.repositories.PostgresDeviceRepository
+import org.tcl.app.repositories.PostgresNotificationRepository
+import org.tcl.app.repositories.PostgresRefreshTokenRepository
+import org.tcl.app.repositories.PostgresUserRepository
+import org.tcl.app.repositories.RefreshTokenRepository
+import org.tcl.app.repositories.UserRepository
+import org.tcl.app.services.BookingService
+import org.tcl.app.services.CourtService
+import org.tcl.app.services.FirebaseService
+import org.tcl.app.services.NotificationService
+import org.tcl.app.services.SlotService
+import org.tcl.app.services.UserService
 
 const val TESTING = true
 
