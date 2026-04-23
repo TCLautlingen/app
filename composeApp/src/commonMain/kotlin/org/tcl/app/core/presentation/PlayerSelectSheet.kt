@@ -92,7 +92,7 @@ fun PlayerRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Avatar(
-                fallback = "${player.firstName.first()} ${player.lastName.first()}",
+                fallback = "${player.firstName.firstOrNull() ?: "?"}${player.lastName.firstOrNull() ?: ""}",
             )
 
             Column {

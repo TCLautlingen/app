@@ -12,6 +12,7 @@ import org.tcl.app.plugins.withTransaction
 import org.tcl.app.tables.ProfilesTable
 import org.tcl.app.tables.UsersTable
 import org.tcl.app.user.User
+import org.jetbrains.exposed.v1.jdbc.selectAll
 
 class PostgresUserRepository : UserRepository {
     override suspend fun createUser(
@@ -32,11 +33,17 @@ class PostgresUserRepository : UserRepository {
     }
 
     override suspend fun allUsers(searchQuery: String): List<User> = withTransaction {
-        UserEntity
-            .find {
-                UsersTable.email like "%$searchQuery%" or (ProfilesTable.firstName like "%$searchQuery%") or (ProfilesTable.lastName like "%$searchQuery%")
-            }
-            .map(::entityToUser)
+        val pattern = "%$searchQuery%"
+        UserEntity.wrapRows(
+            (UsersTable leftJoin ProfilesTable)
+                .selectAll()
+                .where {
+                    UsersTable.email like pattern or
+                    (ProfilesTable.firstName like pattern) or
+                    (ProfilesTable.lastName like pattern)
+                }
+                .withDistinct()
+        ).map(::entityToUser)
     }
 
     override suspend fun userById(id: Int): User? = withTransaction {

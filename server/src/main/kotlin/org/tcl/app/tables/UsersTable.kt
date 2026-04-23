@@ -2,7 +2,7 @@ package org.tcl.app.tables
 
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 
-object UsersTable : IntIdTable() {
+object UsersTable : IntIdTable("users") {
     val email = varchar("email", 256).uniqueIndex()
     val passwordHash = varchar("password_hash", 256)
     val passwordSalt = varchar("password_salt", 256)

@@ -51,7 +51,7 @@ val appModule = module {
         else PostgresCourtRepository()
     }
     single<NotificationRepository> {
-        if (TESTING) FakeNotificationRepository()
+        if (TESTING) FakeNotificationRepository(get())
         else PostgresNotificationRepository()
     }
 

@@ -5,7 +5,9 @@ import kotlinx.datetime.toLocalDateTime
 import org.tcl.app.models.Notification
 import kotlin.time.Clock
 
-class FakeNotificationRepository : NotificationRepository {
+class FakeNotificationRepository(
+    private val userRepository: UserRepository
+) : NotificationRepository {
     private val notifications = mutableListOf<Notification>()
     private var nextId = 1
 
@@ -22,7 +24,7 @@ class FakeNotificationRepository : NotificationRepository {
             title = title,
             body = body,
             createdAt = now.toLocalDateTime(tz),
-            createdBy = senderId
+            createdBy = userRepository.userById(senderId)!!
         )
         notifications.add(notification)
         return notification

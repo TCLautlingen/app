@@ -124,11 +124,11 @@ fun UserItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Avatar(
-                fallback =  "${user.firstName.first()}${user.lastName.first()}",
+                fallback = "${user.firstName.firstOrNull() ?: "?"}${user.lastName.firstOrNull() ?: ""}",
                 size = AvatarSize.Default,
             )
 
-            Column() {
+            Column {
                 Text(text = "${user.firstName} ${user.lastName}")
                 Text(text = user.email)
             }

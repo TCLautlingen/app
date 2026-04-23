@@ -9,8 +9,8 @@ fun entityToUser(entity: UserEntity) : User = User(
     email = entity.email,
     isMember = entity.isMember,
     isAdmin = entity.isAdmin,
-    firstName = entity.profile.firstName,
-    lastName = entity.profile.lastName
+    firstName = entity.profile?.firstName ?: "",
+    lastName = entity.profile?.lastName ?: ""
 )
 
 fun entityToAuthUser(entity: UserEntity) = AuthUser(

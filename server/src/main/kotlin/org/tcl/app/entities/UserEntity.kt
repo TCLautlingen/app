@@ -16,7 +16,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var passwordSalt by UsersTable.passwordSalt
     var isMember by UsersTable.isMember
     var isAdmin by UsersTable.isAdmin
-    val profile by ProfileEntity backReferencedOn ProfilesTable.user
-    val refreshTokens by RefreshTokenEntity referencedOn RefreshTokensTable.user
+    val profile by ProfileEntity optionalBackReferencedOn ProfilesTable.user
+    val refreshTokens by RefreshTokenEntity referrersOn RefreshTokensTable.user
     val notificationTokens by NotificationTokenEntity referrersOn NotificationTokensTable.user
 }

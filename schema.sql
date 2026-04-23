@@ -1,59 +1,65 @@
-DROP TABLE IF EXISTS booking, refresh_token, court, "user" CASCADE;
+DROP TABLE IF EXISTS booking_players, bookings, profiles, notification_tokens, notifications, refresh_tokens, courts, users CASCADE;
 
-CREATE TABLE "user" (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    password_salt VARCHAR(255) NOT NULL,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(256) NOT NULL UNIQUE,
+    password_hash VARCHAR(256) NOT NULL,
+    password_salt VARCHAR(256) NOT NULL,
     is_member BOOLEAN NOT NULL DEFAULT FALSE,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE court (
+CREATE TABLE profiles (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    first_name VARCHAR(256) NOT NULL,
+    last_name VARCHAR(256) NOT NULL,
+    phone_number VARCHAR(20),
+    address VARCHAR(256),
+    "user" INT NOT NULL REFERENCES users(id)
 );
 
-CREATE TABLE refresh_token (
+CREATE TABLE courts (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES "user"(id),
+    name VARCHAR(256) NOT NULL
+);
+
+CREATE TABLE refresh_tokens (
+    id SERIAL PRIMARY KEY,
     token VARCHAR(512) NOT NULL UNIQUE,
-    expires_at BIGINT NOT NULL
+    expires_at BIGINT NOT NULL,
+    "user" INT NOT NULL REFERENCES users(id)
 );
 
-CREATE TABLE booking (
+CREATE TABLE bookings (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES "user"(id),
-    court_id INT NOT NULL REFERENCES court(id),
     date DATE NOT NULL,
     start_time TIME NOT NULL,
-    duration INT NOT NULL
+    duration INT NOT NULL,
+    "user" INT NOT NULL REFERENCES users(id),
+    court INT NOT NULL REFERENCES courts(id)
 );
 
-CREATE TABLE booking_player(
-    booking_id INT NOT NULL REFERENCES booking(id),
-    user_id INT NOT NULL REFERENCES "user"(id),
-    PRIMARY KEY (booking_id, user_id)
-)
-
-CREATE TABLE device (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES "user"(id),
-    device_unique_id VARCHAR(256) NOT NULL UNIQUE,
-    notification_token VARCHAR(256) NOT NULL
+CREATE TABLE booking_players (
+    booking INT NOT NULL REFERENCES bookings(id),
+    "user" INT NOT NULL REFERENCES users(id),
+    PRIMARY KEY (booking, "user")
 );
 
-CREATE TABLE notification (
+CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     title VARCHAR(256) NOT NULL,
     body TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by INT NOT NULL REFERENCES "user"(id)
+    created_by INT NOT NULL REFERENCES users(id)
 );
 
-INSERT INTO court (name) VALUES
+CREATE TABLE notification_tokens (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(256) NOT NULL,
+    "user" INT NOT NULL REFERENCES users(id)
+);
+
+INSERT INTO courts (name) VALUES
     ('Platz 1'),
     ('Platz 2'),
     ('Platz 3'),
