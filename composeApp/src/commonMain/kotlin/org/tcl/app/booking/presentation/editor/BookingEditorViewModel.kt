@@ -18,6 +18,7 @@ import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRemoteDataSource
+import kotlin.collections.contains
 import kotlin.math.abs
 import kotlin.time.Clock
 
@@ -82,13 +83,16 @@ class BookingEditorViewModel(
                 savedStateHandle["startTime"] = action.startTime.toString()
                 _state.update {
                     it.copy(
-                        startTime = action.startTime,
-                        courtId = it.availableSlots
-                            .filter { slot -> LocalTime.parse(slot.startTime) == action.startTime }
-                            .map { slot -> slot.court.id }
-                            .distinct()
-                            .firstOrNull()
+                        startTime = action.startTime
                     )
+                }
+                val availableCourts = _state.value.availableSlots
+                    .filter { LocalTime.parse(it.startTime) == _state.value.startTime }
+                    .map { it.court.id }
+
+                if (_state.value.courtId !in availableCourts) {
+                    savedStateHandle["courtId"] = availableCourts.firstOrNull()
+                    _state.update { it.copy(courtId = availableCourts.firstOrNull()) }
                 }
             }
             is BookingEditorAction.OnCourtChange -> {
