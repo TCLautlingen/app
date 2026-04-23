@@ -30,6 +30,7 @@ import org.tcl.app.booking.presentation.success.BookingSuccessRoot
 import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
+import org.tcl.app.notification.domain.NotificationRemoteDataSource
 import org.tcl.app.notification.presentation.builder.NotificationBuilderRoot
 import org.tcl.app.notification.presentation.inbox.NotificationInboxRoot
 import org.tcl.app.user.domain.UserRemoteDataSource
@@ -42,6 +43,7 @@ fun AppNavigation() {
     val secureStorage = getKoin().get<SecureStorage>()
     val authRemoteDataSource = getKoin().get<AuthRemoteDataSource>()
     val userRemoteDataSource = getKoin().get<UserRemoteDataSource>()
+    val notificationRemoteDataSource = getKoin().get<NotificationRemoteDataSource>()
     var loggedIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -49,9 +51,8 @@ fun AppNavigation() {
             override fun onNewToken(token: String) {
                 if (loggedIn) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        userRemoteDataSource.updateNotificationToken(
-                            deviceUniqueId = secureStorage.deviceUniqueId,
-                            notificationToken = token,
+                        notificationRemoteDataSource.registerToken(
+                            token = token,
                         )
                     }
                 }
@@ -76,9 +77,8 @@ fun AppNavigation() {
         if (loggedIn) {
             val token = NotifierManager.getPushNotifier().getToken()
             if (token != null) {
-                userRemoteDataSource.updateNotificationToken(
-                    deviceUniqueId = secureStorage.deviceUniqueId,
-                    notificationToken = token,
+                notificationRemoteDataSource.registerToken(
+                    token = token,
                 )
             }
         }

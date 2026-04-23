@@ -1,12 +1,12 @@
 package org.tcl.app.repositories
 
 import org.jetbrains.exposed.v1.core.eq
+import org.tcl.app.entities.RefreshTokenEntity
+import org.tcl.app.entities.UserEntity
+import org.tcl.app.mappers.entityToRefreshToken
 import org.tcl.app.models.RefreshToken
-import org.tcl.app.models.RefreshTokenDAO
-import org.tcl.app.models.RefreshTokenTable
-import org.tcl.app.models.UserDAO
-import org.tcl.app.models.daoToRefreshToken
 import org.tcl.app.plugins.withTransaction
+import org.tcl.app.tables.RefreshTokensTable
 
 class PostgresRefreshTokenRepository : RefreshTokenRepository {
     override suspend fun addRefreshToken(
@@ -14,27 +14,27 @@ class PostgresRefreshTokenRepository : RefreshTokenRepository {
         refreshToken: String,
         expiresAt: Long
     ): Unit = withTransaction {
-        RefreshTokenDAO.new {
-            user = UserDAO[userId]
+        RefreshTokenEntity.new {
+            user = UserEntity[userId]
             token = refreshToken
             this.expiresAt = expiresAt
         }
     }
 
     override suspend fun tokenByToken(refreshToken: String): RefreshToken? = withTransaction {
-        RefreshTokenDAO
+        RefreshTokenEntity
             .find {
-                RefreshTokenTable.token eq refreshToken
+                RefreshTokensTable.token eq refreshToken
             }
             .limit(1)
             .firstOrNull()
-            ?.let(::daoToRefreshToken)
+            ?.let(::entityToRefreshToken)
     }
 
     override suspend fun removeRefreshToken(refreshToken: String): Boolean = withTransaction {
-        RefreshTokenDAO
+        RefreshTokenEntity
             .find {
-                RefreshTokenTable.token eq refreshToken
+                RefreshTokensTable.token eq refreshToken
             }
             .limit(1)
             .firstOrNull()

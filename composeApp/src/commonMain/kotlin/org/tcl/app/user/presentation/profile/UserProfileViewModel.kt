@@ -59,7 +59,6 @@ class UserProfileViewModel(
     private fun logout() {
         viewModelScope.launch {
             authRemoteDataSource.logout(
-                deviceUniqueId = secureStorage.deviceUniqueId,
                 refreshToken = secureStorage.tokens.refreshToken
             )
                 .onSuccess {

@@ -119,34 +119,6 @@ fun AuthScreen(
                             label = "Passwort wiederholen",
                         )
                     }
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
-                    ) {
-                        Label(
-                            text = "Vorname",
-                            required = true
-                        )
-                        Input(
-                            value = state.firstName,
-                            onValueChange = { onAction(AuthAction.OnFirstNameChange(it)) },
-                            label = "Vorname",
-                        )
-                    }
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
-                    ) {
-                        Label(
-                            text = "Nachname",
-                            required = true
-                        )
-                        Input(
-                            value = state.lastName,
-                            onValueChange = { onAction(AuthAction.OnLastNameChange(it)) },
-                            label = "Nachname",
-                        )
-                    }
                 }
 
                 Text(

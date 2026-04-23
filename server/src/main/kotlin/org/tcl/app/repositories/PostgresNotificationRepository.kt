@@ -1,9 +1,9 @@
 package org.tcl.app.repositories
 
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.tcl.app.entities.UserEntity
 import org.tcl.app.models.Notification
 import org.tcl.app.models.NotificationDAO
-import org.tcl.app.models.UserDAO
 import org.tcl.app.models.daoToNotification
 
 class PostgresNotificationRepository : NotificationRepository {
@@ -16,7 +16,7 @@ class PostgresNotificationRepository : NotificationRepository {
             .new {
                 this.title = title
                 this.body = body
-                this.createdBy = UserDAO[senderId]
+                this.createdBy = UserEntity[senderId]
             }.let(::daoToNotification)
     }
 }

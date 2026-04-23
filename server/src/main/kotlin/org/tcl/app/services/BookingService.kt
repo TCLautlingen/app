@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalTime
 import org.tcl.app.booking.Booking
 import org.tcl.app.repositories.BookingRepository
 import org.tcl.app.repositories.CourtRepository
-import org.tcl.app.repositories.DeviceRepository
+import org.tcl.app.repositories.NotificationTokenRepository
 import org.tcl.app.repositories.UserRepository
 import org.tcl.app.util.formatDdMmYyyy
 import org.tcl.app.util.plusMinutes
@@ -14,7 +14,7 @@ class BookingService(
     private val bookingRepository: BookingRepository,
     private val courtRepository: CourtRepository,
     private val firebaseService: FirebaseService,
-    private val deviceRepository: DeviceRepository,
+    private val notificationTokenRepository: NotificationTokenRepository,
     private val userRepository: UserRepository,
 ) {
     suspend fun getAllBookingsForUser(userId: Int): List<Booking> {
@@ -51,7 +51,7 @@ class BookingService(
 
         val notificationTokens = mutableListOf<String>()
         for (playerId in playerIds) {
-            notificationTokens.addAll(deviceRepository.getTokensForUser(playerId))
+            notificationTokens.addAll(notificationTokenRepository.getTokensForUser(playerId))
         }
         firebaseService.sendToTokens(
             notificationTokens,

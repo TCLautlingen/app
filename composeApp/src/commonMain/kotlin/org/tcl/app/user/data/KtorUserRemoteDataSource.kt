@@ -29,17 +29,6 @@ class KtorUserRemoteDataSource(
         apiClient.client.get("/users/me")
     }
 
-    override suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError> = safeApiCall {
-        apiClient.client.post("/users/notificationToken") {
-            setBody(
-                NotificationTokenRequest(
-                    deviceUniqueId = deviceUniqueId,
-                    notificationToken = notificationToken
-                )
-            )
-        }
-    }
-
     override suspend fun getUserById(userId: Int): Result<User, DataError> = safeApiCall {
         apiClient.client.get("/users/$userId").body()
     }

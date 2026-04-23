@@ -8,12 +8,14 @@ import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
+import org.tcl.app.entities.UserEntity
+import org.tcl.app.tables.UsersTable
 
 object NotificationTable : IntIdTable("notification") {
     val title = varchar("title", 256)
     val body = text("body")
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
-    val createdBy = reference("created_by", UserTable)
+    val createdBy = reference("created_by", UsersTable)
 }
 
 class NotificationDAO(id: EntityID<Int>) : IntEntity(id) {
@@ -22,7 +24,7 @@ class NotificationDAO(id: EntityID<Int>) : IntEntity(id) {
     var title by NotificationTable.title
     var body by NotificationTable.body
     var createdAt by NotificationTable.createdAt
-    var createdBy by UserDAO referencedOn NotificationTable.createdBy
+    var createdBy by UserEntity referencedOn NotificationTable.createdBy
 }
 
 fun daoToNotification(dao: NotificationDAO): Notification {

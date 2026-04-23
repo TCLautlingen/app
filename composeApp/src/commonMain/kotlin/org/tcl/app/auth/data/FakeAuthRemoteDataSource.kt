@@ -27,15 +27,12 @@ class FakeAuthRemoteDataSource : AuthRemoteDataSource {
     }
 
     override suspend fun logout(
-        deviceUniqueId: String,
         refreshToken: String
     ): EmptyResult<DataError> = Result.Success(Unit)
 
     override suspend fun register(
         email: String,
-        password: String,
-        firstName: String,
-        lastName: String
+        password: String
     ): Result<AuthTokens, RegisterError> {
         return if (email == "taken@test.com") Result.Error(RegisterError.EmailAlreadyExists)
         else Result.Success(fakeTokens)

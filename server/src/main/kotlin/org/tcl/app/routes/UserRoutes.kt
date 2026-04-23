@@ -2,14 +2,11 @@ package org.tcl.app.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
-import org.tcl.app.notification.NotificationTokenRequest
 import org.tcl.app.plugins.JwtConfig.userId
 import org.tcl.app.services.UserService
 
@@ -31,20 +28,6 @@ fun Route.userRoutes() {
                     ?: return@get call.respond("No user with id $userId")
 
                 call.respond(user)
-            }
-
-            post("/notificationToken") {
-                val userId = call.userId()
-                val request = call.receive<NotificationTokenRequest>()
-                require(request.deviceUniqueId.isNotBlank()) { "deviceUniqueId must not be blank" }
-                require(request.notificationToken.isNotBlank()) { "notificationToken must not be blank" }
-
-                userService.updateDevice(
-                    userId = userId,
-                    deviceUniqueId = request.deviceUniqueId,
-                    notificationToken = request.notificationToken
-                )
-                call.respond(HttpStatusCode.OK)
             }
 
             get("/{id}") {

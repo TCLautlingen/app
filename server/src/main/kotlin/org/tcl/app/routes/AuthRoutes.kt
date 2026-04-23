@@ -12,8 +12,6 @@ import org.tcl.app.auth.RefreshRequest
 import org.tcl.app.auth.RegisterRequest
 import org.tcl.app.auth.RegisterResult
 import org.tcl.app.auth.VALIDATION_ERROR_EMAIL
-import org.tcl.app.auth.VALIDATION_ERROR_FIRST_NAME
-import org.tcl.app.auth.VALIDATION_ERROR_LAST_NAME
 import org.tcl.app.auth.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.services.UserService
 
@@ -25,14 +23,10 @@ fun Route.authRoutes() {
             val request = call.receive<RegisterRequest>()
             require(request.email.matches(Regex(".+@.+\\..+"))) { VALIDATION_ERROR_EMAIL }
             require(request.password.length >= 8) { VALIDATION_ERROR_PASSWORD }
-            require(request.firstName.isNotBlank()) { VALIDATION_ERROR_FIRST_NAME }
-            require(request.lastName.isNotBlank()) { VALIDATION_ERROR_LAST_NAME }
 
             val registerResult = userService.registerUser(
                 email = request.email,
-                password = request.password,
-                firstName = request.firstName,
-                lastName = request.lastName
+                password = request.password
             )
 
             when (registerResult) {
@@ -64,7 +58,6 @@ fun Route.authRoutes() {
         post("/logout") {
             val request = call.receive<LogoutRequest>()
             val success = userService.logout(
-                deviceUniqueId = request.deviceUniqueId,
                 refreshToken = request.refreshToken
             )
             if (!success) {

@@ -5,8 +5,6 @@ sealed interface AuthAction {
     data class OnEmailChange(val email: String) : AuthAction
     data class OnPasswordChange(val password: String) : AuthAction
     data class OnConfirmPasswordChange(val confirmPassword: String) : AuthAction
-    data class OnFirstNameChange(val firstName: String) : AuthAction
-    data class OnLastNameChange(val lastName: String) : AuthAction
     data object OnLoginClick : AuthAction
     data object OnRegisterClick : AuthAction
 }

@@ -4,12 +4,13 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
+import org.tcl.app.entities.UserEntity
+import org.tcl.app.mappers.entityToAuthUser
+import org.tcl.app.mappers.entityToUser
 import org.tcl.app.models.AuthUser
-import org.tcl.app.models.UserDAO
-import org.tcl.app.models.UserTable
-import org.tcl.app.models.daoToAuthUser
-import org.tcl.app.models.daoToUser
 import org.tcl.app.plugins.withTransaction
+import org.tcl.app.tables.ProfilesTable
+import org.tcl.app.tables.UsersTable
 import org.tcl.app.user.User
 
 class PostgresUserRepository : UserRepository {
@@ -17,17 +18,13 @@ class PostgresUserRepository : UserRepository {
         email: String,
         passwordHash: String,
         passwordSalt: String,
-        firstName: String,
-        lastName: String
     ): User? = withTransaction {
         try {
-            UserDAO.new {
+            UserEntity.new {
                 this.email = email
                 this.passwordHash = passwordHash
                 this.passwordSalt = passwordSalt
-                this.firstName = firstName
-                this.lastName = lastName
-            }.let(::daoToUser)
+            }.let(::entityToUser)
         } catch (e: ExposedSQLException) {
             val sqlState = (e.cause as? java.sql.SQLException)?.sqlState
             if (sqlState == "23505") null else throw e
@@ -35,18 +32,23 @@ class PostgresUserRepository : UserRepository {
     }
 
     override suspend fun allUsers(searchQuery: String): List<User> = withTransaction {
-        UserDAO
+        UserEntity
             .find {
-                UserTable.email like "%$searchQuery%" or (UserTable.firstName like "%$searchQuery%") or (UserTable.lastName like "%$searchQuery%")
+                UsersTable.email like "%$searchQuery%" or (ProfilesTable.firstName like "%$searchQuery%") or (ProfilesTable.lastName like "%$searchQuery%")
             }
-            .map(::daoToUser)
+            .map(::entityToUser)
     }
 
     override suspend fun userById(id: Int): User? = withTransaction {
-        UserDAO.findById(id)?.let(::daoToUser)
+        UserEntity
+            .findById(id)
+            ?.let(::entityToUser)
     }
 
     override suspend fun authUserByEmail(email: String): AuthUser? = withTransaction {
-        UserDAO.find { UserTable.email eq email }.firstOrNull()?.let(::daoToAuthUser)
+        UserEntity
+            .find { UsersTable.email eq email }
+            .firstOrNull()
+            ?.let(::entityToAuthUser)
     }
 }

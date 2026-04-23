@@ -26,11 +26,6 @@ class FakeUserRemoteDataSource : UserRemoteDataSource {
     override suspend fun getCurrentUser(): Result<User, DataError> =
         Result.Success(currentUser)
 
-    override suspend fun updateNotificationToken(
-        deviceUniqueId: String,
-        notificationToken: String
-    ): EmptyResult<DataError> = Result.Success(Unit)
-
     override suspend fun getUserById(userId: Int): Result<User, DataError> {
         val user = users.find { it.id == userId }
         return if (user != null) Result.Success(user)

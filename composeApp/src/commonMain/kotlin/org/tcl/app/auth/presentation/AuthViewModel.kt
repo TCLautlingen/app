@@ -38,12 +38,6 @@ class AuthViewModel(
             is AuthAction.OnConfirmPasswordChange -> {
                 _state.update { it.copy(confirmPassword = action.confirmPassword) }
             }
-            is AuthAction.OnFirstNameChange -> {
-                _state.update { it.copy(firstName = action.firstName) }
-            }
-            is AuthAction.OnLastNameChange -> {
-                _state.update { it.copy(lastName = action.lastName) }
-            }
             AuthAction.OnLoginClick -> login()
             AuthAction.OnRegisterClick -> register()
         }
@@ -85,9 +79,7 @@ class AuthViewModel(
         viewModelScope.launch {
             dataSource.register(
                 email = currentState.email,
-                password = currentState.password,
-                firstName = currentState.firstName,
-                lastName = currentState.lastName
+                password = currentState.password
             )
                 .onSuccess { authTokens ->
                     secureStorage.tokens = authTokens

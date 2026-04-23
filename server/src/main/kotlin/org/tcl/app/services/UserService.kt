@@ -3,7 +3,7 @@ package org.tcl.app.services
 import org.tcl.app.auth.AuthTokens
 import org.tcl.app.auth.RegisterResult
 import org.tcl.app.plugins.JwtConfig
-import org.tcl.app.repositories.DeviceRepository
+import org.tcl.app.repositories.NotificationTokenRepository
 import org.tcl.app.repositories.RefreshTokenRepository
 import org.tcl.app.repositories.UserRepository
 import org.tcl.app.user.User
@@ -17,13 +17,11 @@ import javax.crypto.spec.PBEKeySpec
 class UserService(
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val deviceRepository: DeviceRepository
+    private val notificationTokenRepository: NotificationTokenRepository
 ) {
     suspend fun registerUser(
         email: String,
-        password: String,
-        firstName: String,
-        lastName: String
+        password: String
     ): RegisterResult {
         val passwordSalt = generateRandomSalt()
         val passwordHash = generateHash(password, passwordSalt)
@@ -31,9 +29,7 @@ class UserService(
         val user = userRepository.createUser(
             email = email,
             passwordHash = passwordHash,
-            passwordSalt = passwordSalt,
-            firstName = firstName,
-            lastName = lastName
+            passwordSalt = passwordSalt
         ) ?: return RegisterResult.EmailAlreadyExists
 
         val accessToken = JwtConfig.generateAccessToken(user.id)
@@ -71,8 +67,7 @@ class UserService(
         )
     }
 
-    suspend fun logout(deviceUniqueId: String, refreshToken: String): Boolean {
-        deviceRepository.removeDevice(deviceUniqueId)
+    suspend fun logout(refreshToken: String): Boolean {
         return refreshTokenRepository.removeRefreshToken(refreshToken)
     }
 
@@ -108,10 +103,6 @@ class UserService(
 
     suspend fun getUserById(id: Int): User? {
         return userRepository.userById(id)
-    }
-
-    suspend fun updateDevice(userId: Int, deviceUniqueId: String, notificationToken: String) {
-        deviceRepository.upsertDevice(userId, deviceUniqueId, notificationToken)
     }
 }
 

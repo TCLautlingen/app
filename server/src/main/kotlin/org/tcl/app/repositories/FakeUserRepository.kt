@@ -9,14 +9,12 @@ class FakeUserRepository : UserRepository {
         val email: String,
         val passwordHash: String,
         val passwordSalt: String,
-        val firstName: String,
-        val lastName: String,
         val isMember: Boolean,
         val isAdmin: Boolean,
     ) {
-        fun toUser(): User = User(id, email, firstName, lastName, isMember, isAdmin)
+        fun toUser(): User = User(id, email, "", "", isMember, isAdmin)
 
-        fun toAuthUser(): AuthUser = AuthUser(id, email, passwordHash, passwordSalt, firstName, lastName)
+        fun toAuthUser(): AuthUser = AuthUser(id, email, passwordHash, passwordSalt)
     }
 
     private var nextId = 1
@@ -27,15 +25,13 @@ class FakeUserRepository : UserRepository {
         email: String,
         passwordHash: String,
         passwordSalt: String,
-        firstName: String,
-        lastName: String
     ): User? {
         if (users.any { user -> email == user.email }) {
             return null
         }
 
         val id = nextId++
-        val storedUser = StoredUser(id, email, passwordHash, passwordSalt, firstName, lastName,
+        val storedUser = StoredUser(id, email, passwordHash, passwordSalt,
             isMember = true,
             isAdmin = true,
         )
@@ -46,7 +42,7 @@ class FakeUserRepository : UserRepository {
 
     override suspend fun allUsers(searchQuery: String): List<User> {
         return users
-            .filter { it.email.contains(searchQuery, ignoreCase = true) || it.firstName.contains(searchQuery, ignoreCase = true) || it.lastName.contains(searchQuery, ignoreCase = true) }
+            .filter { it.email.contains(searchQuery, ignoreCase = true) }
             .map { it.toUser() }
     }
 

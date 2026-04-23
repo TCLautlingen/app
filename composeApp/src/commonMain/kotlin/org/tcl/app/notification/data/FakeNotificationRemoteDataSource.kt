@@ -6,6 +6,14 @@ import org.tcl.app.core.domain.util.Result
 import org.tcl.app.notification.domain.NotificationRemoteDataSource
 
 class FakeNotificationRemoteDataSource : NotificationRemoteDataSource {
+    override suspend fun registerToken(token: String): EmptyResult<DataError> {
+        return Result.Success(Unit)
+    }
+
+    override suspend fun unregisterToken(token: String): EmptyResult<DataError> {
+        return Result.Success(Unit)
+    }
+
     override suspend fun sendNotification(
         title: String,
         body: String

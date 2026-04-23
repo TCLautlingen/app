@@ -7,9 +7,7 @@ interface UserRepository {
     suspend fun createUser(
         email: String,
         passwordHash: String,
-        passwordSalt: String,
-        firstName: String,
-        lastName: String
+        passwordSalt: String
     ): User?
 
     suspend fun allUsers(searchQuery: String): List<User>

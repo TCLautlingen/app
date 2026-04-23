@@ -7,44 +7,46 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.core.inSubQuery
 import org.jetbrains.exposed.v1.core.or
-import org.jetbrains.exposed.v1.jdbc.batchInsert
+import org.jetbrains.exposed.v1.jdbc.SizedCollection
 import org.jetbrains.exposed.v1.jdbc.select
 import org.tcl.app.booking.Booking
-import org.tcl.app.models.BookingDAO
-import org.tcl.app.models.BookingPlayerTable
-import org.tcl.app.models.BookingTable
-import org.tcl.app.models.daoToBooking
+import org.tcl.app.entities.BookingEntity
+import org.tcl.app.entities.CourtEntity
+import org.tcl.app.entities.UserEntity
+import org.tcl.app.mappers.entityToBooking
 import org.tcl.app.plugins.withTransaction
+import org.tcl.app.tables.BookingPlayersTable
+import org.tcl.app.tables.BookingsTable
 
 class PostgresBookingRepository : BookingRepository {
     override suspend fun allBookingsForUser(userId: Int): List<Booking> = withTransaction {
-        BookingDAO
-            .find { BookingTable.userId eq userId }
-            .map(::daoToBooking)
+        BookingEntity
+            .find { BookingsTable.user eq userId }
+            .map(::entityToBooking)
     }
 
     override suspend fun upcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> = withTransaction {
-        BookingDAO.find {
-            (BookingTable.date greaterEq from) and
-                    (BookingTable.userId eq userId or (BookingTable.id inSubQuery
-                            BookingPlayerTable
-                                .select(BookingPlayerTable.bookingId)
-                                .where { BookingPlayerTable.userId eq userId }
+        BookingEntity.find {
+            (BookingsTable.date greaterEq from) and
+                    (BookingsTable.user eq userId or (BookingsTable.id inSubQuery
+                            BookingPlayersTable
+                                .select(BookingPlayersTable.booking)
+                                .where { BookingPlayersTable.user eq userId }
                             ))
         }
-            .map(::daoToBooking)
+            .map(::entityToBooking)
     }
 
     override suspend fun allBookingsForDate(date: LocalDate): List<Booking> = withTransaction {
-        BookingDAO
-            .find { BookingTable.date eq date }
-            .map(::daoToBooking)
+        BookingEntity
+            .find { BookingsTable.date eq date }
+            .map(::entityToBooking)
     }
 
     override suspend fun allBookingsForCourtAndDate(courtId: Int, date: LocalDate): List<Booking> = withTransaction {
-        BookingDAO
-            .find { (BookingTable.courtId eq courtId) and (BookingTable.date eq date) }
-            .map(::daoToBooking)
+        BookingEntity
+            .find { (BookingsTable.court eq courtId) and (BookingsTable.date eq date) }
+            .map(::entityToBooking)
     }
 
     override suspend fun createBooking(
@@ -55,25 +57,19 @@ class PostgresBookingRepository : BookingRepository {
         duration: Int,
         playerIds: List<Int>
     ): Booking = withTransaction {
-        val booking = BookingDAO.new {
-            this.userId = userId
-            this.courtId = courtId
+        BookingEntity.new {
+            this.user = UserEntity[userId]
+            this.court = CourtEntity[courtId]
             this.date = date
             this.startTime = startTime
             this.duration = duration
-        }
-
-        BookingPlayerTable.batchInsert(playerIds) { playerId ->
-            this[BookingPlayerTable.bookingId] = booking.id.value
-            this[BookingPlayerTable.userId] = playerId
-        }
-
-        daoToBooking(booking)
+            this.players = SizedCollection(playerIds.map { UserEntity[it] })
+        }.let(::entityToBooking)
     }
 
     override suspend fun removeBooking(userId: Int, id: Int): Boolean = withTransaction {
-        BookingDAO
-            .find { (BookingTable.id eq id) and (BookingTable.userId eq userId) }
+        BookingEntity
+            .find { (BookingsTable.id eq id) and (BookingsTable.user eq userId) }
             .limit(1)
             .firstOrNull()
             ?.delete() != null

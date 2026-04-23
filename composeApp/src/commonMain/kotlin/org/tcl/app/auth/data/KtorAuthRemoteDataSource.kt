@@ -10,8 +10,6 @@ import org.tcl.app.auth.LogoutRequest
 import org.tcl.app.auth.RefreshRequest
 import org.tcl.app.auth.RegisterRequest
 import org.tcl.app.auth.VALIDATION_ERROR_EMAIL
-import org.tcl.app.auth.VALIDATION_ERROR_FIRST_NAME
-import org.tcl.app.auth.VALIDATION_ERROR_LAST_NAME
 import org.tcl.app.auth.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.domain.LoginError
@@ -45,17 +43,16 @@ class KtorAuthRemoteDataSource(
         }
     }
 
-    override suspend fun logout(deviceUniqueId: String, refreshToken: String): EmptyResult<DataError> = safeApiCall {
+    override suspend fun logout(refreshToken: String): EmptyResult<DataError> = safeApiCall {
         apiClient.client.post("/auth/logout") {
             setBody(LogoutRequest(
-                deviceUniqueId = deviceUniqueId,
                 refreshToken = refreshToken
             ))
         }
     }
 
-    override suspend fun register(email: String, password: String, firstName: String, lastName: String): Result<AuthTokens, RegisterError>  {
-        val registerRequest = RegisterRequest(email, password, firstName, lastName)
+    override suspend fun register(email: String, password: String): Result<AuthTokens, RegisterError>  {
+        val registerRequest = RegisterRequest(email, password)
 
         val response = apiClient.client.post("/auth/register") {
             setBody(registerRequest)
@@ -68,8 +65,6 @@ class KtorAuthRemoteDataSource(
                 when (response.body<String>()) {
                     VALIDATION_ERROR_EMAIL -> Result.Error(RegisterError.InvalidEmail)
                     VALIDATION_ERROR_PASSWORD -> Result.Error(RegisterError.PasswordTooWeak)
-                    VALIDATION_ERROR_FIRST_NAME -> Result.Error(RegisterError.FirstNameEmpty)
-                    VALIDATION_ERROR_LAST_NAME -> Result.Error(RegisterError.LastNameEmpty)
                     else -> Result.Error(RegisterError.Unknown)
                 }
             }

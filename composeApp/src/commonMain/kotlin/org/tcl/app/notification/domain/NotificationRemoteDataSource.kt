@@ -4,5 +4,7 @@ import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 
 interface NotificationRemoteDataSource {
+    suspend fun registerToken(token: String): EmptyResult<DataError>
+    suspend fun unregisterToken(token: String): EmptyResult<DataError>
     suspend fun sendNotification(title: String, body: String): EmptyResult<DataError>
 }

@@ -8,6 +8,5 @@ import org.tcl.app.core.domain.util.Result
 interface UserRemoteDataSource {
     suspend fun getUsers(searchQuery: String): Result<List<User>, DataError>
     suspend fun getCurrentUser(): Result<User, DataError>
-    suspend fun updateNotificationToken(deviceUniqueId: String, notificationToken: String): EmptyResult<DataError>
     suspend fun getUserById(userId: Int): Result<User, DataError>
 }

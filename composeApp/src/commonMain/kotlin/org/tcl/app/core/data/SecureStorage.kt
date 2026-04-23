@@ -10,15 +10,6 @@ import kotlin.uuid.Uuid
 class SecureStorage(ksafe: KSafe) {
     var tokens by ksafe(AuthTokens())
 
-    var deviceUniqueId: String by ksafe("")
-        private set
-
-    init {
-        if (deviceUniqueId.isBlank()) {
-            deviceUniqueId = Uuid.random().toString()
-        }
-    }
-
     fun clearAuthTokens() {
         tokens = AuthTokens()
     }

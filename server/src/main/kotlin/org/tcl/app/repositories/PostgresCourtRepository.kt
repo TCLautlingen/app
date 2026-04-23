@@ -1,20 +1,20 @@
 package org.tcl.app.repositories
 
 import org.tcl.app.court.Court
-import org.tcl.app.models.CourtDAO
-import org.tcl.app.models.daoToCourt
+import org.tcl.app.entities.CourtEntity
+import org.tcl.app.mappers.entityToCourt
 import org.tcl.app.plugins.withTransaction
 
 class PostgresCourtRepository : CourtRepository {
     override suspend fun allCourts(): List<Court> = withTransaction {
-        CourtDAO
+        CourtEntity
             .all()
-            .map(::daoToCourt)
+            .map(::entityToCourt)
     }
 
     override suspend fun courtById(id: Int): Court? = withTransaction {
-        CourtDAO
+        CourtEntity
             .findById(id)
-            ?.let(::daoToCourt)
+            ?.let(::entityToCourt)
     }
 }
