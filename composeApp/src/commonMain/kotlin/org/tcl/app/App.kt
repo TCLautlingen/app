@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.tcl.app.core.presentation.AdaptiveLayout
 import org.tcl.app.navigation.AppNavigation
 import zed.rainxch.rikkaicons.core.ProvideIconPack
 import zed.rainxch.rikkaicons.pack.lucide.LucidePack
@@ -24,7 +25,9 @@ fun App() {
                     .background(RikkaTheme.colors.background)
                     .safeDrawingPadding(),
             ) {
-                AppNavigation()
+                AdaptiveLayout {
+                    AppNavigation()
+                }
             }
         }
     }
