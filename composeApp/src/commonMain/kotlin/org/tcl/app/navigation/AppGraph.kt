@@ -8,6 +8,23 @@ import org.tcl.app.booking.Booking
 
 @Serializable
 sealed interface AppGraph : NavKey {
+    @Serializable
+    data object OnboardingWelcome : AppGraph
+
+    @Serializable
+    data object OnboardingAccount : AppGraph
+
+    @Serializable
+    data object OnboardingMembership : AppGraph
+
+    @Serializable
+    data object OnboardingProfile : AppGraph
+
+    @Serializable
+    data object OnboardingContact : AppGraph
+
+    @Serializable
+    data object OnboardingRules : AppGraph
 
     @Serializable
     data object Auth : AppGraph

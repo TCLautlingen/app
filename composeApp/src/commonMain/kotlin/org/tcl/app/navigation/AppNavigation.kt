@@ -32,6 +32,12 @@ import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.notification.domain.NotificationRemoteDataSource
 import org.tcl.app.notification.presentation.builder.NotificationBuilderRoot
 import org.tcl.app.notification.presentation.inbox.NotificationInboxRoot
+import org.tcl.app.onboarding.presentation.account.OnboardingAccountRoot
+import org.tcl.app.onboarding.presentation.contact.OnboardingContactRoot
+import org.tcl.app.onboarding.presentation.membership.OnboardingMembershipRoot
+import org.tcl.app.onboarding.presentation.profile.OnboardingProfileRoot
+import org.tcl.app.onboarding.presentation.rules.OnboardingRulesRoot
+import org.tcl.app.onboarding.presentation.welcome.OnboardingWelcomeRoot
 import org.tcl.app.user.domain.UserRemoteDataSource
 import org.tcl.app.user.presentation.editor.UserEditorRoot
 import org.tcl.app.user.presentation.list.UserListRoot
@@ -88,6 +94,10 @@ fun AppNavigation() {
             serializersModule = SerializersModule {
                 polymorphic(NavKey::class) {
                     subclass(
+                        AppGraph.OnboardingWelcome::class,
+                        AppGraph.OnboardingWelcome.serializer(),
+                    )
+                    subclass(
                         AppGraph.Auth::class,
                         AppGraph.Auth.serializer(),
                     )
@@ -130,9 +140,10 @@ fun AppNavigation() {
                 }
             }
         },
-        if (loggedIn) AppGraph.BookingList else AppGraph.Auth,
+        AppGraph.OnboardingWelcome,
     )
 
+    /*
     LaunchedEffect(loggedIn) {
         if (loggedIn) {
             navStack.clear()
@@ -142,6 +153,7 @@ fun AppNavigation() {
             navStack.add(AppGraph.Auth)
         }
     }
+     */
 
     NavDisplay(
         backStack = navStack,
@@ -153,6 +165,47 @@ fun AppNavigation() {
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
+            entry<AppGraph.OnboardingWelcome> {
+                OnboardingWelcomeRoot(
+                    onNavigate = { route -> navStack.add(route) },
+                )
+            }
+
+            entry<AppGraph.OnboardingAccount> {
+                OnboardingAccountRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                    onNavigate = { route -> navStack.add(route) },
+                )
+            }
+
+            entry<AppGraph.OnboardingMembership> {
+                OnboardingMembershipRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                    onNavigate = { route -> navStack.add(route) },
+                )
+            }
+
+            entry<AppGraph.OnboardingProfile> {
+                OnboardingProfileRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                    onNavigate = { route -> navStack.add(route) },
+                )
+            }
+
+            entry<AppGraph.OnboardingContact> {
+                OnboardingContactRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                    onNavigate = { route -> navStack.add(route) },
+                )
+            }
+
+            entry<AppGraph.OnboardingRules> {
+                OnboardingRulesRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                    onNavigate = { route -> navStack.add(route) },
+                )
+            }
+
             entry<AppGraph.Auth> {
                 AuthRoot(
                     onSuccess = { loggedIn = true },
