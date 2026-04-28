@@ -1,6 +1,7 @@
-package org.tcl.app.core.data
+package org.tcl.app.core.data.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -15,12 +16,10 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.tcl.app.auth.AuthTokens
 import org.tcl.app.auth.RefreshRequest
-import org.tcl.app.SERVER_IP
-import org.tcl.app.SERVER_PORT
+import org.tcl.app.core.data.SecureStorage
 
-class ApiClient(
-    private val secureStorage: SecureStorage,
-    baseUrl: String = "http://$SERVER_IP:$SERVER_PORT"
+class BackendApiClient(
+    private val secureStorage: SecureStorage
 ) {
     private val refreshClient = HttpClient {
         install(ContentNegotiation) {
@@ -28,19 +27,18 @@ class ApiClient(
         }
 
         defaultRequest {
-            url(baseUrl)
+            url(BACKEND_BASE_URL)
             contentType(ContentType.Application.Json)
         }
     }
 
     val client = HttpClient {
-
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
 
         defaultRequest {
-            url(baseUrl)
+            url(BACKEND_BASE_URL)
             contentType(ContentType.Application.Json)
         }
 
@@ -55,7 +53,7 @@ class ApiClient(
 
                 refreshTokens {
                     try {
-                        val response: AuthTokens = refreshClient.post("/auth/refresh") {
+                        val response: AuthTokens = refreshClient.post("auth/refresh") {
                             contentType(ContentType.Application.Json)
                             setBody(RefreshRequest(secureStorage.tokens.refreshToken))
                         }.body()

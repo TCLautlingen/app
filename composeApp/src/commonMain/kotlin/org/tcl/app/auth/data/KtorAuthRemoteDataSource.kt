@@ -13,17 +13,17 @@ import org.tcl.app.auth.RegisterRequest
 import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.domain.LoginError
 import org.tcl.app.auth.domain.RegisterErrors
-import org.tcl.app.core.data.ApiClient
+import org.tcl.app.core.data.network.BackendApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
 
 class KtorAuthRemoteDataSource(
-    private val apiClient: ApiClient
+    private val backendApiClient: BackendApiClient
 ) : AuthRemoteDataSource {
     override suspend fun refresh(refreshToken: String): Result<AuthTokens, DataError> = safeApiCall {
-        apiClient.client.post("/auth/refresh") {
+        backendApiClient.client.post("auth/refresh") {
             setBody(RefreshRequest(refreshToken))
         }
     }
@@ -31,7 +31,7 @@ class KtorAuthRemoteDataSource(
     override suspend fun login(email: String, password: String): Result<AuthTokens, LoginError> {
         val loginRequest = LoginRequest(email, password)
 
-        val response = apiClient.client.post("/auth/login") {
+        val response = backendApiClient.client.post("auth/login") {
             setBody(loginRequest)
         }
 
@@ -43,7 +43,7 @@ class KtorAuthRemoteDataSource(
     }
 
     override suspend fun logout(refreshToken: String): EmptyResult<DataError> = safeApiCall {
-        apiClient.client.post("/auth/logout") {
+        backendApiClient.client.post("auth/logout") {
             setBody(LogoutRequest(
                 refreshToken = refreshToken
             ))
@@ -53,7 +53,7 @@ class KtorAuthRemoteDataSource(
     override suspend fun register(email: String, password: String): Result<AuthTokens, RegisterErrors>  {
         val registerRequest = RegisterRequest(email, password)
 
-        val response = apiClient.client.post("/auth/register") {
+        val response = backendApiClient.client.post("auth/register") {
             setBody(registerRequest)
         }
 

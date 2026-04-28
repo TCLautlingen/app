@@ -12,17 +12,17 @@ import org.tcl.app.booking.Booking
 import org.tcl.app.booking.BookingRequest
 import org.tcl.app.booking.CourtSlot
 import org.tcl.app.booking.domain.BookingRemoteDataSource
-import org.tcl.app.core.data.ApiClient
+import org.tcl.app.core.data.network.BackendApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
 
 class KtorBookingRemoteDataSource(
-    private val apiClient: ApiClient
+    private val backendApiClient: BackendApiClient
 ) : BookingRemoteDataSource {
     override suspend fun getUpcomingBookings(from: String): Result<List<Booking>, DataError> = safeApiCall {
-            apiClient.client.get("/bookings/upcoming") {
+            backendApiClient.client.get("bookings/upcoming") {
                 parameter("from", from)
             }
     }
@@ -43,24 +43,24 @@ class KtorBookingRemoteDataSource(
         )
 
         return safeApiCall {
-            apiClient.client.post("/bookings") {
+            backendApiClient.client.post("bookings") {
                 setBody(bookingRequest)
             }
         }
     }
 
     override suspend fun deleteBooking(id: String): EmptyResult<DataError> = safeApiCall {
-        apiClient.client.delete("/bookings/$id")
+        backendApiClient.client.delete("bookings/$id")
     }
 
     override suspend fun getCourtSlots(courtId: Int, date: String): Result<List<CourtSlot>, DataError> = safeApiCall {
-        apiClient.client.get("/slots/court/$courtId") {
+        backendApiClient.client.get("slots/court/$courtId") {
             parameter("date", date)
         }
     }
 
     override suspend fun getAvailableSlots(date: String, duration: Int): Result<List<AvailableSlot>, DataError> = safeApiCall {
-        apiClient.client.get("/slots/available") {
+        backendApiClient.client.get("slots/available") {
             parameter("date", date)
             parameter("duration", duration)
         }

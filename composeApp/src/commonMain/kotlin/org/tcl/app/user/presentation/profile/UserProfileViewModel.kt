@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.tcl.app.auth.domain.AuthRemoteDataSource
-import org.tcl.app.core.data.ApiClient
+import org.tcl.app.core.data.network.BackendApiClient
 import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
@@ -18,7 +18,7 @@ import org.tcl.app.user.domain.UserRemoteDataSource
 
 class UserProfileViewModel(
     private val secureStorage: SecureStorage,
-    private val apiClient: ApiClient,
+    private val backendApiClient: BackendApiClient,
     private val dataSource: UserRemoteDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource
 ) : ViewModel() {
@@ -110,7 +110,7 @@ class UserProfileViewModel(
                 }
 
             secureStorage.clearAuthTokens()
-            apiClient.client.clearAuthTokens()
+            backendApiClient.client.clearAuthTokens()
             _events.send(UserProfileEvent.LoggedOut)
         }
     }
