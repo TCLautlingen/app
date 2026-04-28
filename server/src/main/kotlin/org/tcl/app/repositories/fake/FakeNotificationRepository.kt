@@ -1,8 +1,10 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.fake
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.tcl.app.models.Notification
+import org.tcl.app.repositories.NotificationRepository
+import org.tcl.app.repositories.UserRepository
 import kotlin.time.Clock
 
 class FakeNotificationRepository(

@@ -1,4 +1,4 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.postgres
 
 import org.jetbrains.exposed.v1.core.eq
 import org.tcl.app.entities.RefreshTokenEntity
@@ -6,6 +6,7 @@ import org.tcl.app.entities.UserEntity
 import org.tcl.app.mappers.entityToRefreshToken
 import org.tcl.app.models.RefreshToken
 import org.tcl.app.plugins.withTransaction
+import org.tcl.app.repositories.RefreshTokenRepository
 import org.tcl.app.tables.RefreshTokensTable
 
 class PostgresRefreshTokenRepository : RefreshTokenRepository {

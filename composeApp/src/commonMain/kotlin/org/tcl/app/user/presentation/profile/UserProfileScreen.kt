@@ -10,12 +10,16 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
+import org.tcl.app.onboarding.presentation.contact.OnboardingContactAction
+import org.tcl.app.onboarding.presentation.profile.OnboardingProfileAction
 import zed.rainxch.rikkaui.components.ui.avatar.Avatar
 import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
+import zed.rainxch.rikkaui.components.ui.input.Input
+import zed.rainxch.rikkaui.components.ui.label.Label
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
 import zed.rainxch.rikkaui.components.ui.spinner.Spinner
 import zed.rainxch.rikkaui.components.ui.text.Text
@@ -105,7 +109,7 @@ fun UserProfileScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .weight(1f)
                             .padding(RikkaTheme.spacing.lg),
                         verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,11 +119,52 @@ fun UserProfileScreen(
                             size = AvatarSize.Lg
                         )
                         Text(
-                            text = state.user?.firstName + " " + state.user?.lastName,
-                            variant = TextVariant.Large
-                        )
-                        Text(
                             text = state.user?.email ?: "max.mustermann@email.de",
+                        )
+
+                        Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                            Label(text = "Vorname", required = true)
+                            Input(
+                                value = state.firstName,
+                                onValueChange = { onAction(UserProfileAction.OnFirstNameChange(it)) },
+                                placeholder = "Max",
+                                label = "Vorname",
+                            )
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                            Label(text = "Nachname", required = true)
+                            Input(
+                                value = state.lastName,
+                                onValueChange = { onAction(UserProfileAction.OnLastNameChange(it)) },
+                                placeholder = "Mustermann",
+                                label = "Nachname",
+                            )
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                            Label(text = "Telefonnummer")
+                            Input(
+                                value = state.phoneNumber ?: "",
+                                onValueChange = { onAction(UserProfileAction.OnPhoneNumberChange(it)) },
+                                placeholder = "+49 123 456789",
+                                label = "Telefonnummer",
+                            )
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                            Label(text = "Adresse")
+                            Input(
+                                value = state.address ?: "",
+                                onValueChange = { onAction(UserProfileAction.OnAddressChange(it)) },
+                                placeholder = "Musterstraße 1, 72459 Albstadt",
+                                label = "Adresse",
+                            )
+                        }
+
+                        Button(
+                            text = "Speichern",
+                            onClick = { onAction(UserProfileAction.OnSaveClick) },
                         )
                     }
 

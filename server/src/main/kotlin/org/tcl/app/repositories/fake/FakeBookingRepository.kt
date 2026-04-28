@@ -1,8 +1,10 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.fake
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.tcl.app.booking.Booking
+import org.tcl.app.repositories.BookingRepository
+import org.tcl.app.repositories.UserRepository
 
 class FakeBookingRepository(
     private val userRepository: UserRepository

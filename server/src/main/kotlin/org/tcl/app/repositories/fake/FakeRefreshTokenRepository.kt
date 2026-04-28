@@ -1,6 +1,7 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.fake
 
 import org.tcl.app.models.RefreshToken
+import org.tcl.app.repositories.RefreshTokenRepository
 
 class FakeRefreshTokenRepository : RefreshTokenRepository {
     private val tokens = mutableListOf<RefreshToken>()

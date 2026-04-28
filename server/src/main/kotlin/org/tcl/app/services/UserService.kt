@@ -1,11 +1,18 @@
 package org.tcl.app.services
 
 import org.tcl.app.auth.AuthTokens
+import org.tcl.app.auth.RegisterError
+import org.tcl.app.auth.RegisterErrorCode
+import org.tcl.app.auth.RegisterField
 import org.tcl.app.auth.RegisterResult
+import org.tcl.app.auth.RegisterValidator
+import org.tcl.app.models.AuthUser
 import org.tcl.app.plugins.JwtConfig
 import org.tcl.app.repositories.NotificationTokenRepository
 import org.tcl.app.repositories.RefreshTokenRepository
 import org.tcl.app.repositories.UserRepository
+import org.tcl.app.user.DetailedUser
+import org.tcl.app.user.UpdateUserRequest
 import org.tcl.app.user.User
 import java.security.SecureRandom
 import java.security.spec.KeySpec
@@ -23,6 +30,12 @@ class UserService(
         email: String,
         password: String
     ): RegisterResult {
+        val errors = RegisterValidator.validate(email, password)
+
+        if (errors.isNotEmpty()) {
+            return RegisterResult.Errors(errors)
+        }
+
         val passwordSalt = generateRandomSalt()
         val passwordHash = generateHash(password, passwordSalt)
 
@@ -30,7 +43,9 @@ class UserService(
             email = email,
             passwordHash = passwordHash,
             passwordSalt = passwordSalt
-        ) ?: return RegisterResult.EmailAlreadyExists
+        ) ?: return RegisterResult.Errors(
+            listOf(RegisterError(RegisterField.EMAIL, RegisterErrorCode.EMAIL_ALREADY_EXISTS))
+        )
 
         val accessToken = JwtConfig.generateAccessToken(user.id)
         val refreshToken = generateSecureOpaqueToken()
@@ -97,12 +112,38 @@ class UserService(
         )
     }
 
+    suspend fun updateUser(
+        userId: Int,
+        firstName: String?,
+        lastName: String?,
+        phoneNumber: String?,
+        address: String?,
+        isMember: Boolean?
+    ): DetailedUser? {
+        return userRepository.updateUser(
+            id = userId,
+            firstName = firstName,
+            lastName = lastName,
+            phoneNumber = phoneNumber,
+            address = address,
+            isMember = isMember
+        )
+    }
+
     suspend fun getAllUsers(searchQuery: String): List<User> {
         return userRepository.allUsers(searchQuery)
     }
 
     suspend fun getUserById(id: Int): User? {
         return userRepository.userById(id)
+    }
+
+    suspend fun getDetailedUserById(id: Int): DetailedUser? {
+        return userRepository.detailedUserById(id)
+    }
+
+    suspend fun getAuthUserById(id: Int): AuthUser? {
+        return userRepository.authUserById(id)
     }
 }
 

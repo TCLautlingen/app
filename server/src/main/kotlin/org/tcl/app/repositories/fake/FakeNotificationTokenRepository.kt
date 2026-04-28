@@ -1,4 +1,6 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.fake
+
+import org.tcl.app.repositories.NotificationTokenRepository
 
 
 class FakeNotificationTokenRepository : NotificationTokenRepository {

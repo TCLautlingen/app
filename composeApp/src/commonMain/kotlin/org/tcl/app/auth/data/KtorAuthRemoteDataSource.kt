@@ -8,12 +8,11 @@ import org.tcl.app.auth.AuthTokens
 import org.tcl.app.auth.LoginRequest
 import org.tcl.app.auth.LogoutRequest
 import org.tcl.app.auth.RefreshRequest
+import org.tcl.app.auth.RegisterError
 import org.tcl.app.auth.RegisterRequest
-import org.tcl.app.auth.VALIDATION_ERROR_EMAIL
-import org.tcl.app.auth.VALIDATION_ERROR_PASSWORD
 import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.domain.LoginError
-import org.tcl.app.auth.domain.RegisterError
+import org.tcl.app.auth.domain.RegisterErrors
 import org.tcl.app.core.data.ApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
@@ -51,7 +50,7 @@ class KtorAuthRemoteDataSource(
         }
     }
 
-    override suspend fun register(email: String, password: String): Result<AuthTokens, RegisterError>  {
+    override suspend fun register(email: String, password: String): Result<AuthTokens, RegisterErrors>  {
         val registerRequest = RegisterRequest(email, password)
 
         val response = apiClient.client.post("/auth/register") {
@@ -60,15 +59,8 @@ class KtorAuthRemoteDataSource(
 
         return when (response.status) {
             HttpStatusCode.OK -> Result.Success(response.body<AuthTokens>())
-            HttpStatusCode.Conflict -> Result.Error(RegisterError.EmailAlreadyExists)
-            HttpStatusCode.BadRequest -> {
-                when (response.body<String>()) {
-                    VALIDATION_ERROR_EMAIL -> Result.Error(RegisterError.InvalidEmail)
-                    VALIDATION_ERROR_PASSWORD -> Result.Error(RegisterError.PasswordTooWeak)
-                    else -> Result.Error(RegisterError.Unknown)
-                }
-            }
-            else -> Result.Error(RegisterError.Unknown)
+            HttpStatusCode.BadRequest -> Result.Error(RegisterErrors(response.body<List<RegisterError>>()))
+            else -> Result.Error(RegisterErrors(emptyList()))
         }
     }
 }

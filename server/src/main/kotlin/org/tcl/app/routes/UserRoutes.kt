@@ -2,13 +2,16 @@ package org.tcl.app.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.tcl.app.plugins.JwtConfig.userId
 import org.tcl.app.services.UserService
+import org.tcl.app.user.UpdateUserRequest
 
 fun Route.userRoutes() {
     val userService by inject<UserService>()
@@ -24,16 +27,32 @@ fun Route.userRoutes() {
             get("/me") {
                 val userId = call.userId()
 
-                val user = userService.getUserById(userId)
+                val user = userService.getDetailedUserById(userId)
                     ?: return@get call.respond("No user with id $userId")
 
                 call.respond(user)
             }
 
+            patch("/me") {
+                val userId = call.userId()
+                val request = call.receive<UpdateUserRequest>()
+
+                val updatedUser = userService.updateUser(
+                    userId = userId,
+                    firstName = request.firstName?.trim(),
+                    lastName = request.lastName?.trim(),
+                    phoneNumber = request.phoneNumber,
+                    address = request.address,
+                    isMember = request.isMember
+                ) ?: return@patch call.respond(HttpStatusCode.NotFound)
+
+                call.respond(updatedUser)
+            }
+
             get("/{id}") {
                 val calledUserId = call.userId()
 
-                val requestUser = userService.getUserById(calledUserId)
+                val requestUser = userService.getAuthUserById(calledUserId)
                     ?: return@get call.respond("No user with id $calledUserId")
 
                 if (!requestUser.isAdmin) {
@@ -42,7 +61,7 @@ fun Route.userRoutes() {
 
                 val id = requireNotNull(call.parameters["id"]?.toIntOrNull()) { "Invalid id" }
 
-                val user = userService.getUserById(id)
+                val user = userService.getDetailedUserById(id)
                     ?: return@get call.respond("No user with id $id")
                 call.respond(user)
             }

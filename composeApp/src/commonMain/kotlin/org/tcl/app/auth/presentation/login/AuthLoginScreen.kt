@@ -1,4 +1,4 @@
-package org.tcl.app.onboarding.presentation.contact
+package org.tcl.app.auth.presentation.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,49 +11,47 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.ObserveAsEvents
-import org.tcl.app.navigation.AppGraph
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.input.Input
 import zed.rainxch.rikkaui.components.ui.label.Label
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
-import zed.rainxch.rikkaui.components.ui.spinner.Spinner
 import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
-fun OnboardingContactRoot(
+fun AuthLoginRoot(
     onNavigateBack: () -> Unit,
-    onComplete: () -> Unit,
-    viewModel: OnboardingContactViewModel = koinViewModel(),
+    onSuccess: () -> Unit,
+    viewModel: AuthLoginViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            OnboardingContactEvent.SavedSuccessfully -> onComplete()
+            is AuthLoginEvent.LoggedIn -> onSuccess()
         }
     }
 
-    OnboardingContactScreen(
+    AuthLoginScreen(
+        onNavigateBack = onNavigateBack,
         state = state,
         onAction = viewModel::onAction,
-        onNavigateBack = onNavigateBack,
     )
 }
 
 @Composable
-fun OnboardingContactScreen(
-    state: OnboardingContactState,
-    onAction: (OnboardingContactAction) -> Unit,
+fun AuthLoginScreen(
     onNavigateBack: () -> Unit,
+    state: AuthLoginState,
+    onAction: (AuthLoginAction) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = "Kontaktdaten",
+                title = "Anmelden",
                 navigationIcon = {
                     IconButton(
                         icon = RikkaIcons.ArrowLeft,
@@ -76,38 +74,44 @@ fun OnboardingContactScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg),
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
-                    Label(text = "Telefonnummer")
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
+                ) {
+                    Label(
+                        text = "Email",
+                        required = true
+                    )
                     Input(
-                        value = state.phoneNumber,
-                        onValueChange = { onAction(OnboardingContactAction.OnPhoneNumberChange(it)) },
-                        placeholder = "+49 123 456789",
-                        label = "Telefonnummer",
+                        value = state.email,
+                        onValueChange = { onAction(AuthLoginAction.OnEmailChange(it)) },
+                        placeholder = "maxmustermann@beispiel.de",
+                        label = "Email",
                     )
                 }
 
-                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
-                    Label(text = "Adresse")
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
+                ) {
+                    Label(
+                        text = "Passwort",
+                        required = true
+                    )
                     Input(
-                        value = state.address,
-                        onValueChange = { onAction(OnboardingContactAction.OnAddressChange(it)) },
-                        placeholder = "Musterstraße 1, 72459 Albstadt",
-                        label = "Adresse",
+                        value = state.password,
+                        onValueChange = { onAction(AuthLoginAction.OnPasswordChange(it)) },
+                        label = "Passwort",
                     )
                 }
 
-                if (state.errorMessage != null) {
-                    Text(text = state.errorMessage, color = RikkaTheme.colors.destructive)
-                }
-
-                if (state.isLoading) {
-                    Spinner()
-                }
+                Text(
+                    text = state.errorMessage ?: "",
+                    color = RikkaTheme.colors.destructive,
+                )
             }
 
             Button(
                 text = "Weiter",
-                onClick = { onAction(OnboardingContactAction.OnNextClick) },
+                onClick = { onAction(AuthLoginAction.OnLoginClick) },
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             )

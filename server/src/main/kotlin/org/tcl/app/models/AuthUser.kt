@@ -5,4 +5,5 @@ data class AuthUser(
     val email: String,
     val passwordHash: String,
     val passwordSalt: String,
+    val isAdmin: Boolean,
 )

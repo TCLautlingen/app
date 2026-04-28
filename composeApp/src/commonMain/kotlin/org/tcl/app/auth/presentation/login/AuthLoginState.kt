@@ -1,12 +1,11 @@
-package org.tcl.app.auth.presentation
+package org.tcl.app.auth.presentation.login
 
 import androidx.compose.runtime.Stable
 
 @Stable
-data class AuthState(
-    val selectedTab: Int = 0,
+data class AuthLoginState(
     val email: String = "",
     val password: String = "",
-    val confirmPassword: String = "",
     val errorMessage: String? = null,
+    val isLoading: Boolean = false,
 )

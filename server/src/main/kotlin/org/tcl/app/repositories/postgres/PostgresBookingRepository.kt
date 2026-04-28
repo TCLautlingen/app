@@ -1,4 +1,4 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.postgres
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -15,6 +15,7 @@ import org.tcl.app.entities.CourtEntity
 import org.tcl.app.entities.UserEntity
 import org.tcl.app.mappers.entityToBooking
 import org.tcl.app.plugins.withTransaction
+import org.tcl.app.repositories.BookingRepository
 import org.tcl.app.tables.BookingPlayersTable
 import org.tcl.app.tables.BookingsTable
 

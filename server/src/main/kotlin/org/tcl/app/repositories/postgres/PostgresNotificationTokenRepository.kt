@@ -1,10 +1,11 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.postgres
 
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.tcl.app.entities.NotificationTokenEntity
 import org.tcl.app.entities.UserEntity
 import org.tcl.app.plugins.withTransaction
+import org.tcl.app.repositories.NotificationTokenRepository
 import org.tcl.app.tables.NotificationTokensTable
 
 class PostgresNotificationTokenRepository : NotificationTokenRepository {

@@ -1,9 +1,10 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.postgres
 
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
+import org.tcl.app.entities.ProfileEntity
 import org.tcl.app.entities.UserEntity
 import org.tcl.app.mappers.entityToAuthUser
 import org.tcl.app.mappers.entityToUser
@@ -13,6 +14,10 @@ import org.tcl.app.tables.ProfilesTable
 import org.tcl.app.tables.UsersTable
 import org.tcl.app.user.User
 import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.tcl.app.mappers.entityToDetailedUser
+import org.tcl.app.repositories.UserRepository
+import org.tcl.app.user.DetailedUser
+import java.sql.SQLException
 
 class PostgresUserRepository : UserRepository {
     override suspend fun createUser(
@@ -27,7 +32,7 @@ class PostgresUserRepository : UserRepository {
                 this.passwordSalt = passwordSalt
             }.let(::entityToUser)
         } catch (e: ExposedSQLException) {
-            val sqlState = (e.cause as? java.sql.SQLException)?.sqlState
+            val sqlState = (e.cause as? SQLException)?.sqlState
             if (sqlState == "23505") null else throw e
         }
     }
@@ -46,10 +51,58 @@ class PostgresUserRepository : UserRepository {
         ).map(::entityToUser)
     }
 
+    override suspend fun updateUser(
+        id: Int,
+        firstName: String?,
+        lastName: String?,
+        phoneNumber: String?,
+        address: String?,
+        isMember: Boolean?,
+    ): DetailedUser? = withTransaction {
+        val user = UserEntity.findById(id) ?: return@withTransaction null
+
+        println(user.email)
+
+        if (isMember != null) user.isMember = isMember
+
+        val hasProfileFields = firstName != null || lastName != null || phoneNumber != null || address != null
+        if (hasProfileFields) {
+            val profile = user.profile
+            if (profile != null) {
+                if (firstName != null) profile.firstName = firstName
+                if (lastName != null) profile.lastName = lastName
+                if (phoneNumber != null) profile.phoneNumber = phoneNumber
+                if (address != null) profile.address = address
+            } else {
+                ProfileEntity.new {
+                    this.firstName = firstName ?: ""
+                    this.lastName = lastName ?: ""
+                    this.phoneNumber = phoneNumber
+                    this.address = address
+                    this.user = user
+                }
+            }
+        }
+
+        entityToDetailedUser(user)
+    }
+
     override suspend fun userById(id: Int): User? = withTransaction {
         UserEntity
             .findById(id)
             ?.let(::entityToUser)
+    }
+
+    override suspend fun detailedUserById(id: Int): DetailedUser? = withTransaction {
+        UserEntity
+            .findById(id)
+            ?.let(::entityToDetailedUser)
+    }
+
+    override suspend fun authUserById(id: Int): AuthUser? = withTransaction {
+        UserEntity
+            .findById(id)
+            ?.let(::entityToAuthUser)
     }
 
     override suspend fun authUserByEmail(email: String): AuthUser? = withTransaction {

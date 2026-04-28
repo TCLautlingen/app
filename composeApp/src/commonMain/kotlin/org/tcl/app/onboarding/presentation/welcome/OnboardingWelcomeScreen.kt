@@ -85,7 +85,7 @@ fun OnboardingWelcomeScreen(
 
                 Button(
                     text = "Ich habe schon ein Konto",
-                    onClick = { },
+                    onClick = { onNavigate(AppGraph.Auth) },
                     modifier = Modifier.fillMaxWidth(),
                     variant = ButtonVariant.Ghost
                 )

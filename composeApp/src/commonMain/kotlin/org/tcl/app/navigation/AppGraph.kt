@@ -24,9 +24,6 @@ sealed interface AppGraph : NavKey {
     data object OnboardingContact : AppGraph
 
     @Serializable
-    data object OnboardingRules : AppGraph
-
-    @Serializable
     data object Auth : AppGraph
 
     @Serializable

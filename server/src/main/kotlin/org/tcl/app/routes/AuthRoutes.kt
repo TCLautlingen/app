@@ -5,14 +5,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import org.tcl.app.auth.EMAIL_ALREADY_EXISTS_ERROR
-import org.tcl.app.auth.LoginRequest
-import org.tcl.app.auth.LogoutRequest
-import org.tcl.app.auth.RefreshRequest
-import org.tcl.app.auth.RegisterRequest
-import org.tcl.app.auth.RegisterResult
-import org.tcl.app.auth.VALIDATION_ERROR_EMAIL
-import org.tcl.app.auth.VALIDATION_ERROR_PASSWORD
+import org.tcl.app.auth.*
 import org.tcl.app.services.UserService
 
 fun Route.authRoutes() {
@@ -21,17 +14,15 @@ fun Route.authRoutes() {
     route("/auth") {
         post("/register") {
             val request = call.receive<RegisterRequest>()
-            require(request.email.matches(Regex(".+@.+\\..+"))) { VALIDATION_ERROR_EMAIL }
-            require(request.password.length >= 8) { VALIDATION_ERROR_PASSWORD }
 
             val registerResult = userService.registerUser(
-                email = request.email,
+                email = request.email.trim(),
                 password = request.password
             )
 
             when (registerResult) {
-                is RegisterResult.EmailAlreadyExists -> call.respond(HttpStatusCode.Conflict, EMAIL_ALREADY_EXISTS_ERROR)
                 is RegisterResult.Success -> call.respond(registerResult.tokens)
+                is RegisterResult.Errors -> call.respond(HttpStatusCode.BadRequest, registerResult.errors)
             }
         }
 
@@ -39,7 +30,7 @@ fun Route.authRoutes() {
             val request = call.receive<LoginRequest>()
 
             val authTokens = userService.login(
-                email = request.email,
+                email = request.email.trim(),
                 password = request.password
             ) ?: return@post call.respond(HttpStatusCode.Unauthorized)
 

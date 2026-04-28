@@ -9,5 +9,5 @@ interface AuthRemoteDataSource {
     suspend fun refresh(refreshToken: String) : Result<AuthTokens, DataError>
     suspend fun login(email: String, password: String) : Result<AuthTokens, LoginError>
     suspend fun logout(refreshToken: String) : EmptyResult<DataError>
-    suspend fun register(email: String, password: String) : Result<AuthTokens, RegisterError>
+    suspend fun register(email: String, password: String) : Result<AuthTokens, RegisterErrors>
 }

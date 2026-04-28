@@ -1,13 +1,22 @@
 package org.tcl.app.onboarding.presentation.account
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import org.tcl.app.auth.presentation.AuthAction
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.auth.RegisterField
+import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.navigation.AppGraph
 import zed.rainxch.rikkaui.components.ui.button.Button
+import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
+import zed.rainxch.rikkaui.components.ui.checkbox.Checkbox
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.input.Input
 import zed.rainxch.rikkaui.components.ui.label.Label
@@ -19,18 +28,33 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 @Composable
 fun OnboardingAccountRoot(
     onNavigateBack: () -> Unit,
-    onNavigate: (AppGraph) -> Unit
+    onNavigate: (AppGraph) -> Unit,
+    onRegistered: () -> Unit,
+    viewModel: OnboardingAccountViewModel = koinViewModel(),
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            OnboardingAccountEvent.RegisteredSuccessfully -> {
+                onRegistered()
+                onNavigate(AppGraph.OnboardingMembership)
+            }
+        }
+    }
+
     OnboardingAccountScreen(
+        state = state,
+        onAction = viewModel::onAction,
         onNavigateBack = onNavigateBack,
-        onNavigate = onNavigate,
     )
 }
 
 @Composable
 fun OnboardingAccountScreen(
+    state: OnboardingAccountState,
+    onAction: (OnboardingAccountAction) -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigate: (AppGraph) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -58,65 +82,80 @@ fun OnboardingAccountScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg),
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
-                ) {
-                    Label(
-                        text = "Email",
-                        required = true
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                    Label(text = "Email", required = true)
                     Input(
-                        value = "",
-                        onValueChange = {  },
+                        value = state.email,
+                        onValueChange = { onAction(OnboardingAccountAction.OnEmailChange(it)) },
                         placeholder = "maxmustermann@beispiel.de",
                         label = "Email",
                     )
+                    Text(text = state.emailError?: "", color = RikkaTheme.colors.destructive)
                 }
 
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
-                ) {
-                    Label(
-                        text = "Passwort",
-                        required = true
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                    Label(text = "Passwort", required = true)
                     Input(
-                        value = "",
-                        onValueChange = {  },
+                        value = state.password,
+                        onValueChange = { onAction(OnboardingAccountAction.OnPasswordChange(it)) },
                         label = "Passwort",
                     )
+                    Text(text = state.passwordError ?: "", color = RikkaTheme.colors.destructive)
                 }
 
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
-                ) {
-                    Label(
-                        text = "Passwort wiederholen",
-                        required = true
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                    Label(text = "Passwort wiederholen", required = true)
                     Input(
-                        value = "",
-                        onValueChange = {  },
+                        value = state.confirmPassword,
+                        onValueChange = { onAction(OnboardingAccountAction.OnConfirmPasswordChange(it)) },
                         label = "Passwort wiederholen",
                     )
+                    Text(text = state.confirmPasswordError ?: "", color = RikkaTheme.colors.destructive)
                 }
 
-                Text(
-                    text = "",
-                    color = RikkaTheme.colors.destructive,
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
+                    ) {
+                        Checkbox(
+                            checked = state.termsChecked,
+                            onCheckedChange ={ onAction(OnboardingAccountAction.OnTermsCheck(it)) },
+                        )
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = "Ich stimme den "
+                            )
+                            Text(
+                                text = "Nutzungsbedingungen",
+                                modifier = Modifier.clickable { },
+                                style = TextStyle(textDecoration = TextDecoration.Underline),
+                            )
+                            Text(
+                                text = "und der "
+                            )
+                            Text(
+                                text = "Datenschutzerklärung",
+                                modifier = Modifier.clickable { },
+                                style = TextStyle(textDecoration = TextDecoration.Underline),
+                            )
+                            Text(
+                                text = " zu."
+                            )
+                        }
+                    }
+
+                    Text(text = state.termsError ?: "", color = RikkaTheme.colors.destructive)
+                }
             }
 
-            Column(
+            Button(
+                text = "Weiter",
+                onClick = { onAction(OnboardingAccountAction.OnNextClick) },
+                enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
-            ) {
-                Button(
-                    text = "Weiter",
-                    onClick = { onNavigate(AppGraph.OnboardingMembership) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            )
         }
     }
 }

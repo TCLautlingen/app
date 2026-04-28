@@ -21,7 +21,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.getKoin
 import org.tcl.app.auth.domain.AuthRemoteDataSource
-import org.tcl.app.auth.presentation.AuthRoot
+import org.tcl.app.auth.presentation.login.AuthLoginRoot
 import org.tcl.app.booking.presentation.court.BookingCourtRoot
 import org.tcl.app.booking.presentation.editor.BookingEditorRoot
 import org.tcl.app.booking.presentation.list.BookingListRoot
@@ -36,7 +36,6 @@ import org.tcl.app.onboarding.presentation.account.OnboardingAccountRoot
 import org.tcl.app.onboarding.presentation.contact.OnboardingContactRoot
 import org.tcl.app.onboarding.presentation.membership.OnboardingMembershipRoot
 import org.tcl.app.onboarding.presentation.profile.OnboardingProfileRoot
-import org.tcl.app.onboarding.presentation.rules.OnboardingRulesRoot
 import org.tcl.app.onboarding.presentation.welcome.OnboardingWelcomeRoot
 import org.tcl.app.user.domain.UserRemoteDataSource
 import org.tcl.app.user.presentation.editor.UserEditorRoot
@@ -56,35 +55,18 @@ fun AppNavigation() {
             override fun onNewToken(token: String) {
                 if (loggedIn) {
                     CoroutineScope(Dispatchers.Main).launch {
-                        notificationRemoteDataSource.registerToken(
-                            token = token,
-                        )
+                        notificationRemoteDataSource.registerToken(token = token)
                     }
                 }
             }
         })
     }
 
-    LaunchedEffect(Unit) {
-        if (!secureStorage.tokens.refreshToken.isBlank()) {
-            authRemoteDataSource.refresh(secureStorage.tokens.refreshToken)
-                .onSuccess { authTokens ->
-                    secureStorage.tokens = authTokens
-                    loggedIn = true
-                }
-                .onFailure {
-                    loggedIn = false
-                }
-        }
-    }
-
     LaunchedEffect(loggedIn) {
         if (loggedIn) {
             val token = NotifierManager.getPushNotifier().getToken()
             if (token != null) {
-                notificationRemoteDataSource.registerToken(
-                    token = token,
-                )
+                notificationRemoteDataSource.registerToken(token = token)
             }
         }
     }
@@ -93,73 +75,56 @@ fun AppNavigation() {
         configuration = SavedStateConfiguration {
             serializersModule = SerializersModule {
                 polymorphic(NavKey::class) {
-                    subclass(
-                        AppGraph.OnboardingWelcome::class,
-                        AppGraph.OnboardingWelcome.serializer(),
-                    )
-                    subclass(
-                        AppGraph.Auth::class,
-                        AppGraph.Auth.serializer(),
-                    )
-                    subclass(
-                        AppGraph.BookingList::class,
-                        AppGraph.BookingList.serializer(),
-                    )
-                    subclass(
-                        AppGraph.CreateBooking::class,
-                        AppGraph.CreateBooking.serializer(),
-                    )
-                    subclass(
-                        AppGraph.BookingSuccess::class,
-                        AppGraph.BookingSuccess.serializer(),
-                    )
-                    subclass(
-                        AppGraph.BookingCourt::class,
-                        AppGraph.BookingCourt.serializer()
-                    )
-                    subclass(
-                        AppGraph.UserProfile::class,
-                        AppGraph.UserProfile.serializer()
-                    )
-                    subclass(
-                        AppGraph.UserList::class,
-                        AppGraph.UserList.serializer()
-                    )
-                    subclass(
-                        AppGraph.UserEditor::class,
-                        AppGraph.UserEditor.serializer()
-                    )
-                    subclass(
-                        AppGraph.NotificationInbox::class,
-                        AppGraph.NotificationInbox.serializer()
-                    )
-                    subclass(
-                        AppGraph.NotificationBuilder::class,
-                        AppGraph.NotificationBuilder.serializer()
-                    )
+                    subclass(AppGraph.OnboardingWelcome::class, AppGraph.OnboardingWelcome.serializer())
+                    subclass(AppGraph.OnboardingAccount::class, AppGraph.OnboardingAccount.serializer())
+                    subclass(AppGraph.OnboardingMembership::class, AppGraph.OnboardingMembership.serializer())
+                    subclass(AppGraph.OnboardingProfile::class, AppGraph.OnboardingProfile.serializer())
+                    subclass(AppGraph.OnboardingContact::class, AppGraph.OnboardingContact.serializer())
+                    subclass(AppGraph.Auth::class, AppGraph.Auth.serializer())
+                    subclass(AppGraph.BookingList::class, AppGraph.BookingList.serializer())
+                    subclass(AppGraph.CreateBooking::class, AppGraph.CreateBooking.serializer())
+                    subclass(AppGraph.BookingSuccess::class, AppGraph.BookingSuccess.serializer())
+                    subclass(AppGraph.BookingCourt::class, AppGraph.BookingCourt.serializer())
+                    subclass(AppGraph.UserProfile::class, AppGraph.UserProfile.serializer())
+                    subclass(AppGraph.UserList::class, AppGraph.UserList.serializer())
+                    subclass(AppGraph.UserEditor::class, AppGraph.UserEditor.serializer())
+                    subclass(AppGraph.NotificationInbox::class, AppGraph.NotificationInbox.serializer())
+                    subclass(AppGraph.NotificationBuilder::class, AppGraph.NotificationBuilder.serializer())
                 }
             }
         },
         AppGraph.OnboardingWelcome,
     )
 
-    /*
-    LaunchedEffect(loggedIn) {
-        if (loggedIn) {
-            navStack.clear()
-            navStack.add(AppGraph.BookingList)
-        } else {
-            navStack.clear()
-            navStack.add(AppGraph.Auth)
+    LaunchedEffect(Unit) {
+        if (!secureStorage.tokens.refreshToken.isBlank()) {
+            authRemoteDataSource.refresh(secureStorage.tokens.refreshToken)
+                .onSuccess { authTokens ->
+                    secureStorage.tokens = authTokens
+                    loggedIn = true
+                    userRemoteDataSource.getCurrentUser()
+                        .onSuccess { user ->
+                            navStack.clear()
+                            if (user.firstName.isBlank()) {
+                                navStack.add(AppGraph.OnboardingMembership)
+                            } else {
+                                navStack.add(AppGraph.BookingList)
+                            }
+                        }
+                        .onFailure {
+                            navStack.clear()
+                            navStack.add(AppGraph.BookingList)
+                        }
+                }
+                .onFailure {
+                    loggedIn = false
+                }
         }
     }
-     */
 
     NavDisplay(
         backStack = navStack,
-        onBack = {
-            navStack.removeLastOrNull()
-        },
+        onBack = { navStack.removeLastOrNull() },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
@@ -175,6 +140,7 @@ fun AppNavigation() {
                 OnboardingAccountRoot(
                     onNavigateBack = { navStack.removeLastOrNull() },
                     onNavigate = { route -> navStack.add(route) },
+                    onRegistered = { loggedIn = true },
                 )
             }
 
@@ -195,28 +161,23 @@ fun AppNavigation() {
             entry<AppGraph.OnboardingContact> {
                 OnboardingContactRoot(
                     onNavigateBack = { navStack.removeLastOrNull() },
-                    onNavigate = { route -> navStack.add(route) },
-                )
-            }
-
-            entry<AppGraph.OnboardingRules> {
-                OnboardingRulesRoot(
-                    onNavigateBack = { navStack.removeLastOrNull() },
-                    onNavigate = { route -> navStack.add(route) },
+                    onComplete = {
+                        navStack.clear()
+                        navStack.add(AppGraph.BookingList)
+                    },
                 )
             }
 
             entry<AppGraph.Auth> {
-                AuthRoot(
+                AuthLoginRoot(
+                    onNavigateBack = { navStack.removeLastOrNull() },
                     onSuccess = { loggedIn = true },
                 )
             }
 
             entry<AppGraph.BookingList> {
                 BookingListRoot(
-                    onNavigate = { route ->
-                        navStack.add(route)
-                    },
+                    onNavigate = { route -> navStack.add(route) },
                     currentRoute = navStack.lastOrNull() as AppGraph?
                 )
             }
@@ -227,11 +188,7 @@ fun AppNavigation() {
                     courtId = it.courtId,
                     startTime = it.startTime,
                     onCourtBooked = { booking ->
-                        navStack.add(
-                            AppGraph.BookingSuccess(
-                                booking = booking
-                            )
-                        )
+                        navStack.add(AppGraph.BookingSuccess(booking = booking))
                     },
                     onNavigateBack = { navStack.removeLastOrNull() },
                 )
@@ -249,18 +206,14 @@ fun AppNavigation() {
 
             entry<AppGraph.BookingCourt> {
                 BookingCourtRoot(
-                    onNavigate = { route ->
-                        navStack.add(route)
-                    },
+                    onNavigate = { route -> navStack.add(route) },
                     currentRoute = navStack.lastOrNull() as AppGraph?
                 )
             }
 
             entry<AppGraph.UserProfile> {
                 UserProfileRoot(
-                    onNavigate = { route ->
-                        navStack.add(route)
-                    },
+                    onNavigate = { route -> navStack.add(route) },
                     onLoggedOut = { loggedIn = false },
                     currentRoute = navStack.lastOrNull() as AppGraph?
                 )
@@ -268,9 +221,7 @@ fun AppNavigation() {
 
             entry<AppGraph.UserList> {
                 UserListRoot(
-                    onNavigate = { route ->
-                        navStack.add(route)
-                    },
+                    onNavigate = { route -> navStack.add(route) },
                     onNavigateBack = { navStack.removeLastOrNull() },
                 )
             }

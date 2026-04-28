@@ -34,6 +34,15 @@ class UserProfileViewModel(
 
     fun onAction(action: UserProfileAction) {
         when (action) {
+            is UserProfileAction.OnFirstNameChange ->
+                _state.update { it.copy(firstName = action.firstName) }
+            is UserProfileAction.OnLastNameChange ->
+                _state.update { it.copy(lastName = action.lastName) }
+            is UserProfileAction.OnPhoneNumberChange ->
+                _state.update { it.copy(phoneNumber = action.phoneNumber) }
+            is UserProfileAction.OnAddressChange ->
+                _state.update { it.copy(address = action.address) }
+            is UserProfileAction.OnSaveClick -> save()
             is UserProfileAction.OnLogoutClick -> logout()
         }
     }
@@ -46,9 +55,41 @@ class UserProfileViewModel(
                     _state.update {
                         it.copy(
                             user = user,
-                            isLoading = false
+                            isLoading = false,
+                            firstName = user.firstName,
+                            lastName = user.lastName,
+                            phoneNumber = user.phoneNumber,
+                            address = user.address,
                         )
                     }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+    private fun save() {
+        val currentState = _state.value
+
+        _state.update { it.copy(isSaving = true) }
+
+        viewModelScope.launch {
+            dataSource.updateCurrentUser(
+                firstName = currentState.firstName,
+                lastName = currentState.lastName,
+                phoneNumber = currentState.phoneNumber,
+                address = currentState.address,
+            )
+                .onSuccess { user ->
+                    _state.update { it.copy(
+                        user = user,
+                        isSaving = false,
+                        firstName = currentState.firstName,
+                        lastName = currentState.lastName,
+                        phoneNumber = currentState.phoneNumber,
+                        address = currentState.address,
+                    ) }
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }

@@ -1,6 +1,7 @@
-package org.tcl.app.repositories
+package org.tcl.app.repositories.fake
 
 import org.tcl.app.court.Court
+import org.tcl.app.repositories.CourtRepository
 
 class FakeCourtRepository : CourtRepository {
     private val courts = mutableListOf(

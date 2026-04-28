@@ -1,9 +1,12 @@
 package org.tcl.app.auth.data
 
 import org.tcl.app.auth.AuthTokens
+import org.tcl.app.auth.RegisterError
+import org.tcl.app.auth.RegisterErrorCode
+import org.tcl.app.auth.RegisterField
 import org.tcl.app.auth.domain.AuthRemoteDataSource
 import org.tcl.app.auth.domain.LoginError
-import org.tcl.app.auth.domain.RegisterError
+import org.tcl.app.auth.domain.RegisterErrors
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
@@ -33,8 +36,10 @@ class FakeAuthRemoteDataSource : AuthRemoteDataSource {
     override suspend fun register(
         email: String,
         password: String
-    ): Result<AuthTokens, RegisterError> {
-        return if (email == "taken@test.com") Result.Error(RegisterError.EmailAlreadyExists)
+    ): Result<AuthTokens, RegisterErrors> {
+        return if (email == "taken@test.com") Result.Error(
+            RegisterErrors(listOf(RegisterError(RegisterField.EMAIL, RegisterErrorCode.EMAIL_ALREADY_EXISTS)))
+        )
         else Result.Success(fakeTokens)
     }
 }
