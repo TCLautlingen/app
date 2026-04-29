@@ -2,7 +2,7 @@ package org.tcl.app.mappers
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.tcl.app.entities.NotificationEntity
+import org.tcl.app.db.entities.NotificationEntity
 import org.tcl.app.models.Notification
 
 fun entityToNotification(entity: NotificationEntity): Notification = Notification(

@@ -1,4 +1,4 @@
-package org.tcl.app.di
+package org.tcl.app
 
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -27,31 +27,31 @@ import org.tcl.app.services.NotificationService
 import org.tcl.app.services.SlotService
 import org.tcl.app.services.UserService
 
-const val TESTING = false
-
 val appModule = module {
+    val testing = false
+
     single<UserRepository> {
-        if (TESTING) FakeUserRepository()
+        if (testing) FakeUserRepository()
         else PostgresUserRepository()
     }
     single<BookingRepository> {
-        if (TESTING) FakeBookingRepository(get())
+        if (testing) FakeBookingRepository(get())
         else PostgresBookingRepository()
     }
     single<RefreshTokenRepository> {
-        if (TESTING) FakeRefreshTokenRepository()
+        if (testing) FakeRefreshTokenRepository()
         else PostgresRefreshTokenRepository()
     }
     single<NotificationTokenRepository> {
-        if (TESTING) FakeNotificationTokenRepository()
+        if (testing) FakeNotificationTokenRepository()
         else PostgresNotificationTokenRepository()
     }
     single<CourtRepository> {
-        if (TESTING) FakeCourtRepository()
+        if (testing) FakeCourtRepository()
         else PostgresCourtRepository()
     }
     single<NotificationRepository> {
-        if (TESTING) FakeNotificationRepository(get())
+        if (testing) FakeNotificationRepository(get())
         else PostgresNotificationRepository()
     }
 

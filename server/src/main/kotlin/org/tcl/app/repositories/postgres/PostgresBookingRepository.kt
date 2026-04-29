@@ -10,14 +10,14 @@ import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.SizedCollection
 import org.jetbrains.exposed.v1.jdbc.select
 import org.tcl.app.booking.Booking
-import org.tcl.app.entities.BookingEntity
-import org.tcl.app.entities.CourtEntity
-import org.tcl.app.entities.UserEntity
+import org.tcl.app.db.entities.BookingEntity
+import org.tcl.app.db.entities.CourtEntity
+import org.tcl.app.db.entities.UserEntity
 import org.tcl.app.mappers.entityToBooking
-import org.tcl.app.plugins.withTransaction
+import org.tcl.app.db.withTransaction
 import org.tcl.app.repositories.BookingRepository
-import org.tcl.app.tables.BookingPlayersTable
-import org.tcl.app.tables.BookingsTable
+import org.tcl.app.db.tables.BookingPlayersTable
+import org.tcl.app.db.tables.BookingsTable
 
 class PostgresBookingRepository : BookingRepository {
     override suspend fun allBookingsForUser(userId: Int): List<Booking> = withTransaction {

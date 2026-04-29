@@ -1,8 +1,8 @@
 package org.tcl.app.repositories.postgres
 
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import org.tcl.app.entities.NotificationEntity
-import org.tcl.app.entities.UserEntity
+import org.tcl.app.db.entities.NotificationEntity
+import org.tcl.app.db.entities.UserEntity
 import org.tcl.app.mappers.entityToNotification
 import org.tcl.app.models.Notification
 import org.tcl.app.repositories.NotificationRepository

@@ -9,7 +9,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
-import org.tcl.app.plugins.JwtConfig.userId
+import org.tcl.app.JwtConfig.userId
 import org.tcl.app.services.UserService
 import org.tcl.app.user.UpdateUserRequest
 

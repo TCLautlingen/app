@@ -1,7 +1,7 @@
 package org.tcl.app.mappers
 
 import org.tcl.app.booking.Booking
-import org.tcl.app.entities.BookingEntity
+import org.tcl.app.db.entities.BookingEntity
 
 fun entityToBooking(entity: BookingEntity): Booking = Booking(
     id = entity.id.value,

@@ -1,25 +1,27 @@
 package org.tcl.app
 
 import io.ktor.server.application.*
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import org.koin.ktor.plugin.Koin
-import org.tcl.app.di.appModule
-import org.tcl.app.plugins.configureAuthentication
-import org.tcl.app.plugins.configureCors
-import org.tcl.app.plugins.configureDatabases
-import org.tcl.app.plugins.configureRouting
-import org.tcl.app.plugins.configureSerialization
-import org.tcl.app.plugins.configureStatusPages
+import org.tcl.app.db.configureDatabases
+import org.tcl.app.routes.configureRouting
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main() {
+    embeddedServer(
+        Netty,
+        port = System.getenv("PORT")?.toIntOrNull() ?: 8080,
+        host = "0.0.0.0",
+        module = Application::module
+    ).start(wait = true)
+}
 
 fun Application.module() {
     install(Koin) {
         modules(appModule)
     }
-    configureDatabases()
     configureSerialization()
-    configureStatusPages()
-    configureCors()
-    configureAuthentication()
+    configureHTTP()
+    configureDatabases()
     configureRouting()
 }

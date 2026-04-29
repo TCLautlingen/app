@@ -1,6 +1,6 @@
 package org.tcl.app.mappers
 
-import org.tcl.app.entities.RefreshTokenEntity
+import org.tcl.app.db.entities.RefreshTokenEntity
 import org.tcl.app.models.RefreshToken
 
 fun entityToRefreshToken(entity: RefreshTokenEntity) = RefreshToken(

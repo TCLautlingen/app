@@ -1,4 +1,4 @@
-package org.tcl.app.plugins
+package org.tcl.app
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -11,12 +11,12 @@ import javax.naming.AuthenticationException
 
 object JwtConfig {
     private const val ISSUER = "tcl-app"
-    private const val ACCESS_SECRET = "access-secret"
+    private val SECRET = System.getenv("JWT_SECRET")
 
-    const val ACCESS_TOKEN_EXPIRES_MS = 15 * 60 * 1000L // 15 minutes
+    private const val ACCESS_TOKEN_EXPIRES_MS = 15 * 60 * 1000L // 15 minutes
 
     val verifier: JWTVerifier = JWT
-        .require(Algorithm.HMAC256(ACCESS_SECRET))
+        .require(Algorithm.HMAC256(SECRET))
         .withIssuer(ISSUER)
         .build()
 
@@ -25,7 +25,7 @@ object JwtConfig {
             .withIssuer(ISSUER)
             .withClaim("userId", userId)
             .withExpiresAt(Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRES_MS))
-            .sign(Algorithm.HMAC256(ACCESS_SECRET))
+            .sign(Algorithm.HMAC256(SECRET))
 
     fun ApplicationCall.userId(): Int =
         principal<JWTPrincipal>()

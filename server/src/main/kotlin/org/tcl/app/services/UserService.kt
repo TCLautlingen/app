@@ -1,22 +1,15 @@
 package org.tcl.app.services
 
-import org.tcl.app.auth.AuthTokens
-import org.tcl.app.auth.RegisterError
-import org.tcl.app.auth.RegisterErrorCode
-import org.tcl.app.auth.RegisterField
-import org.tcl.app.auth.RegisterResult
-import org.tcl.app.auth.RegisterValidator
+import org.tcl.app.auth.*
 import org.tcl.app.models.AuthUser
-import org.tcl.app.plugins.JwtConfig
-import org.tcl.app.repositories.NotificationTokenRepository
+import org.tcl.app.JwtConfig
 import org.tcl.app.repositories.RefreshTokenRepository
 import org.tcl.app.repositories.UserRepository
 import org.tcl.app.user.DetailedUser
-import org.tcl.app.user.UpdateUserRequest
 import org.tcl.app.user.User
 import java.security.SecureRandom
 import java.security.spec.KeySpec
-import java.util.HexFormat
+import java.util.*
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -24,7 +17,6 @@ import javax.crypto.spec.PBEKeySpec
 class UserService(
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val notificationTokenRepository: NotificationTokenRepository
 ) {
     suspend fun registerUser(
         email: String,
@@ -161,7 +153,7 @@ private const val REFRESH_TOKEN_DURATION_MS = 30L * 24 * 60 * 60 * 1000
 private const val ALGORITHM = "PBKDF2WithHmacSHA512"
 private const val ITERATIONS = 120_000
 private const val KEY_LENGTH = 256
-private const val SECRET = "SomeRandomSecret"
+private val SECRET = System.getenv("SALT_HASH_SECRET")
 
 private fun generateHash(password: String, salt: String): String {
     val combinedSalt = "$salt$SECRET".toByteArray()

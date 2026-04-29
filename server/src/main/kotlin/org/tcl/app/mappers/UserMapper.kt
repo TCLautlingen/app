@@ -1,6 +1,6 @@
 package org.tcl.app.mappers
 
-import org.tcl.app.entities.UserEntity
+import org.tcl.app.db.entities.UserEntity
 import org.tcl.app.models.AuthUser
 import org.tcl.app.user.DetailedUser
 import org.tcl.app.user.User

@@ -14,7 +14,7 @@ import kotlinx.datetime.LocalTime
 import org.koin.ktor.ext.inject
 import org.tcl.app.booking.BookingRequest
 import org.tcl.app.booking.VALID_BOOKING_DURATIONS
-import org.tcl.app.plugins.JwtConfig.userId
+import org.tcl.app.JwtConfig.userId
 import org.tcl.app.services.BookingService
 import org.tcl.app.services.END_TIME
 import org.tcl.app.util.plusMinutes

@@ -13,7 +13,7 @@ import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.tcl.app.notification.RegisterNotificationTokenRequest
 import org.tcl.app.notification.SendNotificationRequest
-import org.tcl.app.plugins.JwtConfig.userId
+import org.tcl.app.JwtConfig.userId
 import org.tcl.app.services.NotificationService
 
 fun Route.notificationRoutes() {

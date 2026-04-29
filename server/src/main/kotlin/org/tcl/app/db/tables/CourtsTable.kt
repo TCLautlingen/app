@@ -1,4 +1,4 @@
-package org.tcl.app.tables
+package org.tcl.app.db.tables
 
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 
