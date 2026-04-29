@@ -2,25 +2,18 @@ package org.tcl.app.user.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.client.plugins.auth.clearAuthTokens
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tcl.app.auth.domain.AuthRemoteDataSource
-import org.tcl.app.core.data.network.BackendApiClient
-import org.tcl.app.core.data.SecureStorage
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.user.domain.UserRemoteDataSource
 
 class UserProfileViewModel(
-    private val secureStorage: SecureStorage,
-    private val backendApiClient: BackendApiClient,
     private val dataSource: UserRemoteDataSource,
-    private val authRemoteDataSource: AuthRemoteDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserProfileState())
     val state = _state.asStateFlow()
@@ -99,18 +92,6 @@ class UserProfileViewModel(
 
     private fun logout() {
         viewModelScope.launch {
-            authRemoteDataSource.logout(
-                refreshToken = secureStorage.tokens.refreshToken
-            )
-                .onSuccess {
-
-                }
-                .onFailure {
-                    
-                }
-
-            secureStorage.clearAuthTokens()
-            backendApiClient.client.clearAuthTokens()
             _events.send(UserProfileEvent.LoggedOut)
         }
     }
