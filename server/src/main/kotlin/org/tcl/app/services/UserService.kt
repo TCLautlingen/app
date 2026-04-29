@@ -7,6 +7,7 @@ import org.tcl.app.repositories.RefreshTokenRepository
 import org.tcl.app.repositories.UserRepository
 import org.tcl.app.user.DetailedUser
 import org.tcl.app.user.User
+import java.security.MessageDigest
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import java.util.*
@@ -55,7 +56,7 @@ class UserService(
         val user = userRepository.authUserByEmail(email) ?: return null
         val passwordHash = generateHash(password, user.passwordSalt)
 
-        if (passwordHash != user.passwordHash) {
+        if (!MessageDigest.isEqual(passwordHash.toByteArray(), user.passwordHash.toByteArray())) {
             return null
         }
 

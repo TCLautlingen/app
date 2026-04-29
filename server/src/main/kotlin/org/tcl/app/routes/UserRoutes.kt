@@ -29,7 +29,7 @@ fun Route.userRoutes() {
                 val userId = call.userId()
 
                 val user = userService.getDetailedUserById(userId)
-                    ?: return@get call.respond("No user with id $userId")
+                    ?: return@get call.respond(HttpStatusCode.NotFound)
 
                 call.respond(user)
             }
@@ -53,7 +53,7 @@ fun Route.userRoutes() {
                 val calledUserId = call.userId()
 
                 val requestUser = userService.getAuthUserById(calledUserId)
-                    ?: return@get call.respond("No user with id $calledUserId")
+                    ?: return@get call.respond(HttpStatusCode.NotFound)
 
                 if (!requestUser.isAdmin) {
                     return@get call.respond(HttpStatusCode.Forbidden)
@@ -62,7 +62,7 @@ fun Route.userRoutes() {
                 val id = requireNotNull(call.parameters["id"]?.toIntOrNull()) { "Invalid id" }
 
                 val user = userService.getDetailedUserById(id)
-                    ?: return@get call.respond("No user with id $id")
+                    ?: return@get call.respond(HttpStatusCode.NotFound)
                 call.respond(user)
             }
 
