@@ -223,7 +223,7 @@ fun BookingCard(
                             size = AvatarSize.Sm
                         )
 
-                        Box(
+                        Spacer(
                             modifier = Modifier.width(RikkaTheme.spacing.sm)
                         )
 

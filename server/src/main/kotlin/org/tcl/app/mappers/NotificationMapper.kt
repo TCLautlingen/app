@@ -9,7 +9,7 @@ fun entityToBroadcastNotification(entity: NotificationEntity): BroadcastNotifica
     id = entity.id.value,
     title = entity.title,
     body = entity.body,
-    createdAt = entity.createdAt.toLocalDateTime(TimeZone.UTC),
+    createdAt = entity.createdAt.toLocalDateTime(TimeZone.of("Europe/Berlin")),
     createdByFirstName = entity.createdBy.profile?.firstName ?: "",
     createdByLastName = entity.createdBy.profile?.lastName ?: "",
 )

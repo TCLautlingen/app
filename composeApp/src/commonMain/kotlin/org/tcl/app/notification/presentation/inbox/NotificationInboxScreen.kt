@@ -1,28 +1,26 @@
 package org.tcl.app.notification.presentation.inbox
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.notification.BroadcastNotification
-import org.tcl.app.util.formatDdMmYyyy
+import org.tcl.app.util.formatRelative
+import zed.rainxch.rikkaicons.core.DecorativeAppIcon
+import zed.rainxch.rikkaicons.tokens.Bell
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.card.Card
 import zed.rainxch.rikkaui.components.ui.card.CardContent
+import zed.rainxch.rikkaui.components.ui.card.CardHeader
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
 import zed.rainxch.rikkaui.components.ui.spinner.Spinner
@@ -110,23 +108,41 @@ fun NotificationInboxScreen(
 @Composable
 private fun BroadcastNotificationCard(notification: BroadcastNotification) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        CardContent {
-            Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
-                Text(
-                    text = notification.title,
-                    variant = TextVariant.Large,
-                )
-                Text(
-                    text = notification.body,
-                    variant = TextVariant.Small,
-                )
-                Spacer(modifier = Modifier.height(RikkaTheme.spacing.sm))
-                Text(
-                    text = "${notification.createdAt.date.formatDdMmYyyy()} · ${notification.createdByFirstName} ${notification.createdByLastName}",
-                    variant = TextVariant.Small,
-                    color = RikkaTheme.colors.onMuted,
-                )
+        CardHeader {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RikkaTheme.shapes.lg)
+                        .background(color = RikkaTheme.colors.primary)
+                        .padding(RikkaTheme.spacing.sm)
+                ) {
+                    DecorativeAppIcon(
+                        token = zed.rainxch.rikkaicons.tokens.RikkaIcons.Bell,
+                        tint = RikkaTheme.colors.onPrimary,
+                    )
+                }
+
+                Column {
+                    Text(
+                        text = notification.title,
+                        variant = TextVariant.Large,
+                    )
+                    Text(
+                        text = "${notification.createdByFirstName} ${notification.createdByLastName} · ${notification.createdAt.formatRelative()}",
+                        variant = TextVariant.Small,
+                        color = RikkaTheme.colors.onMuted,
+                    )
+                }
             }
+        }
+        CardContent {
+            Text(
+                text = notification.body,
+                variant = TextVariant.Small,
+            )
         }
     }
 }

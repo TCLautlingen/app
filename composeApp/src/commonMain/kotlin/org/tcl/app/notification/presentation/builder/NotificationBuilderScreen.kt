@@ -73,12 +73,12 @@ fun NotificationBuilderScreen(
                 verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
             ) {
                 Label(
-                    text = "Überschrift",
+                    text = "Titel",
                 )
                 Input(
                     value = state.title,
                     onValueChange = { onAction(NotificationBuilderAction.OnTitleChange(it)) },
-                    label = "Überschrift",
+                    label = "Titel",
                 )
             }
 
@@ -86,12 +86,12 @@ fun NotificationBuilderScreen(
                 verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
             ) {
                 Label(
-                    text = "Inhalt",
+                    text = "Nachricht",
                 )
                 Textarea(
                     value = state.body,
                     onValueChange = { onAction(NotificationBuilderAction.OnBodyChange(it)) },
-                    label = "Inhalt",
+                    label = "Nachricht",
                 )
             }
 
