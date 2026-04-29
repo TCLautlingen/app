@@ -1,7 +1,8 @@
 package org.tcl.app.services
 
-import org.tcl.app.repositories.NotificationTokenRepository
+import org.tcl.app.notification.BroadcastNotification
 import org.tcl.app.repositories.NotificationRepository
+import org.tcl.app.repositories.NotificationTokenRepository
 import org.tcl.app.repositories.UserRepository
 
 class NotificationService(
@@ -21,20 +22,17 @@ class NotificationService(
     suspend fun sendToAll(title: String, body: String, senderId: Int) {
         val notification = notificationRepository.createNotification(title, body, senderId)
 
-        /*
-        notificationRepository.createInboxEntries(
-            notificationId = notification.id,
-            userIds = allUsers.map { it.id }
-        )
-         */
-
         val allTokens = notificationTokenRepository.getAllTokens()
 
         firebaseService.sendToTokens(
             tokens = allTokens,
             title = title,
             body = body,
-            data = mapOf("notificationId" to notification.toString())
+            data = mapOf("notificationId" to notification.id.toString())
         )
+    }
+
+    suspend fun getBroadcastNotifications(): List<BroadcastNotification> {
+        return notificationRepository.getAllNotifications()
     }
 }

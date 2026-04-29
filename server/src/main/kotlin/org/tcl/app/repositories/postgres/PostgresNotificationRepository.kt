@@ -1,10 +1,10 @@
 package org.tcl.app.repositories.postgres
 
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.tcl.app.db.entities.NotificationEntity
 import org.tcl.app.db.entities.UserEntity
-import org.tcl.app.mappers.entityToNotification
-import org.tcl.app.models.Notification
+import org.tcl.app.db.withTransaction
+import org.tcl.app.mappers.entityToBroadcastNotification
+import org.tcl.app.notification.BroadcastNotification
 import org.tcl.app.repositories.NotificationRepository
 
 class PostgresNotificationRepository : NotificationRepository {
@@ -12,12 +12,18 @@ class PostgresNotificationRepository : NotificationRepository {
         title: String,
         body: String,
         senderId: Int
-    ): Notification = transaction {
+    ): BroadcastNotification = withTransaction {
         NotificationEntity
             .new {
                 this.title = title
                 this.body = body
                 this.createdBy = UserEntity[senderId]
-            }.let(::entityToNotification)
+            }.let(::entityToBroadcastNotification)
+    }
+
+    override suspend fun getAllNotifications(): List<BroadcastNotification> = withTransaction {
+        NotificationEntity.all()
+            .sortedByDescending { it.createdAt }
+            .map(::entityToBroadcastNotification)
     }
 }

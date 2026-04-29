@@ -6,6 +6,7 @@ import org.tcl.app.notification.data.FakeNotificationRemoteDataSource
 import org.tcl.app.notification.data.KtorNotificationRemoteDataSource
 import org.tcl.app.notification.domain.NotificationRemoteDataSource
 import org.tcl.app.notification.presentation.builder.NotificationBuilderViewModel
+import org.tcl.app.notification.presentation.inbox.NotificationInboxViewModel
 
 val notificationModule = module {
     single { KtorNotificationRemoteDataSource(get()) }
@@ -15,4 +16,5 @@ val notificationModule = module {
     }
 
     viewModelOf(::NotificationBuilderViewModel)
+    viewModelOf(::NotificationInboxViewModel)
 }

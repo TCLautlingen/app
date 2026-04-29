@@ -1,7 +1,8 @@
 package org.tcl.app.repositories
 
-import org.tcl.app.models.Notification
+import org.tcl.app.notification.BroadcastNotification
 
 interface NotificationRepository {
-    suspend fun createNotification(title: String, body: String, senderId: Int): Notification
+    suspend fun createNotification(title: String, body: String, senderId: Int): BroadcastNotification
+    suspend fun getAllNotifications(): List<BroadcastNotification>
 }

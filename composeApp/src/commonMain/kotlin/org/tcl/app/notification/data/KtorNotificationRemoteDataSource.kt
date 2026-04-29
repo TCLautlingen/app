@@ -1,12 +1,15 @@
 package org.tcl.app.notification.data
 
 import io.ktor.client.request.delete
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import org.tcl.app.notification.BroadcastNotification
 import org.tcl.app.notification.SendNotificationRequest
 import org.tcl.app.core.data.network.BackendApiClient
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
+import org.tcl.app.core.domain.util.Result
 import org.tcl.app.core.domain.util.safeApiCall
 import org.tcl.app.notification.RegisterNotificationTokenRequest
 import org.tcl.app.notification.domain.NotificationRemoteDataSource
@@ -32,5 +35,9 @@ class KtorNotificationRemoteDataSource(
                 body = body
             ))
         }
+    }
+
+    override suspend fun getInbox(): Result<List<BroadcastNotification>, DataError> = safeApiCall {
+        backendApiClient.client.get("notifications/inbox")
     }
 }
