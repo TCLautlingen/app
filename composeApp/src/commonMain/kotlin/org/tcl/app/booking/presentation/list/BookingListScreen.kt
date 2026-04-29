@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -30,8 +31,11 @@ import app.composeapp.generated.resources.Res
 import app.composeapp.generated.resources.drone
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.booking.Booking
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
+import org.tcl.app.util.formatWeekdayDdMonth
+import org.tcl.app.util.plusMinutes
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialog
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogAction
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogActionVariant
@@ -39,6 +43,8 @@ import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogAnimation
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogCancel
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogFooter
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogHeader
+import zed.rainxch.rikkaui.components.ui.avatar.Avatar
+import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
@@ -174,7 +180,7 @@ fun BookingListScreen(
 
 @Composable
 fun BookingCard(
-    booking: BookingUi,
+    booking: Booking,
     onDelete: () -> Unit,
 ) {
     Card(
@@ -188,28 +194,48 @@ fun BookingCard(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(60.dp)
                         .clip(CircleShape)
                         .background(RikkaTheme.colors.primary)
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.drone),
-                        contentDescription = booking.courtName,
+                        contentDescription = "Platz ${booking.id}",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Am ${booking.date} um ${booking.startTime}",
-                        variant = TextVariant.Small,
+                        text = "Platz ${booking.courtId}"
                     )
                     Text(
-                        text = "${booking.duration} Minuten auf ${booking.courtName}",
-                        variant = TextVariant.Small,
+                        text = booking.date.formatWeekdayDdMonth(),
                     )
+                    Text(
+                        text = "${booking.startTime} - ${booking.startTime.plusMinutes(booking.duration)} · ${booking.duration} min",
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)
+                    ) {
+                        Avatar(
+                            fallback = "${booking.user.firstName.firstOrNull()}${booking.user.lastName.firstOrNull()}",
+                            size = AvatarSize.Sm
+                        )
+
+                        Box(
+                            modifier = Modifier.width(RikkaTheme.spacing.sm)
+                        )
+
+                        for (player in booking.players) {
+                            Avatar(
+                                fallback = "${player.firstName.firstOrNull()}${player.lastName.firstOrNull()}",
+                                size = AvatarSize.Sm
+                            )
+                        }
+                    }
                 }
-                if (booking.isOwner) {
+                if (booking.isOwner ?: false) {
                     IconButton(
                         icon = RikkaIcons.Trash,
                         contentDescription = "Delete booking",

@@ -18,8 +18,7 @@ import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
-import kotlinx.datetime.number
-import org.tcl.app.util.getMonthName
+import org.tcl.app.util.germanName
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
@@ -84,7 +83,7 @@ fun DateSheet(
                         )
 
                         Text(
-                            text = getMonthName(currentMonth.month.number) +
+                            text = currentMonth.month.germanName() +
                                     " ${currentMonth.year}"
                         )
 

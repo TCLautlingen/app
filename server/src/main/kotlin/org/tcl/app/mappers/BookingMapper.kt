@@ -5,7 +5,7 @@ import org.tcl.app.db.entities.BookingEntity
 
 fun entityToBooking(entity: BookingEntity): Booking = Booking(
     id = entity.id.value,
-    userId = entity.user.id.value,
+    user = entityToUser(entity.user),
     courtId = entity.court.id.value,
     date = entity.date,
     startTime = entity.startTime,

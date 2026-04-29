@@ -9,7 +9,7 @@ import org.tcl.app.user.User
 @Serializable
 data class Booking(
     val id: Int,
-    val userId: Int,
+    val user: User,
     val courtId: Int,
     val date: LocalDate,
     val startTime: LocalTime,

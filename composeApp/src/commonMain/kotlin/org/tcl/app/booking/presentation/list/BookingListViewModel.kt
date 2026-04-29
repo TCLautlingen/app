@@ -31,7 +31,7 @@ class BookingListViewModel(
                 viewModelScope.launch {
                     _state.update { it.copy(isLoading = true) }
                     try {
-                        dataSource.deleteBooking(_state.value.bookingIdToDelete ?: "")
+                        dataSource.deleteBooking(_state.value.bookingIdToDelete ?: 0)
                         updateBookings()
                         _state.update { it.copy(showDeleteDialog = false, bookingIdToDelete = null) }
                     } catch (e: Exception) {
@@ -53,7 +53,7 @@ class BookingListViewModel(
                 .onSuccess { bookings ->
                     _state.update {
                         it.copy(
-                            bookings = bookings.map { b -> b.toBookingUi() },
+                            bookings = bookings,
                             isLoading = false
                         )
                     }

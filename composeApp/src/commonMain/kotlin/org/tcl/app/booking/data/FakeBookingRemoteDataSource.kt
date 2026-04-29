@@ -10,11 +10,12 @@ import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.DataError
 import org.tcl.app.core.domain.util.EmptyResult
 import org.tcl.app.core.domain.util.Result
+import org.tcl.app.user.User
 
 class FakeBookingRemoteDataSource : BookingRemoteDataSource {
     private val bookings = mutableListOf(
-        Booking(id = 1, userId = 1, courtId = 1, date = LocalDate(2026, 4, 21), startTime = LocalTime(10, 0), duration = 60, players = emptyList()),
-        Booking(id = 2, userId = 1, courtId = 2, date = LocalDate(2026, 4, 22), startTime = LocalTime(14, 0), duration = 90, players = emptyList()),
+        Booking(id = 1, user = User(1, "", "", ""), courtId = 1, date = LocalDate(2026, 4, 21), startTime = LocalTime(10, 0), duration = 60, players = emptyList()),
+        Booking(id = 2, user = User(1, "", "", ""), courtId = 2, date = LocalDate(2026, 4, 22), startTime = LocalTime(14, 0), duration = 90, players = emptyList()),
     )
 
     override suspend fun getUpcomingBookings(from: String): Result<List<Booking>, DataError> =
@@ -29,7 +30,7 @@ class FakeBookingRemoteDataSource : BookingRemoteDataSource {
     ): Result<Booking, DataError> {
         val new = Booking(
             id = bookings.size + 1,
-            userId = 1,
+            user = User(1, "", "", ""),
             courtId = courtId,
             date = date,
             startTime = startTime,
@@ -40,8 +41,8 @@ class FakeBookingRemoteDataSource : BookingRemoteDataSource {
         return Result.Success(new)
     }
 
-    override suspend fun deleteBooking(id: String): EmptyResult<DataError> {
-        bookings.removeAll { it.id == id.toInt() }
+    override suspend fun deleteBooking(id: Int): EmptyResult<DataError> {
+        bookings.removeAll { it.id == id }
         return Result.Success(Unit)
     }
 

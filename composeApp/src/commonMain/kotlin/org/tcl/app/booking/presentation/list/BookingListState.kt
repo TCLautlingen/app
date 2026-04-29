@@ -1,11 +1,12 @@
 package org.tcl.app.booking.presentation.list
 
 import androidx.compose.runtime.Stable
+import org.tcl.app.booking.Booking
 
 @Stable
 data class BookingListState(
-    val bookings: List<BookingUi> = emptyList(),
+    val bookings: List<Booking> = emptyList(),
     val isLoading : Boolean = true,
     val showDeleteDialog: Boolean = false,
-    val bookingIdToDelete: String? = null,
+    val bookingIdToDelete: Int? = null,
 )

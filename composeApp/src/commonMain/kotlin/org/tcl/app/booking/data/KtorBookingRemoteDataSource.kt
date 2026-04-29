@@ -49,7 +49,7 @@ class KtorBookingRemoteDataSource(
         }
     }
 
-    override suspend fun deleteBooking(id: String): EmptyResult<DataError> = safeApiCall {
+    override suspend fun deleteBooking(id: Int): EmptyResult<DataError> = safeApiCall {
         backendApiClient.client.delete("bookings/$id")
     }
 

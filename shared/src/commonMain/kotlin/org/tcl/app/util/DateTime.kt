@@ -1,7 +1,9 @@
 package org.tcl.app.util
 
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Month
 import kotlinx.datetime.number
 
 fun LocalTime.plusMinutes(minutes: Int): LocalTime {
@@ -17,8 +19,27 @@ fun LocalDate.formatDdMmYyyy(): String {
     return "$day.$month.$yearStr"
 }
 
+fun LocalDate.formatWeekdayDdMonth(): String {
+    val day = day.toString().padStart(2, '0')
+    return "${dayOfWeek.germanName()}, $day. ${month.germanName()}"
+}
+
 val MONTH_NAMES = listOf("Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember")
 
-fun getMonthName(month: Int): String {
-    return MONTH_NAMES[month - 1]
+fun Month.germanName(): String {
+    return MONTH_NAMES[ordinal]
+}
+
+val WEEKDAY_NAMES = listOf(
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag",
+    "Sonntag"
+)
+
+fun DayOfWeek.germanName(): String {
+    return WEEKDAY_NAMES[ordinal]
 }

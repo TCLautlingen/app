@@ -19,12 +19,12 @@ class BookingService(
 ) {
     suspend fun getAllBookingsForUser(userId: Int): List<Booking> {
         return bookingRepository.allBookingsForUser(userId)
-            .map { it.copy(isOwner = it.userId == userId) }
+            .map { it.copy(isOwner = it.user.id == userId) }
     }
 
     suspend fun getUpcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> {
         return bookingRepository.upcomingBookingsForUser(userId, from)
-            .map { it.copy(isOwner = it.userId == userId) }
+            .map { it.copy(isOwner = it.user.id == userId) }
     }
 
     suspend fun createBooking(

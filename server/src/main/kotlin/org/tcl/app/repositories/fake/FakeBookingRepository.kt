@@ -13,13 +13,13 @@ class FakeBookingRepository(
     private var nextId = 1
 
     override suspend fun allBookingsForUser(userId: Int): List<Booking> {
-        return bookings.filter { it.userId == userId }
+        return bookings.filter { it.user.id == userId }
     }
 
     override suspend fun upcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> {
         return bookings.filter { booking ->
             booking.date >= from &&
-                    (booking.userId == userId || booking.players.any { it.id == userId })
+                    (booking.user.id == userId || booking.players.any { it.id == userId })
         }
     }
 
@@ -40,12 +40,12 @@ class FakeBookingRepository(
         playerIds: List<Int>
     ): Booking {
         val players = playerIds.mapNotNull { playerId -> userRepository.userById(playerId) }
-        val booking = Booking(nextId++, userId, courtId, date, startTime, duration, players)
+        val booking = Booking(nextId++, userRepository.userById(userId)!!, courtId, date, startTime, duration, players)
         bookings.add(booking)
         return booking
     }
 
     override suspend fun removeBooking(userId: Int, id: Int): Boolean {
-        return bookings.removeIf { it.id == id && it.userId == userId }
+        return bookings.removeIf { it.id == id && it.user.id == userId }
     }
 }
