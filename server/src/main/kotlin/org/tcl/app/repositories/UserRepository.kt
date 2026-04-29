@@ -17,7 +17,12 @@ interface UserRepository {
         lastName: String?,
         phoneNumber: String?,
         address: String?,
+    ): DetailedUser?
+
+    suspend fun adminUpdateUser(
+        id: Int,
         isMember: Boolean?,
+        isAdmin: Boolean?,
     ): DetailedUser?
 
     suspend fun allUsers(searchQuery: String): List<User>

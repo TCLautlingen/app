@@ -10,8 +10,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
-import org.tcl.app.onboarding.presentation.contact.OnboardingContactAction
-import org.tcl.app.onboarding.presentation.profile.OnboardingProfileAction
 import zed.rainxch.rikkaui.components.ui.avatar.Avatar
 import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.button.Button
@@ -109,8 +107,7 @@ fun UserProfileScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(RikkaTheme.spacing.lg),
+                            .weight(1f),
                         verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {

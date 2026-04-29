@@ -1,5 +1,6 @@
 package org.tcl.app.user.domain
 
+import org.tcl.app.user.AdminUpdateUserRequest
 import org.tcl.app.user.UpdateUserRequest
 import org.tcl.app.user.User
 import org.tcl.app.core.domain.util.DataError
@@ -16,6 +17,10 @@ interface UserRemoteDataSource {
         lastName: String? = null,
         phoneNumber: String? = null,
         address: String? = null,
+    ): Result<DetailedUser, DataError>
+    suspend fun adminUpdateUser(
+        userId: Int,
         isMember: Boolean? = null,
+        isAdmin: Boolean? = null,
     ): Result<DetailedUser, DataError>
 }

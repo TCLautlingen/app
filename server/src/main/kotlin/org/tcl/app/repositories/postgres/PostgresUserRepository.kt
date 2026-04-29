@@ -57,13 +57,8 @@ class PostgresUserRepository : UserRepository {
         lastName: String?,
         phoneNumber: String?,
         address: String?,
-        isMember: Boolean?,
     ): DetailedUser? = withTransaction {
         val user = UserEntity.findById(id) ?: return@withTransaction null
-
-        println(user.email)
-
-        if (isMember != null) user.isMember = isMember
 
         val hasProfileFields = firstName != null || lastName != null || phoneNumber != null || address != null
         if (hasProfileFields) {
@@ -83,6 +78,19 @@ class PostgresUserRepository : UserRepository {
                 }
             }
         }
+
+        entityToDetailedUser(user)
+    }
+
+    override suspend fun adminUpdateUser(
+        id: Int,
+        isMember: Boolean?,
+        isAdmin: Boolean?,
+    ): DetailedUser? = withTransaction {
+        val user = UserEntity.findById(id) ?: return@withTransaction null
+
+        if (isMember != null) user.isMember = isMember
+        if (isAdmin != null) user.isAdmin = isAdmin
 
         entityToDetailedUser(user)
     }

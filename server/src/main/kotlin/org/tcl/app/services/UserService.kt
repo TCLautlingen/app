@@ -110,7 +110,6 @@ class UserService(
         lastName: String?,
         phoneNumber: String?,
         address: String?,
-        isMember: Boolean?
     ): DetailedUser? {
         return userRepository.updateUser(
             id = userId,
@@ -118,7 +117,18 @@ class UserService(
             lastName = lastName,
             phoneNumber = phoneNumber,
             address = address,
-            isMember = isMember
+        )
+    }
+
+    suspend fun adminUpdateUser(
+        userId: Int,
+        isMember: Boolean?,
+        isAdmin: Boolean?,
+    ): DetailedUser? {
+        return userRepository.adminUpdateUser(
+            id = userId,
+            isMember = isMember,
+            isAdmin = isAdmin,
         )
     }
 

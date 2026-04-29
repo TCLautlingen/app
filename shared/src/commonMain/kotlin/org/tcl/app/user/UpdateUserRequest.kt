@@ -8,5 +8,4 @@ data class UpdateUserRequest(
     val lastName: String? = null,
     val phoneNumber: String? = null,
     val address: String? = null,
-    val isMember: Boolean? = null,
 )

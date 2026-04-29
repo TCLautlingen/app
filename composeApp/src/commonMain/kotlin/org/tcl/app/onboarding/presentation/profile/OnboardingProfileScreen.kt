@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.ObserveAsEvents
-import org.tcl.app.navigation.AppGraph
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
@@ -26,14 +25,14 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 @Composable
 fun OnboardingProfileRoot(
     onNavigateBack: () -> Unit,
-    onNavigate: (AppGraph) -> Unit,
+    onComplete: () -> Unit,
     viewModel: OnboardingProfileViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            OnboardingProfileEvent.SavedSuccessfully -> onNavigate(AppGraph.OnboardingContact)
+            OnboardingProfileEvent.SavedSuccessfully -> onComplete()
         }
     }
 
@@ -100,6 +99,26 @@ fun OnboardingProfileScreen(
                     if (state.lastNameError != null) {
                         Text(text = state.lastNameError, color = RikkaTheme.colors.destructive)
                     }
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                    Label(text = "Telefonnummer")
+                    Input(
+                        value = state.phoneNumber,
+                        onValueChange = { onAction(OnboardingProfileAction.OnPhoneNumberChange(it)) },
+                        placeholder = "+49 123 456789",
+                        label = "Telefonnummer",
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
+                    Label(text = "Adresse")
+                    Input(
+                        value = state.address,
+                        onValueChange = { onAction(OnboardingProfileAction.OnAddressChange(it)) },
+                        placeholder = "Musterstraße 1, 72459 Albstadt",
+                        label = "Adresse",
+                    )
                 }
 
                 if (state.errorMessage != null) {

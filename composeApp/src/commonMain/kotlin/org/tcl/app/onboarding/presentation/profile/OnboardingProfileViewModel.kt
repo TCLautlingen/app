@@ -28,6 +28,10 @@ class OnboardingProfileViewModel(
                 _state.update { it.copy(firstName = action.firstName, firstNameError = null) }
             is OnboardingProfileAction.OnLastNameChange ->
                 _state.update { it.copy(lastName = action.lastName, lastNameError = null) }
+            is OnboardingProfileAction.OnPhoneNumberChange ->
+                _state.update { it.copy(phoneNumber = action.phoneNumber) }
+            is OnboardingProfileAction.OnAddressChange ->
+                _state.update { it.copy(address = action.address) }
             OnboardingProfileAction.OnNextClick -> save()
         }
     }
@@ -48,7 +52,9 @@ class OnboardingProfileViewModel(
         viewModelScope.launch {
             userRemoteDataSource.updateCurrentUser(
                 firstName = currentState.firstName.trim(),
-                lastName = currentState.lastName.trim()
+                lastName = currentState.lastName.trim(),
+                phoneNumber = currentState.phoneNumber.trim().ifBlank { null },
+                address = currentState.address.trim().ifBlank { null },
             )
                 .onSuccess {
                     _state.update { it.copy(isLoading = false) }

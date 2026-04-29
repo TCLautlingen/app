@@ -33,11 +33,9 @@ class UserEditorViewModel(
 
     fun onAction(action: UserEditorAction) {
         when (action) {
-            is UserEditorAction.OnSaveClick -> {
-                viewModelScope.launch {
-                    _events.send(UserEditorEvent.UserSaved)
-                }
-            }
+            is UserEditorAction.OnSaveClick -> save()
+            is UserEditorAction.OnMemberToggle -> _state.update { it.copy(isMember = action.isMember) }
+            is UserEditorAction.OnAdminToggle -> _state.update { it.copy(isAdmin = action.isAdmin) }
         }
     }
 
@@ -45,10 +43,27 @@ class UserEditorViewModel(
         viewModelScope.launch {
             userRemoteDataSource.getUserById(userId)
                 .onSuccess { user ->
-                    _state.update { it.copy(user = user) }
+                    _state.update { it.copy(user = user, isMember = user.isMember, isAdmin = user.isAdmin) }
+                }
+                .onFailure {}
+        }
+    }
+
+    private fun save() {
+        val currentState = _state.value
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            userRemoteDataSource.adminUpdateUser(
+                userId = currentState.userId,
+                isMember = currentState.isMember,
+                isAdmin = currentState.isAdmin,
+            )
+                .onSuccess { user ->
+                    _state.update { it.copy(isLoading = false, user = user) }
+                    _events.send(UserEditorEvent.UserSaved)
                 }
                 .onFailure {
-
+                    _state.update { it.copy(isLoading = false) }
                 }
         }
     }

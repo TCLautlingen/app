@@ -25,8 +25,6 @@ import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.notification.presentation.builder.NotificationBuilderRoot
 import org.tcl.app.notification.presentation.inbox.NotificationInboxRoot
 import org.tcl.app.onboarding.presentation.account.OnboardingAccountRoot
-import org.tcl.app.onboarding.presentation.contact.OnboardingContactRoot
-import org.tcl.app.onboarding.presentation.membership.OnboardingMembershipRoot
 import org.tcl.app.onboarding.presentation.profile.OnboardingProfileRoot
 import org.tcl.app.onboarding.presentation.welcome.OnboardingWelcomeRoot
 import org.tcl.app.user.domain.UserRemoteDataSource
@@ -46,10 +44,8 @@ fun AppNavigation() {
                 polymorphic(NavKey::class) {
                     subclass(AppGraph.OnboardingWelcome::class, AppGraph.OnboardingWelcome.serializer())
                     subclass(AppGraph.OnboardingAccount::class, AppGraph.OnboardingAccount.serializer())
-                    subclass(AppGraph.OnboardingMembership::class, AppGraph.OnboardingMembership.serializer())
                     subclass(AppGraph.OnboardingProfile::class, AppGraph.OnboardingProfile.serializer())
-                    subclass(AppGraph.OnboardingContact::class, AppGraph.OnboardingContact.serializer())
-                    subclass(AppGraph.Auth::class, AppGraph.Auth.serializer())
+                    subclass(AppGraph.AuthLogin::class, AppGraph.AuthLogin.serializer())
                     subclass(AppGraph.BookingList::class, AppGraph.BookingList.serializer())
                     subclass(AppGraph.CreateBooking::class, AppGraph.CreateBooking.serializer())
                     subclass(AppGraph.BookingSuccess::class, AppGraph.BookingSuccess.serializer())
@@ -71,7 +67,7 @@ fun AppNavigation() {
             userRemoteDataSource.getCurrentUser()
                 .onSuccess { user ->
                     navStack.clear()
-                    navStack.add(if (user.firstName.isBlank()) AppGraph.OnboardingMembership else AppGraph.BookingList)
+                    navStack.add(if (user.firstName.isBlank()) AppGraph.OnboardingProfile else AppGraph.BookingList)
                 }
                 .onFailure {
                     navStack.clear()
@@ -110,22 +106,8 @@ fun AppNavigation() {
                 )
             }
 
-            entry<AppGraph.OnboardingMembership> {
-                OnboardingMembershipRoot(
-                    onNavigateBack = { navStack.removeLastOrNull() },
-                    onNavigate = { route -> navStack.add(route) },
-                )
-            }
-
             entry<AppGraph.OnboardingProfile> {
                 OnboardingProfileRoot(
-                    onNavigateBack = { navStack.removeLastOrNull() },
-                    onNavigate = { route -> navStack.add(route) },
-                )
-            }
-
-            entry<AppGraph.OnboardingContact> {
-                OnboardingContactRoot(
                     onNavigateBack = { navStack.removeLastOrNull() },
                     onComplete = {
                         navStack.clear()
@@ -134,7 +116,7 @@ fun AppNavigation() {
                 )
             }
 
-            entry<AppGraph.Auth> {
+            entry<AppGraph.AuthLogin> {
                 AuthLoginRoot(
                     onNavigateBack = { navStack.removeLastOrNull() },
                     onSuccess = {

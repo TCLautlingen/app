@@ -11,6 +11,7 @@ import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.tcl.app.JwtConfig.userId
 import org.tcl.app.services.UserService
+import org.tcl.app.user.AdminUpdateUserRequest
 import org.tcl.app.user.UpdateUserRequest
 
 fun Route.userRoutes() {
@@ -43,7 +44,6 @@ fun Route.userRoutes() {
                     lastName = request.lastName?.trim(),
                     phoneNumber = request.phoneNumber,
                     address = request.address,
-                    isMember = request.isMember
                 ) ?: return@patch call.respond(HttpStatusCode.NotFound)
 
                 call.respond(updatedUser)
@@ -64,6 +64,28 @@ fun Route.userRoutes() {
                 val user = userService.getDetailedUserById(id)
                     ?: return@get call.respond("No user with id $id")
                 call.respond(user)
+            }
+
+            patch("/{id}") {
+                val calledUserId = call.userId()
+
+                val requestUser = userService.getAuthUserById(calledUserId)
+                    ?: return@patch call.respond(HttpStatusCode.Unauthorized)
+
+                if (!requestUser.isAdmin) {
+                    return@patch call.respond(HttpStatusCode.Forbidden)
+                }
+
+                val id = requireNotNull(call.parameters["id"]?.toIntOrNull()) { "Invalid id" }
+                val request = call.receive<AdminUpdateUserRequest>()
+
+                val updatedUser = userService.adminUpdateUser(
+                    userId = id,
+                    isMember = request.isMember,
+                    isAdmin = request.isAdmin,
+                ) ?: return@patch call.respond(HttpStatusCode.NotFound)
+
+                call.respond(updatedUser)
             }
         }
     }

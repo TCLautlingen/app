@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
+import org.tcl.app.user.AdminUpdateUserRequest
 import org.tcl.app.user.UpdateUserRequest
 import org.tcl.app.user.User
 import org.tcl.app.core.data.network.BackendApiClient
@@ -38,10 +39,19 @@ class KtorUserRemoteDataSource(
         lastName: String?,
         phoneNumber: String?,
         address: String?,
-        isMember: Boolean?,
     ): Result<DetailedUser, DataError> = safeApiCall {
         backendApiClient.client.patch("users/me") {
-            setBody(UpdateUserRequest(firstName, lastName, phoneNumber, address, isMember))
+            setBody(UpdateUserRequest(firstName, lastName, phoneNumber, address))
+        }
+    }
+
+    override suspend fun adminUpdateUser(
+        userId: Int,
+        isMember: Boolean?,
+        isAdmin: Boolean?,
+    ): Result<DetailedUser, DataError> = safeApiCall {
+        backendApiClient.client.patch("users/$userId") {
+            setBody(AdminUpdateUserRequest(isMember, isAdmin))
         }
     }
 }

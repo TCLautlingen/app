@@ -38,7 +38,7 @@ fun OnboardingAccountRoot(
         when (event) {
             OnboardingAccountEvent.RegisteredSuccessfully -> {
                 onRegistered()
-                onNavigate(AppGraph.OnboardingMembership)
+                onNavigate(AppGraph.OnboardingProfile)
             }
         }
     }

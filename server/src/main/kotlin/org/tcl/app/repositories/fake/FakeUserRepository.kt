@@ -50,12 +50,21 @@ class FakeUserRepository : UserRepository {
         lastName: String?,
         phoneNumber: String?,
         address: String?,
+    ): DetailedUser? {
+        val index = users.indexOfFirst { it.id == id }.takeIf { it >= 0 } ?: return null
+        return users[index].toDetailedUser()
+    }
+
+    override suspend fun adminUpdateUser(
+        id: Int,
         isMember: Boolean?,
+        isAdmin: Boolean?,
     ): DetailedUser? {
         val index = users.indexOfFirst { it.id == id }.takeIf { it >= 0 } ?: return null
         val current = users[index]
         val updated = current.copy(
             isMember = isMember ?: current.isMember,
+            isAdmin = isAdmin ?: current.isAdmin,
         )
         users[index] = updated
         return updated.toDetailedUser()

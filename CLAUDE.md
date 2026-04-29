@@ -38,20 +38,6 @@ Open `/iosApp` in Xcode and run from there.
 ./gradlew :composeApp:test       # Compose app only
 ```
 
-### Database (PostgreSQL via Docker)
-```bash
-docker run --name postgres-db \
-  -e POSTGRES_USER=myuser \
-  -e POSTGRES_PASSWORD=mypassword \
-  -e POSTGRES_DB=mydatabase \
-  -p 5432:5432 \
-  -v pgdata:/var/lib/postgresql/data \
-  -d postgres:16
-```
-Schema is defined in `schema.sql` at the repo root.
-
----
-
 ## Architecture
 
 ### Module Structure
@@ -97,7 +83,7 @@ Fake<Feature>Repository.kt    — In-memory stub for tests
 
 ### Client (`composeApp/`)
 
-**Stack:** Compose Multiplatform 1.10.3 + Ktor client + Koin + Navigation3 + Material3 + RikkaUI
+**Stack:** Compose Multiplatform 1.10.3 + Ktor client + Koin + Navigation3 + RikkaUI
 
 **Architecture:** Clean Architecture + MVVM, feature-sliced vertically.
 

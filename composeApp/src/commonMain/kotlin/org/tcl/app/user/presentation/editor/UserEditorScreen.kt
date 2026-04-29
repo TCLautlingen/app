@@ -104,6 +104,7 @@ fun UserEditorScreen(
                             value = state.user.email,
                             onValueChange = {  },
                             label = "Email",
+                            enabled = false,
                         )
                     }
 
@@ -117,6 +118,7 @@ fun UserEditorScreen(
                             value = state.user.firstName,
                             onValueChange = {  },
                             label = "Vorname",
+                            enabled = false,
                         )
                     }
 
@@ -130,6 +132,7 @@ fun UserEditorScreen(
                             value = state.user.lastName,
                             onValueChange = {  },
                             label = "Nachname",
+                            enabled = false,
                         )
                     }
 
@@ -139,8 +142,8 @@ fun UserEditorScreen(
                     ) {
                         Label(text = "Vereinsmitglied")
                         Toggle(
-                            checked = state.user.isMember,
-                            onCheckedChange = {  },
+                            checked = state.isMember,
+                            onCheckedChange = { onAction(UserEditorAction.OnMemberToggle(it)) },
                             label = "Vereinsmitglied",
                         )
                     }
@@ -151,8 +154,8 @@ fun UserEditorScreen(
                     ) {
                         Label(text = "Admin")
                         Toggle(
-                            checked = state.user.isAdmin,
-                            onCheckedChange = {  },
+                            checked = state.isAdmin,
+                            onCheckedChange = { onAction(UserEditorAction.OnAdminToggle(it)) },
                             label = "Admin",
                         )
                     }

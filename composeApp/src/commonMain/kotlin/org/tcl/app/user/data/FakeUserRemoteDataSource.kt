@@ -40,7 +40,19 @@ class FakeUserRemoteDataSource : UserRemoteDataSource {
         lastName: String?,
         phoneNumber: String?,
         address: String?,
-        isMember: Boolean?,
     ): Result<DetailedUser, DataError> =
         Result.Success(currentUser)
+
+    override suspend fun adminUpdateUser(
+        userId: Int,
+        isMember: Boolean?,
+        isAdmin: Boolean?,
+    ): Result<DetailedUser, DataError> {
+        val user = users.find { it.id == userId }
+            ?: return Result.Error(DataError.NotFound)
+        return Result.Success(user.copy(
+            isMember = isMember ?: user.isMember,
+            isAdmin = isAdmin ?: user.isAdmin,
+        ))
+    }
 }

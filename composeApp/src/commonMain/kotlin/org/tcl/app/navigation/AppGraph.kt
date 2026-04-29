@@ -15,16 +15,10 @@ sealed interface AppGraph : NavKey {
     data object OnboardingAccount : AppGraph
 
     @Serializable
-    data object OnboardingMembership : AppGraph
-
-    @Serializable
     data object OnboardingProfile : AppGraph
 
     @Serializable
-    data object OnboardingContact : AppGraph
-
-    @Serializable
-    data object Auth : AppGraph
+    data object AuthLogin : AppGraph
 
     @Serializable
     data object BookingList : AppGraph

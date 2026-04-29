@@ -7,4 +7,7 @@ import org.tcl.app.user.DetailedUser
 data class UserEditorState(
     val userId: Int,
     val user: DetailedUser? = null,
+    val isMember: Boolean = false,
+    val isAdmin: Boolean = false,
+    val isLoading: Boolean = false,
 )
