@@ -1,6 +1,6 @@
 # Local development: HTTP only
 # For production, replace with your domain:
-#   api.yourdomain.com {
+#   api.tc-lautlingen.de {
 #       reverse_proxy app:8080
 #   }
 

@@ -1,5 +1,4 @@
-# Replace api.yourdomain.com with your actual domain once DNS is configured.
 # Caddy will auto-provision a Let's Encrypt TLS certificate on first startup.
-api.yourdomain.com {
+api.tc-lautlingen.de {
     reverse_proxy app:8080
 }
