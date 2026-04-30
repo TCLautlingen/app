@@ -30,6 +30,7 @@ fun Application.configureSerialization() {
 
 fun Application.configureHTTP() {
     install(CORS) {
+        allowHost("tc-lautlingen.de", subDomains = listOf("api", "www", "app"))
         if (System.getenv("APP_ENV") != "production") {
             allowHost("localhost:8080")
             allowHost("localhost:5173")
