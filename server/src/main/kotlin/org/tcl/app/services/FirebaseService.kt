@@ -11,7 +11,7 @@ class FirebaseService {
     init {
         val serviceAccount = this::class.java
             .classLoader
-            .getResourceAsStream("tc-lautlingen-ec846-firebase-adminsdk-fbsvc-3cbbbaa0b8.json")
+            .getResourceAsStream("tc-lautlingen-ec846-firebase-adminsdk-fbsvc-33e7359490.json")
             ?: throw IllegalStateException("Firebase config not found")
 
         val options = FirebaseOptions.builder()

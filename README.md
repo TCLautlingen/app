@@ -94,6 +94,10 @@ Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-mu
 We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
 If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
 
+# Setup
+1. Add a .env
+2. Add a FirebaseAdminSdk private key in server/src/main/resources and update file name in server/src/main/kotlin/org/tcl/app/services/FirebaseService.kt
+
 # Commands
 
 docker-compose exec -it postgres psql -U tclapp -d tclapp -c "UPDATE users SET is_admin = true WHERE email = 'email@example.com';"
