@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.tcl.app.core.presentation.AdaptiveLayout
-import org.tcl.app.navigation.AppNavigation
+import org.tcl.app.navigation.NavigationRoot
 import zed.rainxch.rikkaicons.core.ProvideIconPack
 import zed.rainxch.rikkaicons.pack.lucide.LucidePack
 import zed.rainxch.rikkaui.foundation.RikkaAccentPreset
@@ -31,7 +31,7 @@ fun App() {
                     .safeDrawingPadding(),
             ) {
                 AdaptiveLayout {
-                    AppNavigation()
+                    NavigationRoot()
                 }
             }
         }

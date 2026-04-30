@@ -1,10 +1,12 @@
 package org.tcl.app.navigation
 
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 import org.tcl.app.booking.Booking
+import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 
 @Serializable
 sealed interface AppGraph : NavKey {

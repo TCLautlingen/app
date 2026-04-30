@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.navigation.AppGraph
@@ -21,7 +22,6 @@ import zed.rainxch.rikkaui.components.ui.label.Label
 import zed.rainxch.rikkaui.components.ui.scaffold.Scaffold
 import zed.rainxch.rikkaui.components.ui.spinner.Spinner
 import zed.rainxch.rikkaui.components.ui.text.Text
-import zed.rainxch.rikkaui.components.ui.text.TextVariant
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
 
@@ -29,7 +29,7 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 @Composable
 fun UserProfileRoot(
     onNavigate: (AppGraph) -> Unit,
-    currentRoute: AppGraph?,
+    currentRoute: NavKey,
     onLoggedOut: () -> Unit,
     viewModel: UserProfileViewModel = koinViewModel()
 ) {
@@ -54,7 +54,7 @@ fun UserProfileScreen(
     state: UserProfileState,
     onAction: (UserProfileAction) -> Unit,
     onNavigate: (AppGraph) -> Unit,
-    currentRoute: AppGraph?,
+    currentRoute: NavKey,
 ) {
     Scaffold(
         topBar = {
@@ -84,7 +84,7 @@ fun UserProfileScreen(
         bottomBar = {
             BottomNavigationBar(
                 onNavigate = onNavigate,
-                current = currentRoute ?: AppGraph.BookingList,
+                current = currentRoute,
             )
         }
     ) {

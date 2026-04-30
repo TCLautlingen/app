@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import app.composeapp.generated.resources.Res
 import app.composeapp.generated.resources.drone
 import org.jetbrains.compose.resources.painterResource
@@ -62,7 +63,7 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 @Composable
 fun BookingListRoot(
     onNavigate: (AppGraph) -> Unit,
-    currentRoute: AppGraph?,
+    currentRoute: NavKey,
     viewModel: BookingListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -80,7 +81,7 @@ fun BookingListScreen(
     state: BookingListState,
     onAction: (BookingListAction) -> Unit,
     onNavigate: (AppGraph) -> Unit,
-    currentRoute: AppGraph?,
+    currentRoute: NavKey,
 ) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         onAction(BookingListAction.OnRefresh)
@@ -93,13 +94,13 @@ fun BookingListScreen(
         bottomBar = {
             BottomNavigationBar(
                 onNavigate = onNavigate,
-                current = currentRoute ?: AppGraph.BookingList,
+                current = currentRoute,
             )
         },
         floatingActionButton = {
             Fab(
                 icon = RikkaIcons.Plus,
-                label = "buchen",
+                label = "Buchen",
                 onClick = { onNavigate(AppGraph.CreateBooking()) },
             )
         },

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.core.presentation.DateSheet
@@ -39,7 +40,7 @@ import zed.rainxch.rikkaui.foundation.RikkaTheme
 @Composable
 fun BookingCourtRoot(
     onNavigate: (AppGraph) -> Unit,
-    currentRoute: AppGraph?,
+    currentRoute: NavKey,
     viewModel: BookingCourtViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -57,7 +58,7 @@ fun BookingCourtScreen(
     state: BookingCourtState,
     onAction: (BookingCourtAction) -> Unit,
     onNavigate: (AppGraph) -> Unit,
-    currentRoute: AppGraph?,
+    currentRoute: NavKey,
 ) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         onAction(BookingCourtAction.OnRefresh)
@@ -70,7 +71,7 @@ fun BookingCourtScreen(
         bottomBar = {
             BottomNavigationBar(
                 onNavigate = onNavigate,
-                current = currentRoute ?: AppGraph.BookingList,
+                current = currentRoute,
             )
         }
     ) {
