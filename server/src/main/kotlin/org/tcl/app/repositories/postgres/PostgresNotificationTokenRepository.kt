@@ -11,9 +11,14 @@ import org.tcl.app.db.tables.NotificationTokensTable
 class PostgresNotificationTokenRepository : NotificationTokenRepository {
 
     override suspend fun registerToken(userId: Int, token: String): Unit = withTransaction {
-        NotificationTokenEntity.new {
-            this.user = UserEntity[userId]
-            this.token = token
+        val exists = NotificationTokenEntity.find {
+            (NotificationTokensTable.user eq userId) and (NotificationTokensTable.token eq token)
+        }.empty().not()
+        if (!exists) {
+            NotificationTokenEntity.new {
+                this.user = UserEntity[userId]
+                this.token = token
+            }
         }
     }
 

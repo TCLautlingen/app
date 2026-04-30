@@ -52,6 +52,10 @@ class AppViewModel(
                 .onSuccess { authTokens ->
                     secureStorage.tokens = authTokens
                     _state.update { it.copy(isLoggedIn = true, isLoading = false) }
+                    val token = NotifierManager.getPushNotifier().getToken()
+                    if (token != null) {
+                        notificationRemoteDataSource.registerToken(token)
+                    }
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }
