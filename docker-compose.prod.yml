@@ -1,0 +1,79 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    mem_limit: 3g
+    environment:
+      POSTGRES_DB: tclapp
+      POSTGRES_USER: tclapp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Bind to VPS localhost only — reachable via SSH tunnel, not open internet
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tclapp"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  app:
+    build: .
+    restart: unless-stopped
+    mem_limit: 2g
+    # Rootfs is read-only; JVM writes (class-data archives, sockets) go to /tmp
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      APP_ENV: production
+      DATABASE_URL: jdbc:postgresql://postgres:5432/tclapp
+      DATABASE_USER: tclapp
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SALT_HASH_SECRET: ${SALT_HASH_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    mem_limit: 256m
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.prod:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

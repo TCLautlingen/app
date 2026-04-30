@@ -119,6 +119,8 @@ fun UserProfileScreen(
                             text = state.user?.email ?: "max.mustermann@email.de",
                         )
 
+                        Spacer(Modifier.height(RikkaTheme.spacing.xl))
+
                         Column(verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm)) {
                             Label(text = "Vorname", required = true)
                             Input(

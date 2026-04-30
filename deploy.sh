@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# TCL App Backend — deploy to production VPS
+# Usage: ./deploy.sh <server-ip>
+
+SERVER_IP="${1:?Usage: ./deploy.sh <server-ip>}"
+SSH_USER="root"
+REMOTE_DIR="/opt/tclapp-backend"
+
+echo "==> Deploying to $SERVER_IP..."
+
+# Sync project files to VPS (excludes dev/build artifacts)
+rsync -avz --delete \
+    --exclude '.git/' \
+    --exclude '.gradle/' \
+    --exclude 'build/' \
+    --exclude '.idea/' \
+    --exclude '.env' \
+    --exclude 'docker-compose.override.yml' \
+    --exclude '.DS_Store' \
+    ./ "$SSH_USER@$SERVER_IP:$REMOTE_DIR/"
+
+echo "==> Building and starting services..."
+ssh "$SSH_USER@$SERVER_IP" "cd $REMOTE_DIR && docker compose -f docker-compose.prod.yml up -d --build"
+
+# Caddyfile is mounted as a volume, so changes on disk don't auto-reload the
+# running Caddy process. Gracefully reload if the file changed since last deploy.
+# (Reload, not restart — avoids a TLS reconnect blip for live traffic.)
+echo "==> Reloading Caddy config..."
+ssh "$SSH_USER@$SERVER_IP" "docker compose -f $REMOTE_DIR/docker-compose.prod.yml exec -T caddy caddy reload --config /etc/caddy/Caddyfile || docker compose -f $REMOTE_DIR/docker-compose.prod.yml restart caddy"
+
+# Poll /health until it returns 200, with a hard 60s ceiling.
+echo "==> Waiting for health check..."
+for i in $(seq 1 30); do
+    if ssh "$SSH_USER@$SERVER_IP" "docker exec tclapp-backend-app-1 curl -sf http://localhost:8080/v1/health" >/dev/null 2>&1; then
+        echo "==> Healthy after $((i*2))s"
+        echo "==> Deploy complete!"
+        exit 0
+    fi
+    sleep 2
+done
+
+echo "Health check failed after 60s" >&2
+exit 1

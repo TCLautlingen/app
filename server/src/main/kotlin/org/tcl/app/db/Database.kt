@@ -24,7 +24,7 @@ import org.tcl.app.db.tables.UsersTable
 fun Application.configureDatabases() {
     val dbUrl = System.getenv("DATABASE_URL")
     val dbUser = System.getenv("DATABASE_USER")
-    val dbPassword = System.getenv("POSTGRES_PASSWORD")
+    val dbPassword = System.getenv("DATABASE_PASSWORD")
 
     val hikariConfig = HikariConfig().apply {
         driverClassName = "org.postgresql.Driver"

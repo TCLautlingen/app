@@ -23,12 +23,27 @@ services:
       APP_ENV: development
       DATABASE_URL: jdbc:postgresql://postgres:5432/tclapp
       DATABASE_USER: tclapp
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tclapp}
-      JWT_SECRET: ${JWT_SECRET}
-      SALT_HASH_SECRET: ${SALT_HASH_SECRET}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-tclapp}
+      JWT_SECRET: ${JWT_SECRET:-devsecret}
+      SALT_HASH_SECRET: ${SALT_HASH_SECRET:-devsecret}
     depends_on:
       postgres:
         condition: service_healthy
 
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:

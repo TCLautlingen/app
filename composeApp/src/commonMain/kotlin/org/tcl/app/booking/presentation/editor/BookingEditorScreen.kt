@@ -104,7 +104,8 @@ fun BookingEditorScreen(
                     variant = ButtonVariant.Outline,
                     leadingIcon = {
                         DecorativeAppIcon(
-                            token = zed.rainxch.rikkaicons.tokens.RikkaIcons.Calendar
+                            token = zed.rainxch.rikkaicons.tokens.RikkaIcons.Calendar,
+                            tint = RikkaTheme.colors.onBackground,
                         )
                     }
                 )
