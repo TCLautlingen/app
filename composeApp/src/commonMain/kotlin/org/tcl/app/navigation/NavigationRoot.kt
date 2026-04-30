@@ -8,6 +8,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import org.koin.compose.getKoin
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.AppViewModel
 import org.tcl.app.auth.presentation.login.AuthLoginRoot
@@ -30,29 +31,33 @@ import org.tcl.app.user.presentation.profile.UserProfileRoot
 @Composable
 fun NavigationRoot() {
     val appViewModel: AppViewModel = koinViewModel()
-    val userRemoteDataSource: UserRemoteDataSource = org.koin.compose.getKoin().get()
+    val userRemoteDataSource: UserRemoteDataSource = getKoin().get()
     val appState by appViewModel.state.collectAsStateWithLifecycle()
 
     val navigationState = rememberNavigationState(
-        startRoute = AppGraph.OnboardingWelcome,
+        startRoute = AppGraph.BookingList,
         topLevelRoutes = setOf(AppGraph.OnboardingWelcome, AppGraph.BookingList, AppGraph.BookingCourt, AppGraph.UserProfile),
     )
     val navigator = rememberNavigator(navigationState)
+    var isReady by remember { mutableStateOf(false) }
 
     // Navigate once startup auth check completes
     LaunchedEffect(appState.isLoading) {
-        if (!appState.isLoading && appState.isLoggedIn) {
-            userRemoteDataSource.getCurrentUser()
-                .onSuccess { user ->
-                    navigator.navigate((if (user.firstName.isBlank()) AppGraph.OnboardingProfile else AppGraph.BookingList))
-                }
-                .onFailure {
-
-                }
+        if (!appState.isLoading) {
+            if (appState.isLoggedIn) {
+                userRemoteDataSource.getCurrentUser()
+                    .onSuccess { user ->
+                        navigator.navigate(if (user.firstName.isBlank()) AppGraph.OnboardingProfile else AppGraph.BookingList)
+                    }
+                    .onFailure { }
+            } else {
+                navigator.navigate(AppGraph.OnboardingWelcome)
+            }
+            isReady = true
         }
     }
 
-    // Navigate to welcome when logged out (transition from true → false)
+    // Navigate to welcome when logged out during a session
     LaunchedEffect(appState.isLoggedIn) {
         if (!appState.isLoggedIn && !appState.isLoading) {
             navigator.navigate(AppGraph.OnboardingWelcome)
@@ -165,11 +170,13 @@ fun NavigationRoot() {
         }
     }
 
-    NavDisplay(
-        entries = navigationState.toEntries(entryProvider),
-        onBack = navigator::goBack,
-        transitionSpec = {
-            fadeIn() togetherWith ExitTransition.KeepUntilTransitionsFinished
-        },
-    )
+    if (isReady) {
+        NavDisplay(
+            entries = navigationState.toEntries(entryProvider),
+            onBack = navigator::goBack,
+            transitionSpec = {
+                fadeIn() togetherWith ExitTransition.KeepUntilTransitionsFinished
+            },
+        )
+    }
 }
