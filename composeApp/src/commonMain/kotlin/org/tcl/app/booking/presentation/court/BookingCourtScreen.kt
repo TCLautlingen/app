@@ -27,6 +27,7 @@ import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import org.tcl.app.util.formatDdMmYyyy
 import zed.rainxch.rikkaicons.core.DecorativeAppIcon
+import zed.rainxch.rikkaicons.tokens.ArrowRight
 import zed.rainxch.rikkaicons.tokens.Calendar
 import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
@@ -150,8 +151,9 @@ fun BookingCourtScreen(
                                 text = courtSlot.startTime,
                             )
                             if (!courtSlot.taken) {
-                                Text(
-                                    text = "→",
+                                DecorativeAppIcon(
+                                    token = zed.rainxch.rikkaicons.tokens.RikkaIcons.ArrowRight,
+                                    size = 16.dp
                                 )
                             }
                         }
