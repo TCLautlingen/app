@@ -2,7 +2,9 @@ package org.tcl.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -83,6 +85,8 @@ fun AppNavigation() {
             navStack.add(AppGraph.OnboardingWelcome)
         }
     }
+
+    BrowserNavigationEffect(remember { derivedStateOf { navStack.lastOrNull() as Any? } })
 
     NavDisplay(
         backStack = navStack,

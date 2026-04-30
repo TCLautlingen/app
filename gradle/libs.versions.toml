@@ -14,7 +14,7 @@ composeMultiplatform = "1.10.3"
 junit = "4.13.2"
 kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
-ktor = "3.4.2"
+ktor = "3.4.3"
 logback = "1.5.32"
 material3 = "1.10.0-alpha05"
 rikkaui = "0.3.0"
@@ -22,10 +22,11 @@ rikkaui-icons = "0.1.0"
 koin = "4.2.1"
 calendar = "2.10.1"
 kotlinx-serialization = "1.11.0"
-navigation3 = "1.1.0"
-androidx-lifecycle-nav3 = "2.10.0"
-cmpNavigation3 = "1.0.0-alpha06"
-ksafe = "1.8.0"
+multiplatform-nav3-ui = "1.0.0-alpha05"
+compose-multiplatform-adaptive = "1.3.0-alpha02"
+compose-multiplatform-lifecycle = "2.10.0-alpha05"
+compose-multiplatform-navigation3-browser = "0.2.0"
+ksafe = "1.8.1"
 postgres = "42.7.10"
 h2 = "2.4.240"
 exposed = "1.2.0"
@@ -82,10 +83,10 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 kizitonwose-calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "cmpNavigation3" }
-jetbrains-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle-nav3" }
-androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
-androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }
+jetbrains-material3-adaptiveNavigation3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "compose-multiplatform-adaptive" }
+jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "compose-multiplatform-lifecycle" }
+navigation3-browser = { module = "com.github.terrakok:navigation3-browser", version.ref = "compose-multiplatform-navigation3-browser" }
 anifantakis-ksafe = { module = "eu.anifantakis:ksafe", version.ref = "ksafe" }
 anifantakis-ksafe-compose = { module = "eu.anifantakis:ksafe-compose", version.ref = "ksafe" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }

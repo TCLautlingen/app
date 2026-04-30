@@ -43,8 +43,6 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
-            implementation(libs.androidx.navigation3.runtime)
-            implementation(libs.androidx.navigation3.ui)
             implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
@@ -67,7 +65,8 @@ kotlin {
             implementation(libs.kizitonwose.calendar)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.jetbrains.navigation3.ui)
-            implementation(libs.jetbrains.lifecycle.viewmodel.navigation3)
+            implementation(libs.jetbrains.material3.adaptiveNavigation3)
+            implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -90,6 +89,7 @@ kotlin {
         }
         webMain.dependencies {
             implementation(libs.ktor.client.js)
+            implementation(libs.navigation3.browser)
         }
     }
 }
