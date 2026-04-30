@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
+import org.koin.android.ext.koin.androidContext
 import org.tcl.app.di.initKoin
 
 object AppContext {
@@ -24,6 +25,8 @@ class AppApplication : Application() {
             )
         )
 
-        initKoin()
+        initKoin {
+            androidContext(this@AppApplication)
+        }
     }
 }

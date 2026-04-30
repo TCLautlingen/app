@@ -2,19 +2,19 @@ package org.tcl.app.onboarding.presentation.account
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
-import org.tcl.app.auth.RegisterField
 import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.navigation.AppGraph
 import zed.rainxch.rikkaui.components.ui.button.Button
-import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.checkbox.Checkbox
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
@@ -98,6 +98,8 @@ fun OnboardingAccountScreen(
                     Input(
                         value = state.password,
                         onValueChange = { onAction(OnboardingAccountAction.OnPasswordChange(it)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        visualTransformation = PasswordVisualTransformation(),
                         label = "Passwort",
                     )
                     Text(text = state.passwordError ?: "", color = RikkaTheme.colors.destructive)
@@ -108,6 +110,8 @@ fun OnboardingAccountScreen(
                     Input(
                         value = state.confirmPassword,
                         onValueChange = { onAction(OnboardingAccountAction.OnConfirmPasswordChange(it)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        visualTransformation = PasswordVisualTransformation(),
                         label = "Passwort wiederholen",
                     )
                     Text(text = state.confirmPasswordError ?: "", color = RikkaTheme.colors.destructive)
