@@ -8,8 +8,9 @@ import com.github.terrakok.navigation3.browser.buildBrowserHistoryFragment
 @Composable
 actual fun BrowserNavigationEffect(currentDestination: State<Any?>) {
     HierarchicalBrowserNavigation(
-        currentDestinationName = {
-            when (val key = currentDestination.value) {
+        currentDestination,
+        currentDestinationName = { current ->
+            when (current) {
                 is AppGraph.OnboardingWelcome -> buildBrowserHistoryFragment("welcome")
                 is AppGraph.OnboardingAccount -> buildBrowserHistoryFragment("account")
                 is AppGraph.OnboardingProfile -> buildBrowserHistoryFragment("setup-profile")
@@ -20,7 +21,7 @@ actual fun BrowserNavigationEffect(currentDestination: State<Any?>) {
                 is AppGraph.BookingCourt -> buildBrowserHistoryFragment("courts")
                 is AppGraph.UserProfile -> buildBrowserHistoryFragment("profile")
                 is AppGraph.UserList -> buildBrowserHistoryFragment("users")
-                is AppGraph.UserEditor -> buildBrowserHistoryFragment("edit-user", mapOf("id" to key.userId.toString()))
+                is AppGraph.UserEditor -> buildBrowserHistoryFragment("edit-user", mapOf("id" to current.userId.toString()))
                 is AppGraph.NotificationInbox -> buildBrowserHistoryFragment("notifications")
                 is AppGraph.NotificationBuilder -> buildBrowserHistoryFragment("send-notification")
                 else -> null
