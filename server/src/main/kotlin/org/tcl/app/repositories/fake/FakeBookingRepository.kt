@@ -45,6 +45,10 @@ class FakeBookingRepository(
         return booking
     }
 
+    override suspend fun bookingById(id: Int): Booking? {
+        return bookings.firstOrNull { it.id == id }
+    }
+
     override suspend fun removeBooking(userId: Int, id: Int): Boolean {
         return bookings.removeIf { it.id == id && it.user.id == userId }
     }

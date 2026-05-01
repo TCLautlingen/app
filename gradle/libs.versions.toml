@@ -73,6 +73,8 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 rikkaui-components = { module = "dev.rikkaui:components", version.ref = "rikkaui" }
 rikkaui-foundation = { module = "dev.rikkaui:foundation", version.ref = "rikkaui" }
 rikkaui-icons-core ={ module = "dev.rikkaui.icons:core", version.ref = "rikkaui-icons" }

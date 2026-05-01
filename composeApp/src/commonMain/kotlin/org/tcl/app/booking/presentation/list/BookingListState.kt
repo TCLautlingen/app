@@ -6,7 +6,8 @@ import org.tcl.app.booking.Booking
 @Stable
 data class BookingListState(
     val bookings: List<Booking> = emptyList(),
-    val isLoading : Boolean = true,
+    val isLoading: Boolean = true,
+    val isOffline: Boolean = false,
     val showDeleteDialog: Boolean = false,
     val bookingIdToDelete: Int? = null,
 )

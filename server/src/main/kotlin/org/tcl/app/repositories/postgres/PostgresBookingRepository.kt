@@ -68,6 +68,10 @@ class PostgresBookingRepository : BookingRepository {
         }.let(::entityToBooking)
     }
 
+    override suspend fun bookingById(id: Int): Booking? = withTransaction {
+        BookingEntity.findById(id)?.let(::entityToBooking)
+    }
+
     override suspend fun removeBooking(userId: Int, id: Int): Boolean = withTransaction {
         BookingEntity
             .find { (BookingsTable.id eq id) and (BookingsTable.user eq userId) }

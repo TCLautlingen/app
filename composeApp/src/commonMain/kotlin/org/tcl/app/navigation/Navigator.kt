@@ -6,11 +6,16 @@ import androidx.navigation3.runtime.NavKey
 
 class Navigator(val state: NavigationState) {
     fun navigate(route: NavKey) {
-        if(route in state.backStacks.keys) {
+        if (route in state.backStacks.keys) {
             state.topLevelRoute = route
         } else {
             state.backStacks[state.topLevelRoute]?.add(route)
         }
+    }
+
+    fun navigateToTopLevel() {
+        state.backStacks[state.topLevelRoute]?.clear()
+        state.backStacks[state.topLevelRoute]?.add(state.topLevelRoute)
     }
 
     fun goBack() {

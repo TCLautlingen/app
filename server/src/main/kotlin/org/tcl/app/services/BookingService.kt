@@ -3,6 +3,7 @@ package org.tcl.app.services
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.tcl.app.booking.Booking
+import org.tcl.app.booking.BookingWsMessage
 import org.tcl.app.repositories.BookingRepository
 import org.tcl.app.repositories.CourtRepository
 import org.tcl.app.repositories.NotificationTokenRepository
@@ -16,15 +17,14 @@ class BookingService(
     private val firebaseService: FirebaseService,
     private val notificationTokenRepository: NotificationTokenRepository,
     private val userRepository: UserRepository,
+    private val bookingWebSocketService: BookingWebSocketService,
 ) {
     suspend fun getAllBookingsForUser(userId: Int): List<Booking> {
         return bookingRepository.allBookingsForUser(userId)
-            .map { it.copy(isOwner = it.user.id == userId) }
     }
 
     suspend fun getUpcomingBookingsForUser(userId: Int, from: LocalDate): List<Booking> {
         return bookingRepository.upcomingBookingsForUser(userId, from)
-            .map { it.copy(isOwner = it.user.id == userId) }
     }
 
     suspend fun createBooking(
@@ -59,10 +59,19 @@ class BookingService(
             body = "Du wurdest von ${creator.firstName} ${creator.lastName} hinzugefügt.",
         )
 
-        return bookingRepository.createBooking(userId, courtId, date, startTime, duration, playerIds)
+        val booking = bookingRepository.createBooking(userId, courtId, date, startTime, duration, playerIds)
+        val affectedUserIds = (listOf(userId) + playerIds).distinct()
+        bookingWebSocketService.notifyUsers(affectedUserIds, BookingWsMessage.BookingCreated(booking))
+        return booking
     }
 
     suspend fun removeBooking(userId: Int, id: Int): Boolean {
-        return bookingRepository.removeBooking(userId, id)
+        val booking = bookingRepository.bookingById(id)
+        val success = bookingRepository.removeBooking(userId, id)
+        if (success && booking != null) {
+            val affectedUserIds = (listOf(booking.user.id) + booking.players.map { it.id }).distinct()
+            bookingWebSocketService.notifyUsers(affectedUserIds, BookingWsMessage.BookingDeleted(id))
+        }
+        return success
     }
 }

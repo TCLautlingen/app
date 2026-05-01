@@ -85,4 +85,8 @@ class AppViewModel(
             _state.update { it.copy(isLoggedIn = false) }
         }
     }
+
+    fun updateUserId(userId: Int) {
+        _state.update { it.copy(currentUserId = userId) }
+    }
 }

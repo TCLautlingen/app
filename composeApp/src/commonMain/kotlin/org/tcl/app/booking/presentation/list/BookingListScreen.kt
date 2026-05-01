@@ -2,18 +2,7 @@ package org.tcl.app.booking.presentation.list
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -24,26 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import app.composeapp.generated.resources.Res
 import app.composeapp.generated.resources.drone
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.tcl.app.AppState
+import org.tcl.app.AppViewModel
 import org.tcl.app.booking.Booking
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import org.tcl.app.util.formatWeekdayDdMonth
 import org.tcl.app.util.plusMinutes
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialog
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogAction
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogActionVariant
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogAnimation
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogCancel
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogFooter
-import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogHeader
+import zed.rainxch.rikkaui.components.ui.alertdialog.*
 import zed.rainxch.rikkaui.components.ui.avatar.Avatar
 import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.button.Button
@@ -65,11 +48,14 @@ fun BookingListRoot(
     onNavigate: (AppGraph) -> Unit,
     currentRoute: NavKey,
     viewModel: BookingListViewModel = koinViewModel(),
+    appViewModel: AppViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val appState by appViewModel.state.collectAsStateWithLifecycle()
 
     BookingListScreen(
         state = state,
+        appState = appState,
         onAction = viewModel::onAction,
         onNavigate = onNavigate,
         currentRoute = currentRoute
@@ -79,14 +65,11 @@ fun BookingListRoot(
 @Composable
 fun BookingListScreen(
     state: BookingListState,
+    appState: AppState,
     onAction: (BookingListAction) -> Unit,
     onNavigate: (AppGraph) -> Unit,
     currentRoute: NavKey,
 ) {
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        onAction(BookingListAction.OnRefresh)
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(title = "Meine Buchungen")
@@ -104,54 +87,73 @@ fun BookingListScreen(
                 onClick = { onNavigate(AppGraph.CreateBooking()) },
             )
         },
-    ) { when {
-            state.isLoading -> {
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (state.isOffline) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(RikkaTheme.colors.onMuted.copy(alpha = 0.12f))
+                        .padding(horizontal = RikkaTheme.spacing.lg, vertical = RikkaTheme.spacing.sm),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Spinner()
+                    Text(
+                        text = "Keine Verbindung – wird synchronisiert...",
+                        variant = TextVariant.Small,
+                        color = RikkaTheme.colors.onMuted,
+                    )
                 }
             }
-            state.bookings.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Noch keinen Platz gebucht",
-                            variant = TextVariant.Lead,
-                            color = RikkaTheme.colors.onMuted,
-                        )
-                        Spacer(modifier = Modifier.height(RikkaTheme.spacing.lg))
-                        Button(
-                            text = "Buche einen Platz",
-                            onClick = { onNavigate(AppGraph.CreateBooking()) },
-                            variant = ButtonVariant.Outline,
-                        )
+
+            when {
+                state.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Spinner()
                     }
                 }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(RikkaTheme.spacing.lg),
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md),
-                ) {
-                    items(
-                        items = state.bookings,
-                        key = { it.id },
-                    ) { booking ->
-                        BookingCard(
-                            booking = booking,
-                            onDelete = { onAction(BookingListAction.OnDeleteClick(booking.id)) },
-                        )
+                state.bookings.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Noch keinen Platz gebucht",
+                                variant = TextVariant.Lead,
+                                color = RikkaTheme.colors.onMuted,
+                            )
+                            Spacer(modifier = Modifier.height(RikkaTheme.spacing.lg))
+                            Button(
+                                text = "Buche einen Platz",
+                                onClick = { onNavigate(AppGraph.CreateBooking()) },
+                                variant = ButtonVariant.Outline,
+                            )
+                        }
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(RikkaTheme.spacing.lg),
+                        verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md),
+                    ) {
+                        items(
+                            items = state.bookings,
+                            key = { it.id },
+                        ) { booking ->
+                            BookingCard(
+                                booking = booking,
+                                isOwner = booking.user.id == appState.currentUserId,
+                                onDelete = { onAction(BookingListAction.OnDeleteClick(booking.id)) },
+                            )
+                        }
                     }
                 }
             }
         }
-
 
         AlertDialog(
             modifier = Modifier.padding(RikkaTheme.spacing.xl),
@@ -182,6 +184,7 @@ fun BookingListScreen(
 @Composable
 fun BookingCard(
     booking: Booking,
+    isOwner: Boolean,
     onDelete: () -> Unit,
 ) {
     Card(
@@ -236,7 +239,8 @@ fun BookingCard(
                         }
                     }
                 }
-                if (booking.isOwner ?: false) {
+
+                if (isOwner) {
                     IconButton(
                         icon = RikkaIcons.Trash,
                         contentDescription = "Delete booking",

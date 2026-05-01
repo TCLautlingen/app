@@ -15,7 +15,6 @@ data class Booking(
     val startTime: LocalTime,
     val duration: Int,
     val players: List<User>,
-    val isOwner: Boolean? = null,
 )
 
 

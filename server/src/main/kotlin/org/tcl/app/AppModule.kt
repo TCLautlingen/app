@@ -21,6 +21,7 @@ import org.tcl.app.repositories.postgres.PostgresUserRepository
 import org.tcl.app.repositories.RefreshTokenRepository
 import org.tcl.app.repositories.UserRepository
 import org.tcl.app.services.BookingService
+import org.tcl.app.services.BookingWebSocketService
 import org.tcl.app.services.CourtService
 import org.tcl.app.services.FirebaseService
 import org.tcl.app.services.NotificationService
@@ -56,6 +57,7 @@ val appModule = module {
     }
 
     singleOf(::UserService)
+    singleOf(::BookingWebSocketService)
     singleOf(::BookingService)
     singleOf(::SlotService)
     singleOf(::CourtService)

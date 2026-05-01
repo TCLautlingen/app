@@ -13,8 +13,21 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.pingPeriod
+import io.ktor.server.websocket.timeout
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.serialization.json.Json
 import org.tcl.app.JwtConfig.verifier
+
+fun Application.configureWebSockets() {
+    install(WebSockets) {
+        pingPeriod = 30.seconds
+        timeout = 60.seconds
+        maxFrameSize = Long.MAX_VALUE
+        masking = false
+    }
+}
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {

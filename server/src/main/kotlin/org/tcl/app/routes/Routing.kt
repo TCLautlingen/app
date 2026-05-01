@@ -11,6 +11,7 @@ fun Application.configureRouting() {
             authRoutes()
             userRoutes()
             bookingRoutes()
+            bookingWebSocketRoutes()
             slotRoutes()
             courtRoutes()
             notificationRoutes()

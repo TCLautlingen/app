@@ -1,7 +1,9 @@
 package org.tcl.app.di
 
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+import org.tcl.app.booking.data.BookingWebSocketDataSource
 import org.tcl.app.booking.data.FakeBookingRemoteDataSource
 import org.tcl.app.booking.data.KtorBookingRemoteDataSource
 import org.tcl.app.booking.domain.BookingRemoteDataSource
@@ -15,6 +17,8 @@ val bookingModule = module {
         if (TESTING) FakeBookingRemoteDataSource()
         else KtorBookingRemoteDataSource(get())
     }
+
+    singleOf(::BookingWebSocketDataSource)
 
     viewModelOf(::BookingListViewModel)
     viewModelOf(::BookingEditorViewModel)

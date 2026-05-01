@@ -17,5 +17,6 @@ interface BookingRepository {
         duration: Int,
         playerIds: List<Int>
     ): Booking
+    suspend fun bookingById(id: Int): Booking?
     suspend fun removeBooking(userId: Int, id: Int): Boolean
 }

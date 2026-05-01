@@ -47,6 +47,7 @@ fun NavigationRoot() {
             if (appState.isLoggedIn) {
                 userRemoteDataSource.getCurrentUser()
                     .onSuccess { user ->
+                        appViewModel.updateUserId(user.id)
                         navigator.navigate(if (user.firstName.isBlank()) AppGraph.OnboardingProfile else AppGraph.BookingList)
                     }
                     .onFailure { }
@@ -123,7 +124,7 @@ fun NavigationRoot() {
             BookingSuccessRoot(
                 booking = it.booking,
                 onNavigateHome = {
-                    navigator.navigate(AppGraph.BookingList)
+                    navigator.navigateToTopLevel()
                 }
             )
         }
