@@ -13,12 +13,10 @@ import org.tcl.app.booking.data.BookingWebSocketDataSource
 import org.tcl.app.booking.domain.BookingRemoteDataSource
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
-import org.tcl.app.user.domain.UserRemoteDataSource
 
 class BookingListViewModel(
     private val dataSource: BookingRemoteDataSource,
-    private val wsDataSource: BookingWebSocketDataSource,
-    private val userRemoteDataSource: UserRemoteDataSource,
+    private val wsDataSource: BookingWebSocketDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookingListState())
     val state = _state.asStateFlow()

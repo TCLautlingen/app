@@ -3,12 +3,14 @@ package org.tcl.app
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.auth.parseAuthorizationHeader
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -61,6 +63,13 @@ fun Application.configureHTTP() {
         jwt("auth-jwt") {
             realm = "tcl-app"
             verifier(verifier)
+            // Browser WebSockets cannot set headers, so also accept ?token= query param.
+            authHeader { call ->
+                call.request.parseAuthorizationHeader()
+                    ?: call.request.queryParameters["token"]?.let { token ->
+                        HttpAuthHeader.Single("Bearer", token)
+                    }
+            }
             validate { credential ->
                 if (credential.payload.getClaim("userId").asInt() != null) {
                     JWTPrincipal(credential.payload)

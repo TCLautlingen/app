@@ -3,7 +3,6 @@ package org.tcl.app.booking.data
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocket
-import io.ktor.http.HttpHeaders
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
@@ -57,10 +56,10 @@ class BookingWebSocketDataSource(
                     .replace("https://", "wss://")
                     .replace("http://", "ws://") + WS_PATH
 
-                wsClient.webSocket(
-                    urlString = wsUrl,
-                    request = { headers.append(HttpHeaders.Authorization, "Bearer $token") }
-                ) {
+                // Browser WebSockets cannot set custom headers, so the token is passed as a
+                // query parameter. The server accepts it from either the Authorization header
+                // or the ?token= query parameter.
+                wsClient.webSocket(urlString = "$wsUrl?token=$token") {
                     attempts = 0
                     _isConnected.value = true
                     for (frame in incoming) {
