@@ -49,6 +49,7 @@ fun Application.configureHTTP() {
         if (System.getenv("APP_ENV") != "production") {
             allowHost("localhost:8080")
             allowHost("localhost:5173")
+            allowHost("localhost:63342")
         }
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)

@@ -14,12 +14,14 @@ import org.tcl.app.core.data.network.BackendApiClient
 import org.tcl.app.core.domain.util.onFailure
 import org.tcl.app.core.domain.util.onSuccess
 import org.tcl.app.notification.domain.NotificationRemoteDataSource
+import org.tcl.app.user.domain.UserRemoteDataSource
 
 class AppViewModel(
     private val secureStorage: SecureStorage,
     private val backendApiClient: BackendApiClient,
     private val authRemoteDataSource: AuthRemoteDataSource,
     private val notificationRemoteDataSource: NotificationRemoteDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AppState())
     val state = _state.asStateFlow()
@@ -64,8 +66,13 @@ class AppViewModel(
     }
 
     fun setLoggedIn() {
+        // Clear any stale token the Ktor Auth plugin may have cached before login/registration,
+        // so the next request calls loadTokens fresh and picks up the just-saved tokens.
+        backendApiClient.client.clearAuthTokens()
         _state.update { it.copy(isLoggedIn = true) }
         viewModelScope.launch {
+            userRemoteDataSource.getCurrentUser()
+                .onSuccess { user -> updateUserId(user.id) }
             val token = NotifierManager.getPushNotifier().getToken()
             if (token != null) {
                 notificationRemoteDataSource.registerToken(token)
