@@ -22,7 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
-import org.tcl.app.core.presentation.DateSheet
+import org.tcl.app.core.presentation.DateSelectSheet
 import org.tcl.app.navigation.AppGraph
 import org.tcl.app.navigation.BottomNavigationBar
 import org.tcl.app.util.formatDdMmYyyy
@@ -162,7 +162,7 @@ fun BookingCourtScreen(
             }
         }
 
-        DateSheet(
+        DateSelectSheet(
             open = state.showDateSheet,
             onDismiss = { onAction(BookingCourtAction.OnDateChangeDismiss) },
             selectedDate = state.date,

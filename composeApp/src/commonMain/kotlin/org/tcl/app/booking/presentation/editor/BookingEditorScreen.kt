@@ -15,7 +15,7 @@ import kotlinx.datetime.LocalTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.tcl.app.booking.Booking
 import org.tcl.app.booking.VALID_BOOKING_DURATIONS
-import org.tcl.app.core.presentation.DateSheet
+import org.tcl.app.core.presentation.DateSelectSheet
 import org.tcl.app.core.presentation.ObserveAsEvents
 import org.tcl.app.core.presentation.PlayerSelectSheet
 import org.tcl.app.util.formatDdMmYyyy
@@ -199,7 +199,7 @@ fun BookingEditorScreen(
             }
         }
 
-        DateSheet(
+        DateSelectSheet(
             open = state.showDateSheet,
             onDismiss = { onAction(BookingEditorAction.OnDateChangeDismiss) },
             selectedDate = state.date,

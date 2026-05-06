@@ -32,9 +32,9 @@ class UserProfileViewModel(
             is UserProfileAction.OnLastNameChange ->
                 _state.update { it.copy(lastName = action.lastName) }
             is UserProfileAction.OnPhoneNumberChange ->
-                _state.update { it.copy(phoneNumber = action.phoneNumber) }
+                _state.update { it.copy(phoneNumber = action.phoneNumber.ifEmpty { null }) }
             is UserProfileAction.OnAddressChange ->
-                _state.update { it.copy(address = action.address) }
+                _state.update { it.copy(address = action.address.ifEmpty { null }) }
             is UserProfileAction.OnSaveClick -> save()
             is UserProfileAction.OnLogoutClick -> logout()
         }

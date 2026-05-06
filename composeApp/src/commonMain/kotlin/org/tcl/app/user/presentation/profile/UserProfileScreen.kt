@@ -162,17 +162,22 @@ fun UserProfileScreen(
                         }
 
                         Button(
-                            text = "Speichern",
-                            onClick = { onAction(UserProfileAction.OnSaveClick) },
+                            text = "Abmelden",
+                            onClick = {
+                                onAction(UserProfileAction.OnLogoutClick)
+                            },
+                            variant = ButtonVariant.Destructive
                         )
                     }
 
                     Button(
-                        text = "Abmelden",
-                        onClick = {
-                            onAction(UserProfileAction.OnLogoutClick)
-                        },
-                        variant = ButtonVariant.Destructive
+                        text = "Speichern",
+                        onClick = { onAction(UserProfileAction.OnSaveClick) },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = state.user?.firstName != state.firstName ||
+                                state.user.lastName != state.lastName ||
+                                state.user.phoneNumber != state.phoneNumber ||
+                                state.user.address != state.address,
                     )
                 }
             }

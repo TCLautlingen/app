@@ -32,7 +32,7 @@ import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.foundation.RikkaTheme
 
 @Composable
-fun DateSheet(
+fun DateSelectSheet(
     open: Boolean,
     onDismiss: () -> Unit,
     selectedDate: LocalDate,
